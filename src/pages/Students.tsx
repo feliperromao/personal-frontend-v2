@@ -1,0 +1,165 @@
+import * as React from 'react';
+import { Box,  Grid, Paper } from "@mui/material";
+import { DataGrid, GridColDef, GridRowId, GridRowSelectionModel } from '@mui/x-data-grid';
+import DeleteDialog from '../components/DeleteDialog';
+import FloatingButton from '../components/FloatingButton';
+import Template from '../components/Template';
+import axios from 'axios';
+import { User } from '../domain/types';
+import UserForm from '../components/forms/UserForm';
+import Breadcrumb from '../components/Breadcrumb';
+import { handleOpenNotification, SNACKBAR_TYPES } from '../components/MySnackbar';
+import { useGlobalState } from "../GlobalState";
+import get_erros_message from '../erros/get_erros_message';
+import SearchInput from '../components/SearchInput';
+import ItemsMenu from '../components/table/ItemsMenu';
+const paginationModel = { page: 0, pageSize: 5 };
+const URL = `${process.env.REACT_APP_BACKEND_GRAPH_API}/students`
+const token = localStorage.getItem('auth-token');
+
+const Students: React.FC = () => {
+  const [formDialogIsOpen, setOpenFormDialog] = React.useState(false);
+  const [deleteDialogIsOpen, setOpenDeleteDialog] = React.useState(false);
+  const [deleteUserId, setDeleteUserId] = React.useState<string | null>(null);
+  const [editingUser, setEditingUser] = React.useState<User | undefined>(undefined);
+  const [users, setUsers] = React.useState<User[]>([]);
+  const { setLoading } = useGlobalState();
+  const [selected, setSelected] = React.useState<GridRowSelectionModel>([])
+  const [searchQuery, setSearchQuery] = React.useState<string>('');
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(URL, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUsers(response.data);
+    } catch (error) {
+      handleOpenNotification("Falha ao listar alunos!", SNACKBAR_TYPES.error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  React.useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const handleEditClick = (id: GridRowId) => {
+    setOpenFormDialog(true)
+    const editUser = users.find(user => user.id == id.toString())
+    if (editUser) {
+      const { id, name, email } = editUser
+      setEditingUser({ id, name, email } as User)
+    }
+  }
+
+  const handleSubmit = async (user: User) => {
+    if (editingUser && editingUser.id) {
+      //TODO: activate loading
+      delete user.id
+      await axios.put(`${URL}/${editingUser.id}`, {
+        name: user.name,
+        email: user.email,
+        password: user.password,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }).then(() => {
+        fetchUsers();
+        handleOpenNotification("Aluno editado com sucesso!", SNACKBAR_TYPES.success);
+        setEditingUser(undefined);
+      }).catch(() => {
+        handleOpenNotification("Falha ao editar aluno!", SNACKBAR_TYPES.error);
+      })
+    } else {
+      //TODO: activate loading
+      await axios.post(URL, user, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }).then(() => {
+        fetchUsers();
+        handleOpenNotification("Aluno cadastrado com sucesso!", SNACKBAR_TYPES.success);
+        //TODO: close modal
+        setEditingUser(undefined);
+      }).catch(error => {
+        const error_messages = get_erros_message(error?.response?.data?.message || [])
+        handleOpenNotification("Falha ao cadastrar novo aluno: " + error_messages, SNACKBAR_TYPES.error);
+      })
+    }
+  };
+
+  const handleDeleteUserClick = (id: GridRowId) => {
+    setDeleteUserId(id.toString())
+    setOpenDeleteDialog(true)
+  }
+
+  const handleCloseDeleteDialog = async (confirm: boolean) => {
+    if (confirm && deleteUserId) {
+      axios.delete(`${URL}/${deleteUserId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+    }
+    setOpenDeleteDialog(false);
+    fetchUsers()
+  };
+
+  const columns: GridColDef[] = [
+    { field: 'name', headerName: 'Nome', width: 300 },
+    { field: 'email', headerName: 'E-mail', width: 300 },
+    {
+      field: 'blocked',
+      headerName: 'Status',
+      width: 100,
+      valueFormatter: value => (value ? 'Desabilitado' : 'Ativo')
+    },
+    {
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Opções',
+      width: 200,
+      getActions: ({ id }) => {
+        return [
+          <ItemsMenu rowId={id} handleDelete={handleDeleteUserClick} handleEdit={() => handleEditClick(id)} />
+        ];
+      },
+    },
+  ];
+
+  return (
+    <Template pageName='Dashboard' >
+      <React.Fragment>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Breadcrumb uri='students' title='Alunos' />
+
+            <Box display="flex" alignItems="center" gap={1} sx={{ margin: '16px 0' }}>
+              <SearchInput />
+            </Box>
+
+            <Paper sx={{ height: 400, width: '100%' }}>
+              <DataGrid
+                rows={users}
+                columns={columns}
+                initialState={{ pagination: { paginationModel } }}
+                onRowSelectionModelChange={(value) => setSelected(value)}
+                pageSizeOptions={[5, 10, 50]}
+                checkboxSelection
+                disableColumnSelector
+                sx={{ border: 0 }}
+              />
+            </Paper>
+          </Grid>
+        </Grid>
+        <UserForm user={editingUser} isOpen={formDialogIsOpen} onSubmit={handleSubmit} handleClose={() => setOpenFormDialog(false)} />
+        <DeleteDialog title="Excluir Usuario" handleCloseDeleteDialog={handleCloseDeleteDialog} isOpen={deleteDialogIsOpen} />
+        <FloatingButton onClick={() => setOpenFormDialog(true)} />
+      </React.Fragment>
+    </Template>
+  );
+}
+
+export default Students;
