@@ -3,23 +3,40 @@ import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
-import DirectionsIcon from '@mui/icons-material/Directions';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-export default function SearchInput() {
+interface SearchInputProps {
+  search: string;
+  handleChange: (value: string) => void;
+  handleSearch: () => void;
+}
+
+const SearchInput: React.FC<SearchInputProps> = ({ search, handleChange, handleSearch }) => {
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    handleChange(value);
+  };
+
+  const onSubmit = (e: React.FormEvent) =>  {
+    e.preventDefault();
+    handleSearch();
+  }
+
   return (
     <Paper
       component="form"
       sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
+      onSubmit={onSubmit}
     >
       <InputBase
         sx={{ ml: 1, flex: 1 }}
         placeholder="Pesquisar"
-        inputProps={{ 'aria-label': 'pesquisar alunos' }}
+        inputProps={{ 'aria-label': 'pesquisar' }}
+        onChange={onChange}
       />
-      <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+      <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={handleSearch}>
         <SearchIcon />
       </IconButton>
       <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
@@ -29,3 +46,4 @@ export default function SearchInput() {
     </Paper>
   );
 }
+export default SearchInput;

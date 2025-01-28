@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Box,  Grid, Paper } from "@mui/material";
-import { DataGrid, GridColDef, GridRowId, GridRowSelectionModel } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from '@mui/x-data-grid';
 import DeleteDialog from '../components/DeleteDialog';
 import FloatingButton from '../components/FloatingButton';
 import Template from '../components/Template';
@@ -13,7 +13,7 @@ import { useGlobalState } from "../GlobalState";
 import get_erros_message from '../erros/get_erros_message';
 import SearchInput from '../components/SearchInput';
 import ItemsMenu from '../components/table/ItemsMenu';
-const paginationModel = { page: 0, pageSize: 5 };
+const paginationModel = { page: 0, pageSize: 10 };
 const URL = `${process.env.REACT_APP_BACKEND_GRAPH_API}/students`
 const token = localStorage.getItem('auth-token');
 
@@ -26,23 +26,28 @@ const Students: React.FC = () => {
   const { setLoading } = useGlobalState();
   const [selected, setSelected] = React.useState<GridRowSelectionModel>([])
   const [searchQuery, setSearchQuery] = React.useState<string>('');
+  const [rowCount, setRowCount] = React.useState<number>(0);
+  const [currentPage, setCurrentPage] = React.useState<number>(0);
+
+  React.useEffect(() => {
+    fetchUsers();
+  }, [currentPage]);
 
   const fetchUsers = async () => {
+    const page = currentPage + 1
     try {
       setLoading(true);
-      const response = await axios.get(URL, {
+      const response = await axios.get(`${URL}?page=${page}&search=${searchQuery}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setUsers(response.data);
+      setUsers(response.data.data);
+      setRowCount(response.data.total_documents)
     } catch (error) {
       handleOpenNotification("Falha ao listar alunos!", SNACKBAR_TYPES.error);
     } finally {
       setLoading(false);
     }
   };
-  React.useEffect(() => {
-    fetchUsers();
-  }, []);
 
   const handleEditClick = (id: GridRowId) => {
     setOpenFormDialog(true)
@@ -51,6 +56,12 @@ const Students: React.FC = () => {
       const { id, name, email } = editUser
       setEditingUser({ id, name, email } as User)
     }
+  }
+
+  const onPaginationModelChange = (data: GridPaginationModel) => {
+    const { page } = data;
+    setCurrentPage(page);
+    fetchUsers();
   }
 
   const handleSubmit = async (user: User) => {
@@ -120,7 +131,7 @@ const Students: React.FC = () => {
       field: 'actions',
       type: 'actions',
       headerName: 'Opções',
-      width: 200,
+      width: 100,
       getActions: ({ id }) => {
         return [
           <ItemsMenu rowId={id} handleDelete={handleDeleteUserClick} handleEdit={() => handleEditClick(id)} />
@@ -137,19 +148,22 @@ const Students: React.FC = () => {
             <Breadcrumb uri='students' title='Alunos' />
 
             <Box display="flex" alignItems="center" gap={1} sx={{ margin: '16px 0' }}>
-              <SearchInput />
+              <SearchInput search={searchQuery} handleChange={setSearchQuery} handleSearch={fetchUsers} />
             </Box>
 
-            <Paper sx={{ height: 400, width: '100%' }}>
+            <Paper sx={{ height: 650, width: '100%' }}>
+              
               <DataGrid
                 rows={users}
                 columns={columns}
                 initialState={{ pagination: { paginationModel } }}
                 onRowSelectionModelChange={(value) => setSelected(value)}
-                pageSizeOptions={[5, 10, 50]}
                 checkboxSelection
                 disableColumnSelector
                 sx={{ border: 0 }}
+                onPaginationModelChange={onPaginationModelChange}
+                paginationMode="server"
+                rowCount={rowCount}
               />
             </Paper>
           </Grid>

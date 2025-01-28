@@ -24,8 +24,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element }) => {
       'Accept': 'application/json'
     }
   }).then(({data}) => {
-    console.log("🚀 ~ data:", data)
-    if (data.type != "PERSONAL") {
+    if (data.type !== "PERSONAL") {
       return <Navigate to="/login" state={{ from: location }} replace />;
     }
   }).catch(() => {

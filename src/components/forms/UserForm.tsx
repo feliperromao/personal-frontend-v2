@@ -1,7 +1,7 @@
 // UserForm.tsx
 import React, { useState, useEffect } from 'react';
 import { User } from '../../domain/types';
-import { Backdrop, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 
 interface UserFormProps {
   user?: User | null;
@@ -43,7 +43,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, isOpen, onSubmit, handleClose
         },
       }}
     >
-      <DialogTitle>Cadastro de usuarios</DialogTitle>
+      <DialogTitle>Cadastro de Alunos</DialogTitle>
       <DialogContent>
         <TextField
           required
@@ -83,7 +83,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, isOpen, onSubmit, handleClose
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancelar</Button>
-        <Button type="submit">{user ? 'Editar' : 'Criar'} Usuário</Button>
+        <Button type="submit">{user ? 'Editar' : 'Criar'} Aluno</Button>
       </DialogActions>
     </Dialog>
   );

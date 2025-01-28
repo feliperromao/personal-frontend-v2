@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Training, User } from '../../domain/types';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, TextField, Grid, Switch, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, ListItemIcon, Paper } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, TextField, Grid, Switch, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
 import { handleOpenNotification, SNACKBAR_TYPES } from '../MySnackbar';
 import axios from 'axios';
-import { DataGrid } from '@mui/x-data-grid';
 import SelectExercises from './SelectExercises';
 
 const STUDENTS_API_URL = `${process.env.REACT_APP_BACKEND_GRAPH_API}/students`
