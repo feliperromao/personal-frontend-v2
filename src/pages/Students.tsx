@@ -64,6 +64,11 @@ const Students: React.FC = () => {
     fetchUsers();
   }
 
+  const closeModal = (): void => {
+    setOpenFormDialog(false)
+    setEditingUser(undefined);
+  };
+
   const handleSubmit = async (user: User) => {
     if (editingUser && editingUser.id) {
       //TODO: activate loading
@@ -77,9 +82,9 @@ const Students: React.FC = () => {
           Authorization: `Bearer ${token}`
         }
       }).then(() => {
-        fetchUsers();
         handleOpenNotification("Aluno editado com sucesso!", SNACKBAR_TYPES.success);
-        setEditingUser(undefined);
+        fetchUsers();
+        closeModal();
       }).catch(() => {
         handleOpenNotification("Falha ao editar aluno!", SNACKBAR_TYPES.error);
       })
@@ -90,10 +95,9 @@ const Students: React.FC = () => {
           Authorization: `Bearer ${token}`
         }
       }).then(() => {
-        fetchUsers();
         handleOpenNotification("Aluno cadastrado com sucesso!", SNACKBAR_TYPES.success);
-        //TODO: close modal
-        setEditingUser(undefined);
+        fetchUsers();
+        closeModal();
       }).catch(error => {
         const error_messages = get_erros_message(error?.response?.data?.message || [])
         handleOpenNotification("Falha ao cadastrar novo aluno: " + error_messages, SNACKBAR_TYPES.error);
@@ -157,7 +161,7 @@ const Students: React.FC = () => {
                 rows={users}
                 columns={columns}
                 initialState={{ pagination: { paginationModel } }}
-                onRowSelectionModelChange={(value) => setSelected(value)}
+                onRowSelectionModelChange={setSelected}
                 checkboxSelection
                 disableColumnSelector
                 sx={{ border: 0 }}
