@@ -13,7 +13,7 @@ import { useGlobalState } from "../GlobalState";
 import get_erros_message from '../erros/get_erros_message';
 import SearchInput from '../components/SearchInput';
 import ItemsMenu from '../components/table/ItemsMenu';
-const paginationModel = { page: 0, pageSize: 10 };
+import { paginationModel } from './@shared/pagination'
 const URL = `${process.env.REACT_APP_BACKEND_GRAPH_API}/students`
 const token = localStorage.getItem('auth-token');
 

@@ -12,8 +12,7 @@ import axios from 'axios';
 import { Training } from '../domain/types';
 import { handleOpenNotification, SNACKBAR_TYPES } from '../components/MySnackbar';
 import TrainingForm from '../components/forms/TrainingForm';
-
-const paginationModel = { page: 0, pageSize: 5 };
+import { paginationModel } from './@shared/pagination'
 const URL = `${process.env.REACT_APP_BACKEND_GRAPH_API}/trainings`;
 const token = localStorage.getItem('auth-token');
 
@@ -42,6 +41,7 @@ const Trainings: React.FC = () => {
   }
 
   const handleSubmit = async (training: Training) => {
+    console.log("🚀 ~ handleSubmit ~ training:", training)
     if (editingTraining && editingTraining.id) {
       return ;
     }

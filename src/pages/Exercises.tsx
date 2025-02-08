@@ -13,7 +13,7 @@ import Breadcrumb from '../components/Breadcrumb';
 import { useGlobalState } from "../GlobalState";
 import ItemsMenu from '../components/table/ItemsMenu';
 import SearchInput from '../components/SearchInput';
-const paginationModel = { page: 0, pageSize: 10 };
+import { paginationModel } from './@shared/pagination'
 const URL = `${process.env.REACT_APP_BACKEND_GRAPH_API}/exercises`;
 const token = localStorage.getItem('auth-token');
 
