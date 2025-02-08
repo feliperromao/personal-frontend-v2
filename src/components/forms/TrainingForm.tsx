@@ -142,6 +142,7 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, onSubmit,
                     <TableHead>
                       <TableRow>
                         <TableCell sx={{fontWeight: '600'}}>Ordenar</TableCell>
+                        <TableCell sx={{fontWeight: '600'}}>Posição</TableCell>
                         <TableCell sx={{fontWeight: '600'}}>Nome</TableCell>
                         <TableCell sx={{fontWeight: '600'}}>Instruções</TableCell>
                         <TableCell sx={{fontWeight: '600'}}>Remover</TableCell>
@@ -166,6 +167,7 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, onSubmit,
                               <ArrowDownward />
                             </IconButton>
                           </TableCell>
+                          <TableCell>{index + 1}</TableCell>
                           <TableCell>{item.name}</TableCell>
                           <TableCell>{item.instructions}</TableCell>
                           <TableCell>
