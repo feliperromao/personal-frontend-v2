@@ -13,10 +13,10 @@ interface Option {
 
 interface UsersSelectProps {
   value: Option | undefined
+  onChange: (value: any) => void;
 }
 
-const UsersSelect: React.FC<UsersSelectProps> = ({ value }) => {
-  const [searchQuery, setSearchQuery] = React.useState<string>('');
+const UsersSelect: React.FC<UsersSelectProps> = ({ value, onChange }) => {
   const [users, setUsers] = React.useState<Option[]>([]);
 
   React.useEffect(() => {
@@ -39,6 +39,7 @@ const UsersSelect: React.FC<UsersSelectProps> = ({ value }) => {
     <SearchableSelect
       options={users}
       value={value}
+      onChange={onChange}
     />
   )
 }

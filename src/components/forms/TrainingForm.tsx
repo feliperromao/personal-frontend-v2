@@ -1,11 +1,8 @@
-import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import { Training, User } from '../../domain/types';
+import { Exercise, Training } from '../../domain/types';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, TextField, Grid, Switch, FormControl, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, IconButton, Typography } from '@mui/material';
 import SelectExercises from './SelectExercises';
 import UsersSelect from './Select/UsersSelect';
-import { Exercise } from '../../domain/types';
-import DeleteIcon from "@mui/icons-material/Delete";
 import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
 const token = localStorage.getItem('auth-token');
 
@@ -46,8 +43,16 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, onSubmit,
     setShowExerciseModal(false)
   }
 
-  const saveExercises = (itens: any): any => {
-    setSelectedExercises(itens);
+  const addExercise = (item: Exercise): void => {
+    const founded = selectedExercises.find(exercise => exercise.id === item.id)
+    if (!founded) {
+      setSelectedExercises([...selectedExercises, item]);
+    }
+  }
+
+  const removeExercise = (item: Exercise): any => {
+    const founded = selectedExercises.filter(exercise => exercise.id !== exercise.id)
+    setSelectedExercises(founded);
   }
 
   const updateExercises = (items: Exercise[]): any => {
@@ -72,10 +77,6 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, onSubmit,
     updateExercises(newItems);
   };
 
-  const handleRemoveExercise = (id: string | undefined) => {
-    console.log("🚀 ~ handleRemoveExercise ~ id:", id)
-  }
-
   return (
     <React.Fragment>
       <Dialog
@@ -87,7 +88,11 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, onSubmit,
           component: 'form',
           onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
-            onSubmit(formData);
+            console.log("🚀 ~ formData:", formData)
+            onSubmit({
+              ...formData,
+              exercises: selectedExercises,
+            });
             setFormData({ name: '', description: '', show_to_student: false, student_id: '', exercises: [] });
             handleClose();
           },
@@ -106,7 +111,7 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, onSubmit,
           <Grid container spacing={3} mt={1}>
             <Grid item xs={12} md={6}>
               <FormControl fullWidth>
-                <UsersSelect value={user} />
+                <UsersSelect value={user} onChange={(user) => setFormData({...formData, student_id: user.value})} />
               </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -132,7 +137,8 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, onSubmit,
               <SelectExercises
                 isOpen={showExerciseModal}
                 handleClose={closeExercisesModal}
-                handleSave={(itens: any) => saveExercises(itens)}
+                addExercise={(item: Exercise) => addExercise(item)}
+                removeExercise={(item: Exercise) => removeExercise(item)}
               />
             </Grid>
             <Grid item xs={12} md={12} mt={2}>
@@ -145,13 +151,12 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, onSubmit,
                         <TableCell sx={{fontWeight: '600'}}>Posição</TableCell>
                         <TableCell sx={{fontWeight: '600'}}>Nome</TableCell>
                         <TableCell sx={{fontWeight: '600'}}>Instruções</TableCell>
-                        <TableCell sx={{fontWeight: '600'}}>Remover</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {selectedExercises.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={3} align='center'>
+                          <TableCell colSpan={4} align='center'>
                             <Typography sx={{ color: 'grey' }} variant="h6" component="h6">
                               Nenhum exercicio selecionado
                             </Typography>
@@ -170,11 +175,6 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, onSubmit,
                           <TableCell>{index + 1}</TableCell>
                           <TableCell>{item.name}</TableCell>
                           <TableCell>{item.instructions}</TableCell>
-                          <TableCell>
-                            <IconButton onClick={() => handleRemoveExercise(item.id)}>
-                              <DeleteIcon />
-                            </IconButton>
-                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

@@ -1,22 +1,15 @@
 import * as React from 'react';
 import {
-  AppBar, Button, Checkbox, Dialog, IconButton, InputAdornment, List,
+  AppBar, Checkbox, Dialog, IconButton, InputAdornment, List,
   ListItem, ListItemButton, ListItemIcon, ListItemText, Slide, TextField, Toolbar, Typography, CircularProgress, Pagination
 } from '@mui/material';
 import { TransitionProps } from 'notistack';
 import SearchIcon from "@mui/icons-material/Search";
 import { GridCloseIcon } from "@mui/x-data-grid";
 import axios from 'axios';
-
+import { Exercise } from '../../domain/types';
 const URL = `${process.env.REACT_APP_BACKEND_GRAPH_API}/exercises`;
 const token = localStorage.getItem('auth-token');
-
-interface ExercisesItem {
-  id: string;
-  name: string;
-  instructions: string;
-  series: number;
-}
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children: React.ReactElement<unknown> },
@@ -28,11 +21,12 @@ const Transition = React.forwardRef(function Transition(
 interface SelectExercisesProps {
   isOpen: boolean;
   handleClose: () => void;
-  handleSave: (items: ExercisesItem[]) => void;
+  addExercise: (item: Exercise) => void;
+  removeExercise: (item: Exercise) => void;
 }
 
-const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, handleClose, handleSave }) => {
-  const [exercises, setExercises] = React.useState<ExercisesItem[]>([]);
+const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, handleClose, addExercise, removeExercise }) => {
+  const [exercises, setExercises] = React.useState<Exercise[]>([]);
   const [currentPage, setCurrentPage] = React.useState<number>(1);
   const [totalPages, setTotalPages] = React.useState<number>(1);
   const [loading, setLoading] = React.useState<boolean>(false);
@@ -63,17 +57,17 @@ const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, handleClose, 
         ? prevChecked.filter((id) => id !== value)
         : [...prevChecked, value]
     );
+
+    const wasChecked = checked.includes(value)
+    const exercise = exercises.find(item => item.id === value)
+    if (exercise) {
+      wasChecked ? removeExercise(exercise) : addExercise(exercise)
+    }
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
     setCurrentPage(1);
-  };
-
-  const handleSubmit = () => {
-    const selectedExercises = exercises.filter((item) => checked.includes(item.id));
-    handleSave(selectedExercises);
-    handleClose();
   };
 
   return (
@@ -101,9 +95,6 @@ const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, handleClose, 
             }}
             sx={{ backgroundColor: 'white', borderRadius: 1, ml: 2 }}
           />
-          <Button color="inherit" onClick={handleSubmit}>
-            Salvar
-          </Button>
         </Toolbar>
       </AppBar>
       {loading ? (

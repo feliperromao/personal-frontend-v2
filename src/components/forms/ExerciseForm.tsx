@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Exercise } from '../../domain/types';
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Grid, TextField } from '@mui/material';
+import ExerciseType from './Select/ExerciseType';
 
 interface UserFormProps {
   exercise?: Exercise | null;
@@ -11,7 +12,9 @@ interface UserFormProps {
 
 const ExerciseForm: React.FC<UserFormProps> = ({ exercise, isOpen, onSubmit, handleClose }) => {
   const [formData, setFormData] = useState<Exercise>({
+    id: '',
     name: '',
+    type: '',
     instructions: '',
     video: '',
     rest: 30,
@@ -28,7 +31,7 @@ const ExerciseForm: React.FC<UserFormProps> = ({ exercise, isOpen, onSubmit, han
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    switch(name){
+    switch (name) {
       case "rest":
       case "load":
       case "series":
@@ -43,6 +46,10 @@ const ExerciseForm: React.FC<UserFormProps> = ({ exercise, isOpen, onSubmit, han
     setFormData((prev) => ({ ...prev, [name]: checked }));
   };
 
+  const setExerciseType = (type: string) => {
+    setFormData((prev) => ({ ...prev, type: type }));
+  }
+
   const convertToNumber = (value: string): number => {
     return +value
   }
@@ -56,24 +63,32 @@ const ExerciseForm: React.FC<UserFormProps> = ({ exercise, isOpen, onSubmit, han
         onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
           event.preventDefault();
           onSubmit(formData);
-          setFormData({ name: '', instructions: '', video: '', rest: 30, load: 0, series: 0, load_progress: false });
+          setFormData({ id: '', name: '', type: '', instructions: '', video: '', rest: 30, load: 0, series: 0, load_progress: false });
           handleClose();
         },
       }}
     >
       <DialogTitle>Cadastro de exercícios</DialogTitle>
       <DialogContent>
-        <TextField
-          required
-          margin="dense"
-          id="name"
-          name="name"
-          label="Nome"
-          fullWidth
-          variant="outlined"
-          value={formData.name}
-          onChange={handleChange}
-        />
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <TextField
+              required
+              margin="dense"
+              id="name"
+              name="name"
+              label="Nome"
+              fullWidth
+              variant="outlined"
+              value={formData.name}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <ExerciseType value={formData.type} onChange={setExerciseType} />
+          </Grid>
+        </Grid>
+
         <TextField
           required
           margin="dense"
@@ -143,11 +158,11 @@ const ExerciseForm: React.FC<UserFormProps> = ({ exercise, isOpen, onSubmit, han
               label="Progressão de carga"
               control={
                 <Checkbox
-                id="load_progress"
-                name="load_progress"
-                defaultChecked
-                value={formData.load_progress}
-                onChange={handleChangeCheckbox} />
+                  id="load_progress"
+                  name="load_progress"
+                  defaultChecked
+                  value={formData.load_progress}
+                  onChange={handleChangeCheckbox} />
               }
             />
           </Grid>

@@ -56,6 +56,7 @@ const Exercises: React.FC = () => {
     if (editingExercise && editingExercise.id) {
       await axios.put(`${URL}/${editingExercise.id}`, {
         name: exercise.name,
+        type: exercise.type,
         instructions: exercise.instructions,
         video: exercise.video,
         rest: exercise.rest,
@@ -76,7 +77,17 @@ const Exercises: React.FC = () => {
       return;
     }
 
-    await axios.post(URL, exercise, {
+    await axios.post(URL, 
+      {
+        name: exercise.name,
+        type: exercise.type,
+        instructions: exercise.instructions,
+        video: exercise.video,
+        rest: exercise.rest,
+        load: exercise.load,
+        series: exercise.series,
+        load_progress: exercise.load_progress,
+      }, {
       headers: {
         Authorization: `Bearer ${token}`
       }

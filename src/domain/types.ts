@@ -7,8 +7,9 @@ export interface User {
 }
 
 export interface Exercise {
-  id?: string;
+  id: string;
   name: string;
+  type: string;
   instructions: string;
   video?: string;
   rest: number;

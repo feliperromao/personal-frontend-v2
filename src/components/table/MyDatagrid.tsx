@@ -1,17 +1,16 @@
 import { DataGrid, GridColDef, GridRowId, GridRowSelectionModel } from "@mui/x-data-grid";
 import ItemsMenu from "./ItemsMenu";
-
-const paginationModel = { page: 0, pageSize: 10 };
+import { paginationModel } from "../../pages/@shared/pagination";
 
 interface DatagridProps {
   rows: any[],
   totalDocuments: number
   columns: GridColDef[],
   showOptions: boolean,
-  setSelected: (ids: GridRowSelectionModel) => {},
-  changePagination: () => {},
-  handleDelete: () => {},
-  handleEdit: (id: string) => {},
+  setSelected: (ids: GridRowSelectionModel) => void,
+  changePagination: () => void,
+  handleDelete: () => void,
+  handleEdit: (id: string) => void,
 }
 
 const MyDatagrid: React.FC<DatagridProps> = ({ rows, columns, totalDocuments, showOptions, setSelected, changePagination, handleDelete, handleEdit }) => {

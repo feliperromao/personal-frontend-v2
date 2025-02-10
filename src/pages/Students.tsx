@@ -155,8 +155,7 @@ const Students: React.FC = () => {
               <SearchInput search={searchQuery} handleChange={setSearchQuery} handleSearch={fetchUsers} />
             </Box>
 
-            <Paper sx={{ height: 650, width: '100%' }}>
-              
+            <Paper sx={{ height: 400, width: '100%' }}>
               <DataGrid
                 rows={users}
                 columns={columns}
