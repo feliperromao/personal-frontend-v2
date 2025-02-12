@@ -77,7 +77,7 @@ const Exercises: React.FC = () => {
       return;
     }
 
-    await axios.post(URL, 
+    await axios.post(URL,
       {
         name: exercise.name,
         type: exercise.type,
