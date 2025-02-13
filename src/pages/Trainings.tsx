@@ -89,6 +89,10 @@ const Trainings: React.FC = () => {
     setOpenFormDialog(false);
   };
 
+  const getStudentName = (id: string): string | undefined => {
+    return students.find(item => item.value === id)?.label
+  }
+
   React.useEffect(() => {
     fetchStudents();
     fetchTrainings();
@@ -97,6 +101,9 @@ const Trainings: React.FC = () => {
   const columns: GridColDef[] = [
     { field: 'name', headerName: 'Nome', width: 200 },
     { field: 'description', headerName: 'Descrição', width: 300 },
+    {
+      field: 'student_id', headerName: 'Aluno', width: 200, valueGetter: (params) => getStudentName(params),
+    },
     { field: 'show_to_student', headerName: 'Mostrar', valueFormatter: value => (value ? 'Sim' : 'Não') },
     {
       field: 'actions',
