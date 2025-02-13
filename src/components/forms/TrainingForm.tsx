@@ -1,26 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Exercise, Training } from '../../domain/types';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, TextField, Grid, Switch, FormControl, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, IconButton, Typography } from '@mui/material';
+import { Exercise, Training, User } from '../../domain/types';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, TextField, Grid, Switch, FormControl, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, IconButton, Typography, Autocomplete } from '@mui/material';
 import SelectExercises from './SelectExercises';
-import UsersSelect from './Select/UsersSelect';
 import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
 const token = localStorage.getItem('auth-token');
+const URL = `${process.env.REACT_APP_BACKEND_GRAPH_API}/students/list-all`;
 
-interface Option {
+export interface Option {
   label: string;
   value: string;
 }
+
 interface TrainingFormProps {
   training?: Training | null;
   isOpen: boolean;
+  students: Option[];
   onSubmit: (training: Training) => void;
   handleClose: () => void;
 }
 
-const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, onSubmit, handleClose }) => {
-  const [user, setUser] = React.useState<Option>();
+const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, students, onSubmit, handleClose }) => {
   const [showExerciseModal, setShowExerciseModal] = React.useState(false);
   const [selectedExercises, setSelectedExercises] = React.useState<Exercise[]>([]);
+  const [student, setStudent] = useState<Option | null>(null);
   const [formData, setFormData] = useState<Training>({
     name: '',
     description: '',
@@ -32,6 +34,11 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, onSubmit,
   useEffect(() => {
     if (training) {
       setFormData(training);
+      setSelectedExercises(training.exercises)
+      const currentSdudent = students.find(item => item.value === training.student_id);
+      if (currentSdudent) {
+        setStudent(currentSdudent);
+      }
     }
   }, [training, selectedExercises]);
 
@@ -77,23 +84,33 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, onSubmit,
     updateExercises(newItems);
   };
 
+  const clearFormData = () => {
+    setFormData({ name: '', description: '', show_to_student: false, student_id: '', exercises: [] });
+    setSelectedExercises([]);
+    setStudent(null);
+  }
+
+  const onClose = () => {
+    clearFormData();
+    handleClose();
+  }
+
   return (
     <React.Fragment>
       <Dialog
         fullWidth={true}
         maxWidth="md"
         open={isOpen}
-        onClose={handleClose}
+        onClose={onClose}
         PaperProps={{
           component: 'form',
           onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
-            console.log("🚀 ~ formData:", formData)
             onSubmit({
               ...formData,
               exercises: selectedExercises,
             });
-            setFormData({ name: '', description: '', show_to_student: false, student_id: '', exercises: [] });
+            clearFormData();
             handleClose();
           },
         }}
@@ -107,11 +124,19 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, onSubmit,
             <Grid item xs={12} md={6}>
               <TextField required id="description" name="description" label="Instruções" fullWidth variant="outlined" value={formData.description} onChange={handleChange} />
             </Grid>
-          </Grid>
-          <Grid container spacing={3} mt={1}>
             <Grid item xs={12} md={6}>
               <FormControl fullWidth>
-                <UsersSelect value={user} onChange={(user) => setFormData({...formData, student_id: user.value})} />
+                <Autocomplete
+                  options={students}
+                  getOptionLabel={(option) => option.label}
+                  value={student}
+                  onChange={(_, newValue) => {
+                    setStudent(newValue)
+                    setFormData(prev => ({ ...prev, student_id: newValue?.value || '' }));
+                  }}
+                  renderInput={(params) => <TextField {...params} label="Aluno" variant="outlined" />}
+                  fullWidth
+                />
               </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -124,8 +149,6 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, onSubmit,
                 label="Exibir para aluno"
               />
             </Grid>
-          </Grid>
-          <Grid container spacing={3} mt={1}>
             <Grid item xs={12} md={6}>
               <Button color="inherit" variant="contained" onClick={openExercisesModal}>
                 Selecionar Exercicios
@@ -147,10 +170,10 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, onSubmit,
                   <Table size="small">
                     <TableHead>
                       <TableRow>
-                        <TableCell sx={{fontWeight: '600'}}>Ordenar</TableCell>
-                        <TableCell sx={{fontWeight: '600'}}>Posição</TableCell>
-                        <TableCell sx={{fontWeight: '600'}}>Nome</TableCell>
-                        <TableCell sx={{fontWeight: '600'}}>Instruções</TableCell>
+                        <TableCell sx={{ fontWeight: '600' }}>Ordenar</TableCell>
+                        <TableCell sx={{ fontWeight: '600' }}>Posição</TableCell>
+                        <TableCell sx={{ fontWeight: '600' }}>Nome</TableCell>
+                        <TableCell sx={{ fontWeight: '600' }}>Instruções</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -186,7 +209,7 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, onSubmit,
 
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancelar</Button>
+          <Button onClick={onClose}>Cancelar</Button>
           <Button variant="contained" type="submit">{training ? 'Editar' : 'Salvar'}</Button>
         </DialogActions>
       </Dialog>

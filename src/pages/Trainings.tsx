@@ -9,11 +9,12 @@ import FloatingButton from '../components/FloatingButton';
 import DeleteDialog from '../components/DeleteDialog';
 import { useGlobalState } from '../GlobalState';
 import axios from 'axios';
-import { Training } from '../domain/types';
+import { Training, User } from '../domain/types';
 import { handleOpenNotification, SNACKBAR_TYPES } from '../components/MySnackbar';
-import TrainingForm from '../components/forms/TrainingForm';
+import TrainingForm, { Option } from '../components/forms/TrainingForm';
 import { paginationModel } from './@shared/pagination'
-const URL = `${process.env.REACT_APP_BACKEND_GRAPH_API}/trainings`;
+const URL_TRAININGS = `${process.env.REACT_APP_BACKEND_GRAPH_API}/trainings`;
+const URL_STUDENTS = `${process.env.REACT_APP_BACKEND_GRAPH_API}/students/list-all`;
 const token = localStorage.getItem('auth-token');
 
 const Trainings: React.FC = () => {
@@ -21,15 +22,24 @@ const Trainings: React.FC = () => {
   const [trainings, setTrainings] = React.useState<Training[]>([]);
   const [editingTraining, setEditingTraining] = React.useState<Training | undefined>(undefined);
   const [formDialogIsOpen, setOpenFormDialog] = React.useState(false);
+  const [students, setStudents] = React.useState<Option[]>([]);
   const deleteDialogIsOpen = false;
+
   const handleCloseDeleteDialog = () => { }
-  const handleEditClick = (id: GridRowId) => { }
+
+  const handleEditClick = (id: GridRowId) => {
+    const trainingToEdit = trainings.find(training => training.id === id);
+    if (trainingToEdit) {
+      setEditingTraining(trainingToEdit);
+      setOpenFormDialog(true);
+    }
+  };
   const handleDeleteClick = (id: GridRowId) => { }
 
   const fetchTrainings = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(URL, {
+      const response = await axios.get(URL_TRAININGS, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setTrainings(response.data)
@@ -40,30 +50,47 @@ const Trainings: React.FC = () => {
     }
   }
 
+  const fetchStudents = async () => {
+    const response = await axios.get(URL_STUDENTS, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const usersRaw = response.data.map((user: User) => ({ label: user.name, value: user.id }));
+    setStudents(usersRaw);
+  };
+
   const handleSubmit = async (training: Training) => {
-    console.log("🚀 ~ handleSubmit ~ training:", training)
-    if (editingTraining && editingTraining.id) {
-      return ;
+    if (editingTraining) {
+      await axios.put(`${URL}/${editingTraining.id}`, training, {
+        headers: { Authorization: `Bearer ${token}` },
+      }).then(() => {
+        fetchTrainings();
+        handleOpenNotification("Treino atualizado com sucesso!", SNACKBAR_TYPES.success);
+      }).catch(() => {
+        handleOpenNotification("Falha ao atualizar treino", SNACKBAR_TYPES.error);
+      }).finally(() => {
+        setEditingTraining(undefined);
+        setOpenFormDialog(false);
+      });
+      return;
     }
 
-    await axios.post(URL, training, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+    await axios.post(URL_TRAININGS, training, {
+      headers: { Authorization: `Bearer ${token}` }
     }).then(() => {
       fetchTrainings();
       handleOpenNotification("Treino cadastrado com sucesso!", SNACKBAR_TYPES.success);
     }).catch(() => {
       handleOpenNotification("Falha ao cadastrar treino", SNACKBAR_TYPES.error);
-    })
-  }
+    });
+  };
 
   const handleCloseModal = () => {
-    // clearEditUser()
-    setOpenFormDialog(false)
-  }
+    setEditingTraining(undefined);
+    setOpenFormDialog(false);
+  };
 
   React.useEffect(() => {
+    fetchStudents();
     fetchTrainings();
   }, []);
 
@@ -119,7 +146,13 @@ const Trainings: React.FC = () => {
         </Grid2>
 
         <FloatingButton onClick={() => setOpenFormDialog(true)} />
-        <TrainingForm training={editingTraining} isOpen={formDialogIsOpen} onSubmit={handleSubmit} handleClose={handleCloseModal} />
+        <TrainingForm
+          training={editingTraining}
+          isOpen={formDialogIsOpen}
+          onSubmit={handleSubmit}
+          handleClose={handleCloseModal}
+          students={students}
+        />
         <DeleteDialog title='Excluir Treino' handleCloseDeleteDialog={handleCloseDeleteDialog} isOpen={deleteDialogIsOpen} />
       </React.Fragment>
     </Template>
