@@ -4,7 +4,6 @@ import { DataGrid, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionM
 import DeleteDialog from '../components/DeleteDialog';
 import FloatingButton from '../components/FloatingButton';
 import Template from '../components/Template';
-import axios from 'axios';
 import { User } from '../domain/types';
 import UserForm from '../components/forms/UserForm';
 import Breadcrumb from '../components/Breadcrumb';
@@ -14,7 +13,8 @@ import get_erros_message from '../erros/get_erros_message';
 import SearchInput from '../components/SearchInput';
 import ItemsMenu from '../components/table/ItemsMenu';
 import { paginationModel } from './@shared/pagination'
-const URL = `${process.env.REACT_APP_BACKEND_GRAPH_API}/students`
+import api from './@shared/api';
+const URL = `${process.env.REACT_APP_BACKEND_API}/students`
 const token = localStorage.getItem('auth-token');
 
 const Students: React.FC = () => {
@@ -37,9 +37,7 @@ const Students: React.FC = () => {
     const page = currentPage + 1
     try {
       setLoading(true);
-      const response = await axios.get(`${URL}?page=${page}&search=${searchQuery}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`${URL}?page=${page}&search=${searchQuery}`);
       setUsers(response.data.data);
       setRowCount(response.data.total_documents)
     } catch (error) {
@@ -73,14 +71,10 @@ const Students: React.FC = () => {
     if (editingUser && editingUser.id) {
       //TODO: activate loading
       delete user.id
-      await axios.put(`${URL}/${editingUser.id}`, {
+      await api.put(`${URL}/${editingUser.id}`, {
         name: user.name,
         email: user.email,
         password: user.password,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
       }).then(() => {
         handleOpenNotification("Aluno editado com sucesso!", SNACKBAR_TYPES.success);
         fetchUsers();
@@ -90,11 +84,7 @@ const Students: React.FC = () => {
       })
     } else {
       //TODO: activate loading
-      await axios.post(URL, user, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }).then(() => {
+      await api.post(URL, user).then(() => {
         handleOpenNotification("Aluno cadastrado com sucesso!", SNACKBAR_TYPES.success);
         fetchUsers();
         closeModal();
@@ -112,11 +102,7 @@ const Students: React.FC = () => {
 
   const handleCloseDeleteDialog = async (confirm: boolean) => {
     if (confirm && deleteUserId) {
-      axios.delete(`${URL}/${deleteUserId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
+      api.delete(`${URL}/${deleteUserId}`)
     }
     setOpenDeleteDialog(false);
     fetchUsers()

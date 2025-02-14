@@ -8,14 +8,14 @@ import { DataGrid, GridActionsCellItem, GridColDef, GridRowId } from '@mui/x-dat
 import FloatingButton from '../components/FloatingButton';
 import DeleteDialog from '../components/DeleteDialog';
 import { useGlobalState } from '../GlobalState';
-import axios from 'axios';
 import { Training, User } from '../domain/types';
 import { handleOpenNotification, SNACKBAR_TYPES } from '../components/MySnackbar';
 import TrainingForm, { Option } from '../components/forms/TrainingForm';
-import { paginationModel } from './@shared/pagination'
-const URL_TRAININGS = `${process.env.REACT_APP_BACKEND_GRAPH_API}/trainings`;
-const URL_STUDENTS = `${process.env.REACT_APP_BACKEND_GRAPH_API}/students/list-all`;
-const token = localStorage.getItem('auth-token');
+import { paginationModel } from './@shared/pagination';
+import api from './@shared/api';
+
+const URL_TRAININGS = `/trainings`;
+const URL_STUDENTS = `/students/list-all`;
 
 const Trainings: React.FC = () => {
   const { setLoading } = useGlobalState();
@@ -25,7 +25,7 @@ const Trainings: React.FC = () => {
   const [students, setStudents] = React.useState<Option[]>([]);
   const deleteDialogIsOpen = false;
 
-  const handleCloseDeleteDialog = () => { }
+  const handleCloseDeleteDialog = () => { };
 
   const handleEditClick = (id: GridRowId) => {
     const trainingToEdit = trainings.find(training => training.id === id);
@@ -34,54 +34,45 @@ const Trainings: React.FC = () => {
       setOpenFormDialog(true);
     }
   };
-  const handleDeleteClick = (id: GridRowId) => { }
-
+  const handleDeleteClick = (id: GridRowId) => { };
   const fetchTrainings = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(URL_TRAININGS, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setTrainings(response.data)
+      const response = await api.get(URL_TRAININGS);
+      setTrainings(response.data);
     } catch (error) {
       handleOpenNotification("Falha ao listar os treinos", SNACKBAR_TYPES.error);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const fetchStudents = async () => {
-    const response = await axios.get(URL_STUDENTS, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const usersRaw = response.data.map((user: User) => ({ label: user.name, value: user.id }));
-    setStudents(usersRaw);
+    try {
+      const response = await api.get(URL_STUDENTS);
+      const usersRaw = response.data.map((user: User) => ({ label: user.name, value: user.id }));
+      setStudents(usersRaw);
+    } catch (error) {
+      handleOpenNotification("Falha ao carregar alunos", SNACKBAR_TYPES.error);
+    }
   };
 
   const handleSubmit = async (training: Training) => {
-    if (editingTraining) {
-      await axios.put(`${URL}/${editingTraining.id}`, training, {
-        headers: { Authorization: `Bearer ${token}` },
-      }).then(() => {
-        fetchTrainings();
+    try {
+      if (editingTraining) {
+        await api.put(`${URL_TRAININGS}/${editingTraining.id}`, training);
         handleOpenNotification("Treino atualizado com sucesso!", SNACKBAR_TYPES.success);
-      }).catch(() => {
-        handleOpenNotification("Falha ao atualizar treino", SNACKBAR_TYPES.error);
-      }).finally(() => {
-        setEditingTraining(undefined);
-        setOpenFormDialog(false);
-      });
-      return;
-    }
-
-    await axios.post(URL_TRAININGS, training, {
-      headers: { Authorization: `Bearer ${token}` }
-    }).then(() => {
+      } else {
+        await api.post(URL_TRAININGS, training);
+        handleOpenNotification("Treino cadastrado com sucesso!", SNACKBAR_TYPES.success);
+      }
       fetchTrainings();
-      handleOpenNotification("Treino cadastrado com sucesso!", SNACKBAR_TYPES.success);
-    }).catch(() => {
-      handleOpenNotification("Falha ao cadastrar treino", SNACKBAR_TYPES.error);
-    });
+    } catch (error) {
+      handleOpenNotification("Falha ao salvar treino", SNACKBAR_TYPES.error);
+    } finally {
+      setEditingTraining(undefined);
+      setOpenFormDialog(false);
+    }
   };
 
   const handleCloseModal = () => {
@@ -90,8 +81,8 @@ const Trainings: React.FC = () => {
   };
 
   const getStudentName = (id: string): string | undefined => {
-    return students.find(item => item.value === id)?.label
-  }
+    return students.find(item => item.value === id)?.label;
+  };
 
   React.useEffect(() => {
     fetchStudents();
@@ -110,30 +101,26 @@ const Trainings: React.FC = () => {
       type: 'actions',
       width: 200,
       headerName: 'Editar/Excluir',
-      getActions: ({ id }) => {
-        return [
-          <GridActionsCellItem
-            icon={<EditIcon />}
-            label="Save"
-            sx={{
-              color: 'primary.main',
-            }}
-            onClick={() => handleEditClick(id)}
-          />,
-          <GridActionsCellItem
-            icon={<DeleteIcon />}
-            label="Cancel"
-            className="textPrimary"
-            onClick={() => handleDeleteClick(id)}
-            color="inherit"
-          />,
-        ];
-      },
+      getActions: ({ id }) => [
+        <GridActionsCellItem
+          icon={<EditIcon />}
+          label="Save"
+          sx={{ color: 'primary.main' }}
+          onClick={() => handleEditClick(id)}
+        />,
+        <GridActionsCellItem
+          icon={<DeleteIcon />}
+          label="Cancel"
+          className="textPrimary"
+          onClick={() => handleDeleteClick(id)}
+          color="inherit"
+        />,
+      ],
     },
   ];
 
   return (
-    <Template pageName='Treinos' >
+    <Template pageName='Treinos'>
       <React.Fragment>
         <Grid2 container spacing={2}>
           <Grid2 size={12}>
@@ -163,6 +150,7 @@ const Trainings: React.FC = () => {
         <DeleteDialog title='Excluir Treino' handleCloseDeleteDialog={handleCloseDeleteDialog} isOpen={deleteDialogIsOpen} />
       </React.Fragment>
     </Template>
-  )
-}
+  );
+};
+
 export default Trainings;

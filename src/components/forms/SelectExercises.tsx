@@ -6,10 +6,9 @@ import {
 import { TransitionProps } from 'notistack';
 import SearchIcon from "@mui/icons-material/Search";
 import { GridCloseIcon } from "@mui/x-data-grid";
-import axios from 'axios';
 import { Exercise } from '../../domain/types';
-const URL = `${process.env.REACT_APP_BACKEND_GRAPH_API}/exercises`;
-const token = localStorage.getItem('auth-token');
+import api from '../../pages/@shared/api';
+const URL = '/exercises';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children: React.ReactElement<unknown> },
@@ -40,9 +39,8 @@ const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, handleClose, 
   const fetchExercises = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${URL}`, {
+      const response = await api.get(URL, {
         params: { page: currentPage, search },
-        headers: { Authorization: `Bearer ${token}` },
       });
       setExercises(response.data.data);
       setTotalPages(Math.ceil(response.data.total_documents / response.data.per_page));

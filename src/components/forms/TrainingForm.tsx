@@ -3,8 +3,6 @@ import { Exercise, Training, User } from '../../domain/types';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, TextField, Grid, Switch, FormControl, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, IconButton, Typography, Autocomplete } from '@mui/material';
 import SelectExercises from './SelectExercises';
 import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
-const token = localStorage.getItem('auth-token');
-const URL = `${process.env.REACT_APP_BACKEND_GRAPH_API}/students/list-all`;
 
 export interface Option {
   label: string;

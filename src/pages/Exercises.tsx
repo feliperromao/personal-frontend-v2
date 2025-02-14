@@ -4,7 +4,6 @@ import Grid from '@mui/material/Grid2';
 import { DataGrid, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from '@mui/x-data-grid';
 import Template from '../components/Template';
 import { Exercise } from '../domain/types';
-import axios from 'axios';
 import DeleteDialog from '../components/DeleteDialog';
 import FloatingButton from '../components/FloatingButton';
 import ExerciseForm from '../components/forms/ExerciseForm';
@@ -14,8 +13,8 @@ import { useGlobalState } from "../GlobalState";
 import ItemsMenu from '../components/table/ItemsMenu';
 import SearchInput from '../components/SearchInput';
 import { paginationModel } from './@shared/pagination'
-const URL = `${process.env.REACT_APP_BACKEND_GRAPH_API}/exercises`;
-const token = localStorage.getItem('auth-token');
+import api from './@shared/api';
+const URL = 'exercises';
 
 const Exercises: React.FC = () => {
   const { setLoading } = useGlobalState();
@@ -54,7 +53,7 @@ const Exercises: React.FC = () => {
 
   const handleSubmit = async (exercise: Exercise) => {
     if (editingExercise && editingExercise.id) {
-      await axios.put(`${URL}/${editingExercise.id}`, {
+      await api.put(`${URL}/${editingExercise.id}`, {
         name: exercise.name,
         type: exercise.type,
         instructions: exercise.instructions,
@@ -63,10 +62,6 @@ const Exercises: React.FC = () => {
         load: exercise.load,
         series: exercise.series,
         load_progress: exercise.load_progress,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
       }).then(() => {
         fetchExercises();
         handleCloseModal();
@@ -77,7 +72,7 @@ const Exercises: React.FC = () => {
       return;
     }
 
-    await axios.post(URL,
+    await api.post(URL,
       {
         name: exercise.name,
         type: exercise.type,
@@ -87,11 +82,7 @@ const Exercises: React.FC = () => {
         load: exercise.load,
         series: exercise.series,
         load_progress: exercise.load_progress,
-      }, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }).then(() => {
+      }).then(() => {
       fetchExercises();
       handleCloseModal();
       handleOpenNotification("Exercício cadastrado com sucesso!", SNACKBAR_TYPES.success);
@@ -107,11 +98,7 @@ const Exercises: React.FC = () => {
 
   const handleCloseDeleteDialog = async (confirm: boolean) => {
     if (confirm && deleteId) {
-      await axios.delete(`${URL}/${deleteId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }).then(() => {
+      await api.delete(`${URL}/${deleteId}`).then(() => {
         handleOpenNotification("Exercício excluido com sucesso!", SNACKBAR_TYPES.success);
       }).catch(() => {
         handleOpenNotification("Erro ao excluir o exercício!", SNACKBAR_TYPES.error);
@@ -125,9 +112,7 @@ const Exercises: React.FC = () => {
     const page = currentPage + 1
     try {
       setLoading(true);
-      const response = await axios.get(`${URL}?page=${page}&search=${searchQuery}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get(`${URL}?page=${page}&search=${searchQuery}`);
       setExercises(response.data.data);
       setRowCount(response.data.total_documents);
     } catch (error) {

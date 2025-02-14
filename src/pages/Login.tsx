@@ -19,7 +19,7 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-  const URL = `${process.env.REACT_APP_BACKEND_GRAPH_API}/auth/login`;
+  const URL = `${process.env.REACT_APP_BACKEND_API}/auth/login`;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,7 +1,6 @@
-import axios from 'axios';
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-const API_URL = `${process.env.REACT_APP_BACKEND_GRAPH_API}/auth/profile`
+import api from '../pages/@shared/api';
 
 interface ProtectedRouteProps {
   element: React.ReactElement;
@@ -18,12 +17,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element }) => {
   }
 
   //TODO: make reqiest to validate token
-  axios.get(API_URL, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Accept': 'application/json'
-    }
-  }).then(({data}) => {
+  api.get('/auth/profile').then(({ data }) => {
     if (data.type !== "PERSONAL") {
       return <Navigate to="/login" state={{ from: location }} replace />;
     }
