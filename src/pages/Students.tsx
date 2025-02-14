@@ -14,7 +14,7 @@ import SearchInput from '../components/SearchInput';
 import ItemsMenu from '../components/table/ItemsMenu';
 import { paginationModel } from './@shared/pagination'
 import api from './@shared/api';
-const URL = `${process.env.REACT_APP_BACKEND_API}/students`
+const URL = '/students'
 const token = localStorage.getItem('auth-token');
 
 const Students: React.FC = () => {

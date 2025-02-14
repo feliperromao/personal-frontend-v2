@@ -37,6 +37,7 @@ const ExerciseType: React.FC<ExerciseType> = ({value, onChange}) => {
     <FormControl fullWidth margin="dense">
       <InputLabel id="exercise-select-label">Categoria</InputLabel>
       <Select
+        required
         labelId="exercise-select-label"
         value={selectedCategory}
         onChange={(e) => handleChange(e)}

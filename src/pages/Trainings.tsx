@@ -13,6 +13,7 @@ import { handleOpenNotification, SNACKBAR_TYPES } from '../components/MySnackbar
 import TrainingForm, { Option } from '../components/forms/TrainingForm';
 import { paginationModel } from './@shared/pagination';
 import api from './@shared/api';
+import ItemsMenu from '../components/table/ItemsMenu';
 
 const URL_TRAININGS = `/trainings`;
 const URL_STUDENTS = `/students/list-all`;
@@ -99,23 +100,13 @@ const Trainings: React.FC = () => {
     {
       field: 'actions',
       type: 'actions',
-      width: 200,
-      headerName: 'Editar/Excluir',
-      getActions: ({ id }) => [
-        <GridActionsCellItem
-          icon={<EditIcon />}
-          label="Save"
-          sx={{ color: 'primary.main' }}
-          onClick={() => handleEditClick(id)}
-        />,
-        <GridActionsCellItem
-          icon={<DeleteIcon />}
-          label="Cancel"
-          className="textPrimary"
-          onClick={() => handleDeleteClick(id)}
-          color="inherit"
-        />,
-      ],
+      headerName: 'Opções',
+      width: 100,
+      getActions: ({ id }) => {
+        return [
+          <ItemsMenu rowId={id} handleDelete={handleDeleteClick} handleEdit={() => handleEditClick(id)} />
+        ];
+      },
     },
   ];
 

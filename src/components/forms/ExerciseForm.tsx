@@ -90,18 +90,17 @@ const ExerciseForm: React.FC<UserFormProps> = ({ exercise, isOpen, onSubmit, han
         </Grid>
 
         <TextField
-          required
-          margin="dense"
           id="instructions"
           name="instructions"
           label="Instruções"
+          multiline
           fullWidth
-          variant="outlined"
+          rows={4}
+          margin="dense"
           value={formData.instructions}
           onChange={handleChange}
         />
         <TextField
-          required
           margin="dense"
           id="video"
           name="video"
