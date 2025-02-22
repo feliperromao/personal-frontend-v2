@@ -7,19 +7,18 @@ import SearchIcon from '@mui/icons-material/Search';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 interface SearchInputProps {
-  search: string;
   handleChange: (value: string) => void;
   handleSearch: () => void;
 }
 
-const SearchInput: React.FC<SearchInputProps> = ({ search, handleChange, handleSearch }) => {
+const SearchInput: React.FC<SearchInputProps> = ({ handleChange, handleSearch }) => {
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     handleChange(value);
   };
 
-  const onSubmit = (e: React.FormEvent) =>  {
+  const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleSearch();
   }
@@ -27,7 +26,7 @@ const SearchInput: React.FC<SearchInputProps> = ({ search, handleChange, handleS
   return (
     <Paper
       component="form"
-      sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
+      sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 600 }}
       onSubmit={onSubmit}
     >
       <InputBase

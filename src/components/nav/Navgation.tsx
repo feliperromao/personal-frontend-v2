@@ -8,7 +8,7 @@ import SportsGymnasticsIcon from '@mui/icons-material/SportsGymnastics';
 import { useNavigate } from 'react-router-dom';
 import { Dashboard, Logout } from '@mui/icons-material';
 
-export const MainNavgation = () => {
+export const PersonalMenu = () => {
   const navigate = useNavigate();
   return (
     <React.Fragment>
@@ -30,6 +30,18 @@ export const MainNavgation = () => {
       <ListItemButton onClick={() => navigate('/trainings')}>
         <ListItemIcon><SportsGymnasticsIcon /></ListItemIcon>
         <ListItemText primary="Treinos" />
+      </ListItemButton>
+    </React.Fragment>
+  );
+}
+
+export const StudentMenu = () => {
+  const navigate = useNavigate();
+  return (
+    <React.Fragment>
+      <ListItemButton onClick={() => navigate('/my-workouts')}>
+        <ListItemIcon><SportsGymnasticsIcon /></ListItemIcon>
+        <ListItemText primary="Meus Treinos" />
       </ListItemButton>
     </React.Fragment>
   );

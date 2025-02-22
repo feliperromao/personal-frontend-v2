@@ -14,7 +14,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { AppBar } from './nav/AppBar';
-import { MainNavgation, SecondaryNavgation } from './nav/Navgation';
+import { PersonalMenu, SecondaryNavgation, StudentMenu } from './nav/Navgation';
 import MySnackbar from './MySnackbar';
 import { Backdrop, CircularProgress } from '@mui/material';
 import { useGlobalState } from "../GlobalState";
@@ -22,6 +22,7 @@ import { useGlobalState } from "../GlobalState";
 interface PageTemplateProps {
   pageName: string;
   children: React.ReactNode;
+  type?: "PERSONAL" | "STUDENT"
 }
 
 const drawerWidth: number = 240;
@@ -55,7 +56,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-const Template: React.FC<PageTemplateProps> = ({ children, pageName }) => {
+const Template: React.FC<PageTemplateProps> = ({ children, pageName, type }) => {
   const { loading } = useGlobalState();
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
@@ -123,7 +124,7 @@ const Template: React.FC<PageTemplateProps> = ({ children, pageName }) => {
           </Toolbar>
           <Divider />
           <List component="nav">
-            <MainNavgation />
+            { type === "STUDENT" ? <StudentMenu /> : <PersonalMenu /> }
           </List>
           <Divider />
           <List component="nav">

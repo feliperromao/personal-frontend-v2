@@ -131,14 +131,14 @@ const Students: React.FC = () => {
   ];
 
   return (
-    <Template pageName='Dashboard' >
+    <Template pageName='Alunos' >
       <React.Fragment>
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <Breadcrumb uri='students' title='Alunos' />
 
             <Box display="flex" alignItems="center" gap={1} sx={{ margin: '16px 0' }}>
-              <SearchInput search={searchQuery} handleChange={setSearchQuery} handleSearch={fetchUsers} />
+              <SearchInput handleChange={setSearchQuery} handleSearch={fetchUsers} />
             </Box>
 
             <Paper sx={{ height: 400, width: '100%' }}>

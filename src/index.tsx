@@ -9,6 +9,7 @@ import Students from './pages/Students';
 import Exercises from './pages/Exercises';
 import { GlobalStateProvider } from './GlobalState';
 import Trainings from './pages/Trainings';
+import StudentWorkouts from './pages/StudentWorkouts';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -19,10 +20,11 @@ root.render(
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/" element={<ProtectedRoute element={<Dashboard />} />} />
-          <Route path="/students" element={<ProtectedRoute element={<Students />} />} />
-          <Route path="/exercises" element={<ProtectedRoute element={<Exercises />} />} />
-          <Route path="/trainings" element={<ProtectedRoute element={<Trainings />} />} />
+          <Route path="/" element={<ProtectedRoute allowedType="PERSONAL" element={<Dashboard />} />} />
+          <Route path="/students" element={<ProtectedRoute allowedType="PERSONAL" element={<Students />} />} />
+          <Route path="/exercises" element={<ProtectedRoute allowedType="PERSONAL" element={<Exercises />} />} />
+          <Route path="/trainings" element={<ProtectedRoute allowedType="PERSONAL" element={<Trainings />} />} />
+          <Route path="/my-workouts" element={<ProtectedRoute allowedType="STUDENT" element={<StudentWorkouts />} />} />
         </Routes>
       </Router>
     </GlobalStateProvider>

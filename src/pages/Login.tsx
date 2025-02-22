@@ -31,14 +31,11 @@ const Login: React.FC = () => {
       const { data } = await axios.post(URL, { email, password });
 
       const { user, access_token } = data;
-      if (user.type === "PERSONAL") {
-        localStorage.setItem("user", JSON.stringify(user));
-        localStorage.setItem("auth-token", access_token);
-        setSuccess(true);
-        setTimeout(() => navigate("/"), 1500); // Redireciona após sucesso
-      } else {
-        setError("Acesso permitido apenas para Personais.");
-      }
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("auth-token", access_token);
+      setSuccess(true);
+      const navigateTO = user.type == "PERSONAL" ? "/" : "/my-workouts"
+      setTimeout(() => navigate(navigateTO), 1500);
     } catch (err) {
       setError("Erro ao fazer login. Verifique suas credenciais.");
     } finally {
@@ -60,7 +57,7 @@ const Login: React.FC = () => {
         }}
       >
         <Typography variant="h5" fontWeight="bold" gutterBottom>
-          Entrar como Personal
+          Entrar no MyPersonal.App
         </Typography>
 
         {error && <Alert severity="error">{error}</Alert>}

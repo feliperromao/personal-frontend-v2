@@ -149,7 +149,7 @@ const Exercises: React.FC = () => {
             <Breadcrumb uri='exercises' title='Exercícios' />
 
             <Box display="flex" alignItems="center" gap={1} sx={{ margin: '16px 0' }}>
-              <SearchInput search={searchQuery} handleChange={setSearchQuery} handleSearch={fetchExercises} />
+              <SearchInput handleChange={setSearchQuery} handleSearch={fetchExercises} />
             </Box>
 
             <Paper sx={{ height: 400, width: '100%' }}>
