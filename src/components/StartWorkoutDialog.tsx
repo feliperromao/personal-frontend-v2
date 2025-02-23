@@ -12,7 +12,8 @@ import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
-import { Training } from '../domain/types';
+import { Exercise, Training } from '../domain/types';
+import RunExerciseDialog from './RunExerciseDialog';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -30,6 +31,18 @@ interface StartWorkoutDialogProps {
 }
 
 const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({ open, training, handleClose }) => {
+  const [showExercise, setShowExercise] = React.useState(false);
+  const [exerciseInProgress, setExerciseInProgress] = React.useState<Exercise | undefined>(undefined);
+
+  const handleClickExercise = (exercise: Exercise) => {
+    setExerciseInProgress(exercise);
+    setShowExercise(true);
+  }
+
+  const handleCloseExercise = () => {
+    setExerciseInProgress(undefined);
+    setShowExercise(false);
+  }
 
   return (
     <React.Fragment>
@@ -60,7 +73,7 @@ const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({ open, training,
         <List>
           {training?.exercises.map(exercise => (
             <>
-              <ListItemButton>
+              <ListItemButton onClick={() => handleClickExercise(exercise)}>
                 <ListItemText primary={exercise.name} secondary={exercise.instructions} />
               </ListItemButton>
               <Divider />
@@ -68,6 +81,7 @@ const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({ open, training,
           ))}
         </List>
       </Dialog>
+      <RunExerciseDialog open={showExercise} exercise={exerciseInProgress} handleClose={handleCloseExercise} />
     </React.Fragment>
   );
 }
