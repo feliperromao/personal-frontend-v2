@@ -57,17 +57,17 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const defaultTheme = createTheme();
 
 const Template: React.FC<PageTemplateProps> = ({ children, pageName, type }) => {
-  const { loading } = useGlobalState();
-  const [open, setOpen] = React.useState(true);
+  const { loading, drawerOpen, setDrawerOpen } = useGlobalState();
   const toggleDrawer = () => {
-    setOpen(!open);
+    localStorage.setItem("drawerOpen", !drawerOpen ? "1": "")
+    setDrawerOpen(!drawerOpen);
   };
 
   return (
     <ThemeProvider theme={defaultTheme}>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <AppBar position="absolute" open={open}>
+        <AppBar position="absolute" open={drawerOpen}>
           <Toolbar
             sx={{
               pr: '24px', // keep right padding when drawer closed
@@ -80,7 +80,7 @@ const Template: React.FC<PageTemplateProps> = ({ children, pageName, type }) => 
               onClick={toggleDrawer}
               sx={{
                 marginRight: '36px',
-                ...(open && { display: 'none' }),
+                ...(drawerOpen && { display: 'none' }),
               }}
             >
               <MenuIcon />
@@ -101,7 +101,7 @@ const Template: React.FC<PageTemplateProps> = ({ children, pageName, type }) => 
             </IconButton>
           </Toolbar>
         </AppBar>
-        <Drawer variant="permanent" open={open}>
+        <Drawer variant="permanent" open={drawerOpen}>
           <Toolbar
             sx={{
               display: 'flex',
