@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { Exercise, Training } from '../domain/types';
 import RunExerciseDialog from './RunExerciseDialog';
 
@@ -33,6 +34,7 @@ interface StartWorkoutDialogProps {
 const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({ open, training, handleClose }) => {
   const [showExercise, setShowExercise] = React.useState(false);
   const [exerciseInProgress, setExerciseInProgress] = React.useState<Exercise | undefined>(undefined);
+  const [finishedExercises, setFinishedExercises] = React.useState<string[]>([])
 
   const handleClickExercise = (exercise: Exercise) => {
     setExerciseInProgress(exercise);
@@ -42,6 +44,17 @@ const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({ open, training,
   const handleCloseExercise = () => {
     setExerciseInProgress(undefined);
     setShowExercise(false);
+  }
+
+  const handleFinishExercise = (id: string|undefined) => {
+    if (id) {
+      setFinishedExercises([
+        ...finishedExercises,
+        id
+      ])
+    }
+
+    handleCloseExercise()
   }
 
   return (
@@ -75,13 +88,22 @@ const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({ open, training,
             <>
               <ListItemButton onClick={() => handleClickExercise(exercise)}>
                 <ListItemText primary={exercise.name} secondary={exercise.instructions} />
+                {/* colocar um icone de exericicio feito aqui ou marcar com alguma coisa */}
+                {finishedExercises.includes(exercise.id) && (
+                  <CheckCircleIcon color="success" />
+                )}
               </ListItemButton>
               <Divider />
             </>
           ))}
         </List>
       </Dialog>
-      <RunExerciseDialog open={showExercise} exercise={exerciseInProgress} handleClose={handleCloseExercise} />
+      <RunExerciseDialog
+        open={showExercise}
+        exercise={exerciseInProgress}
+        handleClose={handleCloseExercise}
+        handleFinish={handleFinishExercise}
+      />
     </React.Fragment>
   );
 }
