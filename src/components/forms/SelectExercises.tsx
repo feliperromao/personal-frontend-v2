@@ -1,12 +1,12 @@
 import * as React from 'react';
 import {
   AppBar, Checkbox, Dialog, IconButton, InputAdornment, List,
-  ListItem, ListItemButton, ListItemIcon, ListItemText, Slide, TextField, Toolbar, Typography, CircularProgress, Pagination
+  ListItem, ListItemButton, ListItemIcon, ListItemText, Slide, TextField, Toolbar, Typography, CircularProgress, Pagination, MenuItem, Select, FormControl, InputLabel
 } from '@mui/material';
 import { TransitionProps } from 'notistack';
 import SearchIcon from "@mui/icons-material/Search";
 import { GridCloseIcon } from "@mui/x-data-grid";
-import { Exercise } from '../../domain/types';
+import { Exercise, exerciseCategories } from '../../domain/types';
 import api from '../../pages/@shared/api';
 const URL = '/exercises';
 
@@ -31,16 +31,18 @@ const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, handleClose, 
   const [loading, setLoading] = React.useState<boolean>(false);
   const [search, setSearch] = React.useState<string>('');
   const [checked, setChecked] = React.useState<string[]>([]);
+  const [typeFilter, setTypeFilter] = React.useState<string>('');
+  const [exerciseTypes, setExerciseTypes] = React.useState<string[]>([]);
 
   React.useEffect(() => {
     fetchExercises();
-  }, [currentPage, search]);
+  }, [currentPage, search, typeFilter]);
 
   const fetchExercises = async () => {
     setLoading(true);
     try {
       const response = await api.get(URL, {
-        params: { page: currentPage, search },
+        params: { page: currentPage, search, exercise_type: typeFilter },
       });
       setExercises(response.data.data);
       setTotalPages(Math.ceil(response.data.total_documents / response.data.per_page));
@@ -56,21 +58,16 @@ const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, handleClose, 
         : [...prevChecked, value]
     );
 
-    const wasChecked = checked.includes(value)
-    const exercise = exercises.find(item => item.id === value)
+    const wasChecked = checked.includes(value);
+    const exercise = exercises.find(item => item.id === value);
     if (exercise) {
-      wasChecked ? removeExercise(exercise) : addExercise(exercise)
+      wasChecked ? removeExercise(exercise) : addExercise(exercise);
     }
-  };
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(event.target.value);
-    setCurrentPage(1);
   };
 
   return (
     <Dialog fullScreen open={isOpen} onClose={handleClose} TransitionComponent={Transition}>
-      <AppBar color="secondary" sx={{ position: 'relative' }}>
+      <AppBar color="primary" sx={{ position: 'relative' }}>
         <Toolbar>
           <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
             <GridCloseIcon />
@@ -83,7 +80,7 @@ const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, handleClose, 
             placeholder="Pesquisar..."
             size="small"
             value={search}
-            onChange={handleSearchChange}
+            onChange={(event) => setSearch(event.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -93,6 +90,19 @@ const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, handleClose, 
             }}
             sx={{ backgroundColor: 'white', borderRadius: 1, ml: 2 }}
           />
+          <FormControl size="small" sx={{ ml: 2, minWidth: 150, backgroundColor: 'white', borderRadius: 1 }}>
+            <Select
+              variant='outlined'
+              value={typeFilter}
+              onChange={(event) => setTypeFilter(event.target.value)}
+              displayEmpty
+            >
+              <MenuItem value="">Todos</MenuItem>
+              {exerciseCategories.map((type) => (
+                <MenuItem key={type.name} value={type.name}>{type.type}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Toolbar>
       </AppBar>
       {loading ? (

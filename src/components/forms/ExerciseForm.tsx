@@ -168,7 +168,7 @@ const ExerciseForm: React.FC<UserFormProps> = ({ exercise, isOpen, onSubmit, han
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Cancelar</Button>
+        <Button color='inherit' onClick={handleClose}>Cancelar</Button>
         <Button type="submit">{exercise ? 'Editar' : 'Criar'} exercício</Button>
       </DialogActions>
     </Dialog>

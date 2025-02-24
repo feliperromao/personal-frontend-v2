@@ -26,3 +26,22 @@ export interface Training {
   student_id: string,
   exercises: Exercise[]
 }
+
+export type ExerciseCategory = {
+  name: string;
+  type: string;
+};
+
+export const exerciseCategories: ExerciseCategory[] = [
+  { name: "CHEST", type: "Peito" },
+  { name: "BACK", type: "Costas" },
+  { name: "LEGS", type: "Pernas" },
+  { name: "SHOULDERS", type: "Ombros" },
+  { name: "BICEPS", type: "Biceps" },
+  { name: "TRICEPS", type: "Triceps" },
+  { name: "ABS", type: "Abdomem" },
+  { name: "GLUTES", type: "Gluteos" },
+  { name: "CALVES", type: "Panturrilhas" },
+  { name: "CARDIO", type: "Cardio" },
+  { name: "MOBILITY", type: "Mobilidade" }
+];

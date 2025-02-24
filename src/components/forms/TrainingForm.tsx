@@ -207,7 +207,7 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, students,
 
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>Cancelar</Button>
+          <Button color='inherit' onClick={onClose}>Cancelar</Button>
           <Button variant="contained" type="submit">{training ? 'Editar' : 'Salvar'}</Button>
         </DialogActions>
       </Dialog>

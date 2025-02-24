@@ -1,24 +1,6 @@
 import React, { useState } from "react";
 import { MenuItem, Select, InputLabel, FormControl, SelectChangeEvent } from "@mui/material";
-
-type ExerciseCategory = {
-  name: string;
-  type: string;
-};
-
-const exerciseCategories: ExerciseCategory[] = [
-  { name: "CHEST", type: "Peito" },
-  { name: "BACK", type: "Costas" },
-  { name: "LEGS", type: "Pernas" },
-  { name: "SHOULDERS", type: "Ombros" },
-  { name: "BICEPS", type: "Biceps" },
-  { name: "TRICEPS", type: "Triceps" },
-  { name: "ABS", type: "Abdomem" },
-  { name: "GLUTES", type: "Gluteos" },
-  { name: "CALVES", type: "Panturrilhas" },
-  { name: "CARDIO", type: "Cardio" },
-  { name: "MOBILITY", type: "Mobilidade" }
-];
+import { exerciseCategories } from "../../../domain/types";
 
 interface ExerciseType {
   value: string

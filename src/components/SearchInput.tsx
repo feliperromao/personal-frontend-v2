@@ -39,7 +39,7 @@ const SearchInput: React.FC<SearchInputProps> = ({ handleChange, handleSearch })
         <SearchIcon />
       </IconButton>
       <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-      <IconButton color="secondary" sx={{ p: '10px' }} aria-label="directions">
+      <IconButton color="inherit" sx={{ p: '10px' }} aria-label="directions">
         <DeleteIcon />
       </IconButton>
     </Paper>

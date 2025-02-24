@@ -82,7 +82,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, isOpen, onSubmit, handleClose
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Cancelar</Button>
+        <Button color='inherit' onClick={handleClose}>Cancelar</Button>
         <Button type="submit">{user ? 'Editar' : 'Criar'} Aluno</Button>
       </DialogActions>
     </Dialog>

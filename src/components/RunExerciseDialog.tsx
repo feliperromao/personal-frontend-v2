@@ -1,7 +1,9 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Input } from '@mui/material';
+import { Button, Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Input, Paper, Stack, TextField, Typography } from '@mui/material';
 import React from 'react'
 import { Exercise } from '../domain/types';
 import CountdownTimer from './CountdownTimer';
+import VideoCard from './VideoCard';
+import { Container, Row } from './Grid';
 
 interface RunExerciseDialogProps {
   exercise?: Exercise
@@ -10,6 +12,8 @@ interface RunExerciseDialogProps {
 }
 
 const RunExerciseDialog: React.FC<RunExerciseDialogProps> = ({ open, exercise, handleClose }) => {
+  const [series, setSeries] = React.useState(0);
+  
   return (
     <Dialog
       fullWidth={true}
@@ -17,24 +21,40 @@ const RunExerciseDialog: React.FC<RunExerciseDialogProps> = ({ open, exercise, h
       open={open}
       onClose={() => { }}
     >
-      <DialogTitle>{exercise?.name}</DialogTitle>
+      <DialogTitle>
+        <Typography variant="h5" align="center">
+          {exercise?.name}
+        </Typography>
+      </DialogTitle>
       <DialogContent>
         <DialogContentText>
           {exercise?.instructions}
         </DialogContentText>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <DialogContentText>
-              - Series: {exercise?.series}
-            </DialogContentText>
-            <DialogContentText>
-              - Progreção de carga: {exercise?.load_progress ? 'SIM': 'Não'}
-            </DialogContentText>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <CountdownTimer rest={exercise?.rest ?? 60} />
-          </Grid>
-        </Grid>
+        <DialogContentText mt={1}>
+          Progreção de carga: {exercise?.load_progress ? 'SIM' : 'Não'}
+        </DialogContentText>
+        <DialogContentText mt={1}>
+          Series: <Chip label={`${series} / ${exercise?.series}`} />
+        </DialogContentText>
+        <DialogContentText mt={2}>
+          <TextField
+            label="Carga (KG)"
+            type="number"
+            variant="outlined"
+            value={exercise?.load}
+          />
+        </DialogContentText>
+
+        <Container spacing={3} mt={1}>
+          <Row md={6}>
+            <Paper>
+              <CountdownTimer rest={exercise?.rest ?? 60} />
+            </Paper>
+          </Row>
+          <Row md={6}>
+            <VideoCard videoId="qyW8hCaCxsw" />
+          </Row>
+        </Container>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Fechar</Button>

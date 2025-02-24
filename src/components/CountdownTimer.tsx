@@ -40,7 +40,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ rest }) => {
   return (
     <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
       <Box position="relative" display="inline-flex">
-        <CircularProgress variant="determinate" value={progress} size={100} thickness={4} />
+        <CircularProgress variant="determinate" value={progress} size={200} thickness={4} />
         <Box
           top={0}
           left={0}
@@ -57,20 +57,11 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ rest }) => {
         </Box>
       </Box>
 
-      <TextField
-        label="Definir Tempo (s)"
-        type="number"
-        variant="outlined"
-        value={time}
-        onChange={(e) => setTime(Number(e.target.value))}
-        disabled={isRunning}
-      />
-
       <Box display="flex" gap={2}>
-        <Button variant="contained" color="primary" onClick={handleStartPause}>
+        <Button color="primary" onClick={handleStartPause}>
           {isRunning ? "Pausar" : "Iniciar"}
         </Button>
-        <Button variant="outlined" color="secondary" onClick={handleReset}>
+        <Button  color="secondary" onClick={handleReset}>
           Resetar
         </Button>
       </Box>
