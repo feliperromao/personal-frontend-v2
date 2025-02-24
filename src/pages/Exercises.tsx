@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Box, Paper } from '@mui/material';
+import { Box, FormControl, MenuItem, Paper, Select } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { DataGrid, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from '@mui/x-data-grid';
 import Template from '../components/Template';
-import { Exercise } from '../domain/types';
+import { Exercise, exerciseCategories } from '../domain/types';
 import DeleteDialog from '../components/DeleteDialog';
 import FloatingButton from '../components/FloatingButton';
 import ExerciseForm from '../components/forms/ExerciseForm';
@@ -27,10 +27,11 @@ const Exercises: React.FC = () => {
   const [currentPage, setCurrentPage] = React.useState<number>(0);
   const [rowCount, setRowCount] = React.useState<number>(0);
   const [selected, setSelected] = React.useState<GridRowSelectionModel>([]);
+  const [exerciseType, setExerciseType] = React.useState<string>('');
 
   React.useEffect(() => {
     fetchExercises();
-  }, [currentPage]);
+  }, [currentPage, exerciseType]);
 
   const handleEditClick = (id: GridRowId) => {
     setOpenFormDialog(true)
@@ -83,12 +84,12 @@ const Exercises: React.FC = () => {
         series: exercise.series,
         load_progress: exercise.load_progress,
       }).then(() => {
-      fetchExercises();
-      handleCloseModal();
-      handleOpenNotification("Exercício cadastrado com sucesso!", SNACKBAR_TYPES.success);
-    }).catch(() => {
-      handleOpenNotification("Falha ao cadastrar exercício", SNACKBAR_TYPES.error);
-    })
+        fetchExercises();
+        handleCloseModal();
+        handleOpenNotification("Exercício cadastrado com sucesso!", SNACKBAR_TYPES.success);
+      }).catch(() => {
+        handleOpenNotification("Falha ao cadastrar exercício", SNACKBAR_TYPES.error);
+      })
   }
 
   const handleCloseModal = () => {
@@ -112,7 +113,7 @@ const Exercises: React.FC = () => {
     const page = currentPage + 1
     try {
       setLoading(true);
-      const response = await api.get(`${URL}?page=${page}&search=${searchQuery}`);
+      const response = await api.get(`${URL}?page=${page}&search=${searchQuery}&exercise_type=${exerciseType}`);
       setExercises(response.data.data);
       setRowCount(response.data.total_documents);
     } catch (error) {
@@ -149,7 +150,28 @@ const Exercises: React.FC = () => {
             <Breadcrumb uri='exercises' title='Exercícios' />
 
             <Box display="flex" alignItems="center" gap={1} sx={{ margin: '16px 0' }}>
-              <SearchInput handleChange={setSearchQuery} handleSearch={fetchExercises} />
+              <SearchInput
+                handleChange={setSearchQuery}
+                handleSearch={fetchExercises}
+                append={
+                  <FormControl size="small" sx={{ ml: 2, minWidth: 150, backgroundColor: 'white', borderRadius: 1 }}>
+                    <Select
+                      variant='outlined'
+                      value={exerciseType}
+                      onChange={(event) => {
+                        setExerciseType(event.target.value)
+                        fetchExercises()
+                      }}
+                      displayEmpty
+                    >
+                      <MenuItem value="">Todos</MenuItem>
+                      {exerciseCategories.map((type) => (
+                        <MenuItem key={type.name} value={type.name}>{type.type}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                }
+              />
             </Box>
 
             <Paper sx={{ height: 400, width: '100%' }}>

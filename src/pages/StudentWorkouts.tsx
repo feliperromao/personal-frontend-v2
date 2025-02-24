@@ -44,7 +44,7 @@ const StudentWorkouts: React.FC = () => {
   return (
     <Template type="STUDENT" pageName='Meus Treinos'>
       <>
-        <Breadcrumb uri='trainings' title='Treinos' />
+        <Breadcrumb uri='my-workouts' title='Meus Treinos' />
         <Grid mt={1} container spacing={2}>
           {trainings && trainings.map(training => (
             <Grid item xs={12} md={6} key={training.id}>

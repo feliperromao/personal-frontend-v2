@@ -9,9 +9,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 interface SearchInputProps {
   handleChange: (value: string) => void;
   handleSearch: () => void;
+  append?: React.ReactNode
 }
 
-const SearchInput: React.FC<SearchInputProps> = ({ handleChange, handleSearch }) => {
+const SearchInput: React.FC<SearchInputProps> = ({ handleChange, handleSearch, append }) => {
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
@@ -38,6 +39,7 @@ const SearchInput: React.FC<SearchInputProps> = ({ handleChange, handleSearch })
       <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={handleSearch}>
         <SearchIcon />
       </IconButton>
+      {append}
       <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
       <IconButton color="inherit" sx={{ p: '10px' }} aria-label="directions">
         <DeleteIcon />
