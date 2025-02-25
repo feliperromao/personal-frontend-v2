@@ -26,6 +26,18 @@ const ExerciseForm: React.FC<UserFormProps> = ({ exercise, isOpen, onSubmit, han
   useEffect(() => {
     if (exercise) {
       setFormData(exercise);
+    } else {
+      setFormData({
+        id: '',
+        name: '',
+        type: '',
+        instructions: '',
+        video: '',
+        rest: 30,
+        load: 0,
+        series: 4,
+        load_progress: false
+      })
     }
   }, [exercise]);
 
@@ -159,8 +171,8 @@ const ExerciseForm: React.FC<UserFormProps> = ({ exercise, isOpen, onSubmit, han
                 <Checkbox
                   id="load_progress"
                   name="load_progress"
-                  defaultChecked
                   value={formData.load_progress}
+                  checked={formData.load_progress}
                   onChange={handleChangeCheckbox} />
               }
             />

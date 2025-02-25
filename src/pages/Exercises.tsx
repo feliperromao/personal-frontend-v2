@@ -128,7 +128,7 @@ const Exercises: React.FC = () => {
     { field: 'instructions', headerName: 'Instruções', width: 300 },
     { field: 'series', headerName: 'series' },
     { field: 'rest', headerName: 'Descanço', width: 150 },
-    { field: 'load_progress', headerName: 'PC', valueFormatter: value => (value ? '-' : 'Sim') },
+    { field: 'load_progress', headerName: 'PC', valueFormatter: value => (value ? 'Sim' : '-') },
     {
       field: 'actions',
       type: 'actions',
