@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import SportsGymnasticsIcon from '@mui/icons-material/SportsGymnastics';
-import { useNavigate, useLocation } from 'react-router-dom';
+import Logout from '@mui/icons-material/Logout';
 
 const StudentBottomNav: React.FC = () => {
   const navigate = useNavigate();
@@ -39,6 +40,7 @@ const StudentBottomNav: React.FC = () => {
         sx={{height: 70}}
       >
         <BottomNavigationAction label="Meus treinos" icon={<SportsGymnasticsIcon />} />
+        <BottomNavigationAction label="Sair" icon={<Logout />} />
       </BottomNavigation>
     </Box>
   );

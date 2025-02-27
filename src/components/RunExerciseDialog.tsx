@@ -1,20 +1,34 @@
-import React from 'react'
+import React from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import { Button, ButtonGroup, Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Input, Paper, Stack, TextField, Typography } from '@mui/material';
+import {
+  Button,
+  ButtonGroup,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Grid,
+  Paper,
+  TextField,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
 import { Exercise } from '../domain/types';
 import CountdownTimer from './CountdownTimer';
 import VideoCard from './VideoCard';
-import { Container, Row } from './Grid';
 
 interface RunExerciseDialogProps {
-  exercise?: Exercise
+  exercise?: Exercise;
   open: boolean;
   handleClose: () => void;
   handleFinish: (id: string | undefined) => void;
 }
 
 const RunExerciseDialog: React.FC<RunExerciseDialogProps> = ({ open, exercise, handleClose, handleFinish }) => {
+  const isMobile = useMediaQuery('(max-width:600px)');
   const [series, setSeries] = React.useState(0);
 
   React.useEffect(() => {
@@ -24,82 +38,85 @@ const RunExerciseDialog: React.FC<RunExerciseDialogProps> = ({ open, exercise, h
   }, [open]);
 
   return (
-    <Dialog
-      fullWidth={true}
-      maxWidth="md"
-      open={open}
-      onClose={() => { }}
-    >
-      <DialogTitle>
-        <Typography variant="h5" align="center">
-          {exercise?.name}
-        </Typography>
+    <Dialog fullScreen={isMobile} fullWidth maxWidth="md" open={open} onClose={handleClose}>
+      <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white', textAlign: 'center' }}>
+        <Typography variant="h5">{exercise?.name}</Typography>
       </DialogTitle>
-      <DialogContent>
-        <DialogContentText mb={1}>
-          {exercise?.instructions}
-        </DialogContentText>
-        <Container spacing={3}>
-          <Row md={6}>
-            <DialogContentText>
-              Progreção de carga: {exercise?.load_progress ? 'SIM' : 'Não'}
-            </DialogContentText>
-            <DialogContentText mt={1}>
-              Series: <Chip label={`${series} / ${exercise?.series}`} />
-              <ButtonGroup sx={{ position: 'relative', marginLeft: 2 }}>
-                <Button
-                  aria-label="reduce"
-                  onClick={() => {
-                    setSeries(Math.max(series - 1, 0));
-                  }}
-                >
-                  <RemoveIcon fontSize="small" />
-                </Button>
-                <Button
-                  disabled={series >= (exercise?.series ?? 1)}
-                  aria-label="increase"
-                  onClick={() => {
-                    setSeries(series + 1);
-                  }}
-                >
-                  <AddIcon fontSize="small" />
-                </Button>
-              </ButtonGroup>
-            </DialogContentText>
-          </Row>
-          <Row md={6}>
+      <DialogContent sx={{ padding: 3 }}>
+        <DialogContentText sx={{ mb: 2 }}>{exercise?.instructions}</DialogContentText>
+
+        <Grid container spacing={2} alignItems="center">
+          {/* Progresso de Carga */}
+          <Grid item xs={12}>
+            <Typography variant="body1">
+              <strong>Progreção de carga:</strong> {exercise?.load_progress ? 'SIM' : 'Não'}
+            </Typography>
+          </Grid>
+
+          {/* Controle de Séries */}
+          <Grid item xs={12} sm={6} display="flex" alignItems="center">
+            <Typography variant="body1" sx={{ mr: 2 }}>Séries:</Typography>
+            <Chip label={`${series} / ${exercise?.series}`} sx={{ fontSize: 16, padding: 1 }} />
+            <ButtonGroup sx={{ ml: 2 }}>
+              <Button
+                aria-label="reduce"
+                onClick={() => setSeries(Math.max(series - 1, 0))}
+                disabled={series === 0}
+              >
+                <RemoveIcon fontSize="small" />
+              </Button>
+              <Button
+                aria-label="increase"
+                onClick={() => setSeries(Math.min(series + 1, exercise?.series ?? 1))}
+                disabled={series >= (exercise?.series ?? 1)}
+              >
+                <AddIcon fontSize="small" />
+              </Button>
+            </ButtonGroup>
+          </Grid>
+
+          {/* Carga do Exercício */}
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Carga (KG)"
               type="number"
               variant="outlined"
               value={exercise?.load}
+              inputProps={{ min: 0 }}
             />
-          </Row>
-        </Container>
-        <Container spacing={3} mt={1}>
-          <Row md={6}>
-            <Paper>
+          </Grid>
+        </Grid>
+
+        {/* Timer e Vídeo */}
+        <Grid container spacing={2} mt={3}>
+          <Grid item xs={12} sm={6}>
+            <Paper sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 2 }}>
               <CountdownTimer rest={exercise?.rest ?? 60} />
             </Paper>
-          </Row>
-          {exercise?.video ? (
-            <Row md={6}>
-              <VideoCard url={exercise?.video} />
-            </Row>
-          ) : null}
-        </Container>
+          </Grid>
+          {exercise?.video && (
+            <Grid item xs={12} sm={6}>
+              <VideoCard url={exercise.video} />
+            </Grid>
+          )}
+        </Grid>
       </DialogContent>
-      <DialogActions>
+
+      {/* Botões de Ação */}
+      <DialogActions sx={{ justifyContent: 'space-between', padding: 2 }}>
         <Button color="inherit" onClick={handleClose}>Fechar</Button>
         <Button
           disabled={series !== (exercise?.series ?? 1)}
           onClick={() => handleFinish(exercise?.id)}
           variant="contained"
-        >Concluir</Button>
+          color="primary"
+        >
+          Concluir
+        </Button>
       </DialogActions>
     </Dialog>
-  )
-}
+  );
+};
 
 export default RunExerciseDialog;
