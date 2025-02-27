@@ -55,7 +55,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-// TODO remove, this demo shouldn't need to reset the theme.
+
 const defaultTheme = createTheme();
 
 const Template: React.FC<PageTemplateProps> = ({ children, pageName, type }) => {
@@ -75,7 +75,7 @@ const Template: React.FC<PageTemplateProps> = ({ children, pageName, type }) => 
         <AppBar position="absolute" open={drawerOpen}>
           <Toolbar
             sx={{
-              pr: '24px', // keep right padding when drawer closed
+              pr: '24px',
             }}
           >
             {!isMobile && (

@@ -1,4 +1,3 @@
-// UserForm.tsx
 import React, { useState, useEffect } from 'react';
 import { User } from '../../domain/types';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, useMediaQuery } from '@mui/material';

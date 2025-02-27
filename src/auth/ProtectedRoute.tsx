@@ -26,14 +26,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, allowedType })
       const userData = JSON.parse(user);
       setUserType(userData.type);
 
-      // Se for um aluno e a rota permitida for STUDENT, já autoriza
       if (userData.type === allowedType) {
         setIsAuthorized(true);
         setIsLoading(false);
         return;
       }
 
-      // Caso contrário, faz a requisição para validar o usuário
       api
         .get("/auth/profile")
         .then(({ data }) => {

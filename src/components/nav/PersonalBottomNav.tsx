@@ -11,8 +11,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 const PersonalBottomNav: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
-  // Mapeia as rotas para os índices do BottomNavigation
   const routeMap: { [key: string]: number } = {
     '/': 0,
     '/students': 1,

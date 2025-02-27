@@ -69,7 +69,6 @@ const Students: React.FC = () => {
 
   const handleSubmit = async (user: User) => {
     if (editingUser && editingUser.id) {
-      //TODO: activate loading
       delete user.id
       await api.put(`${URL}/${editingUser.id}`, {
         name: user.name,
@@ -83,7 +82,6 @@ const Students: React.FC = () => {
         handleOpenNotification("Falha ao editar aluno!", SNACKBAR_TYPES.error);
       })
     } else {
-      //TODO: activate loading
       await api.post(URL, user).then(() => {
         handleOpenNotification("Aluno cadastrado com sucesso!", SNACKBAR_TYPES.success);
         fetchUsers();

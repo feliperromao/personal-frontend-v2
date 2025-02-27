@@ -8,8 +8,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 const StudentBottomNav: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
-  // Mapeia as rotas para os índices do BottomNavigation
   const routeMap: { [key: string]: number } = {
     '/my-workouts': 3,
   };
