@@ -1,7 +1,9 @@
 import React from 'react';
 import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
 import RemoveIcon from '@mui/icons-material/Remove';
 import {
+  AppBar,
   Button,
   ButtonGroup,
   Chip,
@@ -11,8 +13,10 @@ import {
   DialogContentText,
   DialogTitle,
   Grid,
+  IconButton,
   Paper,
   TextField,
+  Toolbar,
   Typography,
   useMediaQuery,
 } from '@mui/material';
@@ -39,9 +43,21 @@ const RunExerciseDialog: React.FC<RunExerciseDialogProps> = ({ open, exercise, h
 
   return (
     <Dialog fullScreen={isMobile} fullWidth maxWidth="md" open={open} onClose={handleClose}>
-      <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white', textAlign: 'center' }}>
-        <Typography variant="h5">{exercise?.name}</Typography>
-      </DialogTitle>
+      <AppBar sx={{ position: 'relative' }}>
+        <Toolbar>
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={handleClose}
+            aria-label="close"
+          >
+            <CloseIcon />
+          </IconButton>
+          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+            {exercise?.name}
+          </Typography>
+        </Toolbar>
+      </AppBar>
       <DialogContent sx={{ padding: 3 }}>
         <DialogContentText sx={{ mb: 2 }}>{exercise?.instructions}</DialogContentText>
 

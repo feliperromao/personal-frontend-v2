@@ -118,8 +118,8 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, students,
         <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white' }}>
           Cadastro de Treinos
         </DialogTitle>
-        <DialogContent>
-          <Grid container spacing={3} mt={1}>
+        <DialogContent sx={{paddingTop: '20px!important'}}>
+          <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <TextField required id="name" name="name" label="Nome" fullWidth variant="outlined" value={formData.name} onChange={handleChange} />
             </Grid>

@@ -86,7 +86,7 @@ const ExerciseForm: React.FC<UserFormProps> = ({ exercise, isOpen, onSubmit, han
         Cadastro de exercícios
       </DialogTitle>
 
-      <DialogContent>
+      <DialogContent sx={{paddingTop: '20px!important'}}>
         <Grid container spacing={1}>
           <Grid item xs={12} md={6}>
             <TextField

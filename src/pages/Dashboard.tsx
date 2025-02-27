@@ -9,8 +9,8 @@ import { Grid } from '@mui/material';
 const Dashboard: React.FC = () => {
   return (
     <Template pageName='Dashboard' >
-      <Grid container mt={2} spacing={1} sx={{display: 'flex', justifyContent: 'center'}}>
-        <Grid item sm={6} md={4}>
+      <Grid container mt={2} spacing={0} sx={{display: 'flex', justifyContent: 'center', paddingTop: '20px'}}>
+        <Grid item sm={6} md={3}>
           <PageCard
             title='Alunos'
             description='Cadastre novos alunos nesse menu'
@@ -19,7 +19,7 @@ const Dashboard: React.FC = () => {
             image='/img/3538371.jpg'
           />
         </Grid>
-        <Grid sm={6} md={4}>
+        <Grid item sm={6} md={3}>
           <PageCard
             title='Exercicios'
             description='Aqui ficam todos os exercicios que voce criar'
@@ -28,7 +28,7 @@ const Dashboard: React.FC = () => {
             image='/img/3297251.jpg'
           />
         </Grid>
-        <Grid sm={6} md={4}>
+        <Grid item sm={6} md={3}>
           <PageCard
             title='Treinos' description='Os treinos que você cria para seus alunos...'
             link='/trainings'
