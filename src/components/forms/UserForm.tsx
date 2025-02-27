@@ -1,7 +1,7 @@
 // UserForm.tsx
 import React, { useState, useEffect } from 'react';
 import { User } from '../../domain/types';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, useMediaQuery } from '@mui/material';
 
 interface UserFormProps {
   user?: User | null;
@@ -11,6 +11,7 @@ interface UserFormProps {
 }
 
 const UserForm: React.FC<UserFormProps> = ({ user, isOpen, onSubmit, handleClose }) => {
+  const isMobile = useMediaQuery('(max-width:600px)');
   const [formData, setFormData] = useState<User>({
     name: '',
     email: '',
@@ -32,18 +33,18 @@ const UserForm: React.FC<UserFormProps> = ({ user, isOpen, onSubmit, handleClose
     <Dialog
       open={isOpen}
       onClose={handleClose}
-
+      fullScreen={isMobile}
       PaperProps={{
         component: 'form',
         onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
           event.preventDefault();
           onSubmit(formData);
-          // setFormData({ name: '', email: '', password: '' });
-          // handleClose();
         },
       }}
     >
-      <DialogTitle>Cadastro de Alunos</DialogTitle>
+      <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white' }}>
+        Cadastro de Alunos
+      </DialogTitle>
       <DialogContent>
         <TextField
           required
@@ -83,7 +84,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, isOpen, onSubmit, handleClose
       </DialogContent>
       <DialogActions>
         <Button color='inherit' onClick={handleClose}>Cancelar</Button>
-        <Button type="submit">{user ? 'Editar' : 'Criar'} Aluno</Button>
+        <Button variant='contained' type="submit">{user ? 'Editar' : 'Criar'} Aluno</Button>
       </DialogActions>
     </Dialog>
   );

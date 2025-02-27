@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Exercise } from '../../domain/types';
-import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Grid, TextField } from '@mui/material';
+import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Grid, TextField, useMediaQuery } from '@mui/material';
 import ExerciseType from './Select/ExerciseType';
 
 interface UserFormProps {
@@ -11,6 +11,7 @@ interface UserFormProps {
 }
 
 const ExerciseForm: React.FC<UserFormProps> = ({ exercise, isOpen, onSubmit, handleClose }) => {
+  const isMobile = useMediaQuery('(max-width:600px)');
   const [formData, setFormData] = useState<Exercise>({
     id: '',
     name: '',
@@ -68,6 +69,7 @@ const ExerciseForm: React.FC<UserFormProps> = ({ exercise, isOpen, onSubmit, han
 
   return (
     <Dialog
+      fullScreen={isMobile}
       open={isOpen}
       onClose={handleClose}
       PaperProps={{
@@ -80,9 +82,12 @@ const ExerciseForm: React.FC<UserFormProps> = ({ exercise, isOpen, onSubmit, han
         },
       }}
     >
-      <DialogTitle>Cadastro de exercícios</DialogTitle>
+      <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white' }}>
+        Cadastro de exercícios
+      </DialogTitle>
+
       <DialogContent>
-        <Grid container spacing={3}>
+        <Grid container spacing={1}>
           <Grid item xs={12} md={6}>
             <TextField
               required
@@ -181,7 +186,7 @@ const ExerciseForm: React.FC<UserFormProps> = ({ exercise, isOpen, onSubmit, han
       </DialogContent>
       <DialogActions>
         <Button color='inherit' onClick={handleClose}>Cancelar</Button>
-        <Button type="submit">{exercise ? 'Editar' : 'Criar'} exercício</Button>
+        <Button variant='contained' type="submit">{exercise ? 'Editar' : 'Criar'} exercício</Button>
       </DialogActions>
     </Dialog>
   );

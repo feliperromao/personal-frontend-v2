@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Exercise, Training, User } from '../../domain/types';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, TextField, Grid, Switch, FormControl, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, IconButton, Typography, Autocomplete } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, TextField, Grid, Switch, FormControl, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, IconButton, Typography, Autocomplete, useMediaQuery } from '@mui/material';
 import SelectExercises from './SelectExercises';
 import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
 
@@ -18,6 +18,7 @@ interface TrainingFormProps {
 }
 
 const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, students, onSubmit, handleClose }) => {
+  const isMobile = useMediaQuery('(max-width:600px)');
   const [showExerciseModal, setShowExerciseModal] = React.useState(false);
   const [selectedExercises, setSelectedExercises] = React.useState<Exercise[]>([]);
   const [student, setStudent] = useState<Option | null>(null);
@@ -96,6 +97,7 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, students,
   return (
     <React.Fragment>
       <Dialog
+        fullScreen={isMobile}
         fullWidth={true}
         maxWidth="md"
         open={isOpen}
@@ -113,9 +115,11 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, students,
           },
         }}
       >
-        <DialogTitle>Cadastro de Treinos</DialogTitle>
+        <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white' }}>
+          Cadastro de Treinos
+        </DialogTitle>
         <DialogContent>
-          <Grid container spacing={3}>
+          <Grid container spacing={3} mt={1}>
             <Grid item xs={12} md={6}>
               <TextField required id="name" name="name" label="Nome" fullWidth variant="outlined" value={formData.name} onChange={handleChange} />
             </Grid>
@@ -148,7 +152,7 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, students,
               />
             </Grid>
             <Grid item xs={12} md={6}>
-              <Button color="inherit" variant="contained" onClick={openExercisesModal}>
+              <Button fullWidth color="inherit" variant="contained" onClick={openExercisesModal}>
                 Selecionar Exercicios
               </Button>
             </Grid>
