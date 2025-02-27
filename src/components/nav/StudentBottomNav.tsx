@@ -15,6 +15,12 @@ const StudentBottomNav: React.FC = () => {
 
   const [value, setValue] = React.useState(routeMap[location.pathname] || 0);
 
+  const logout = () => {
+    localStorage.removeItem('user')
+    localStorage.removeItem('auth-token');
+    navigate('/login')
+  }
+
   useEffect(() => {
     setValue(routeMap[location.pathname] || 0);
   }, [location.pathname]);
@@ -40,7 +46,7 @@ const StudentBottomNav: React.FC = () => {
         sx={{height: 70}}
       >
         <BottomNavigationAction label="Meus treinos" icon={<SportsGymnasticsIcon />} />
-        <BottomNavigationAction label="Sair" icon={<Logout />} />
+        <BottomNavigationAction onClick={logout} label="Sair" icon={<Logout />} />
       </BottomNavigation>
     </Box>
   );
