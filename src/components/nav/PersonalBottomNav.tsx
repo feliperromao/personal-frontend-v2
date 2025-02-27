@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
 import Box from '@mui/material/Box';
+import { useNavigate, useLocation } from 'react-router-dom';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import PeopleIcon from '@mui/icons-material/People';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import SportsGymnasticsIcon from '@mui/icons-material/SportsGymnastics';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import { useNavigate, useLocation } from 'react-router-dom';
+import Logout from '@mui/icons-material/Logout';
 
 const PersonalBottomNav: React.FC = () => {
   const navigate = useNavigate();
@@ -19,6 +20,12 @@ const PersonalBottomNav: React.FC = () => {
   };
 
   const [value, setValue] = React.useState(routeMap[location.pathname] || 0);
+
+  const logout = () => {
+    localStorage.removeItem('user')
+    localStorage.removeItem('auth-token');
+    navigate('/login')
+  }
 
   useEffect(() => {
     setValue(routeMap[location.pathname] || 0);
@@ -48,6 +55,7 @@ const PersonalBottomNav: React.FC = () => {
         <BottomNavigationAction label="Alunos" icon={<PeopleIcon />} />
         <BottomNavigationAction label="Exercícios" icon={<FitnessCenterIcon />} />
         <BottomNavigationAction label="Treinos" icon={<SportsGymnasticsIcon />} />
+        <BottomNavigationAction onClick={logout} label="Sair" icon={<Logout />} />
       </BottomNavigation>
     </Box>
   );

@@ -27,9 +27,20 @@ const Trainings: React.FC = () => {
   const [editingTraining, setEditingTraining] = React.useState<Training | undefined>(undefined);
   const [formDialogIsOpen, setOpenFormDialog] = React.useState(false);
   const [students, setStudents] = React.useState<Option[]>([]);
-  const deleteDialogIsOpen = false;
+  const [deleteId, setDeleteId] = React.useState<string | null>(null);
+  const [deleteDialogIsOpen, setOpenDeleteDialog] = React.useState(false);
 
-  const handleCloseDeleteDialog = () => { };
+  const handleCloseDeleteDialog = async (confirm: boolean) => {
+    if (confirm && deleteId) {
+      await api.delete(`${URL_TRAININGS}/${deleteId}`).then(() => {
+        handleOpenNotification("Exercício excluido com sucesso!", SNACKBAR_TYPES.success);
+      }).catch(() => {
+        handleOpenNotification("Erro ao excluir o exercício!", SNACKBAR_TYPES.error);
+      })
+    }
+    setOpenDeleteDialog(false);
+    await fetchTrainings()
+  };
 
   const handleEditClick = (id: GridRowId) => {
     const trainingToEdit = trainings.find(training => training.id === id);
@@ -39,7 +50,10 @@ const Trainings: React.FC = () => {
     }
   };
 
-  const handleDeleteClick = (id: GridRowId) => { };
+  const handleDeleteClick = (id: GridRowId) => {
+    setDeleteId(id.toString())
+    setOpenDeleteDialog(true)
+  }
 
   const fetchTrainings = async () => {
     const page = currentPage + 1
