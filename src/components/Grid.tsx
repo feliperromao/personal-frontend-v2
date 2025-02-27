@@ -19,11 +19,13 @@ interface RowProps {
   children: ReactNode,
   xs?: number,
   md?: number,
+  sm?: number,
 }
 
-export const Row: React.FC<RowProps> = ({ children, xs, md }) => {
+export const Row: React.FC<RowProps> = ({ children, xs, md, sm }) => {
   return <Grid
     item
+    sm={sm ?? 12}
     xs={xs ?? 12}
     md={md ?? 12}
   >{children}</Grid>
