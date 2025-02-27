@@ -38,6 +38,7 @@ const StudentBottomNav: React.FC = () => {
           const paths = ['/my-workouts'];
           navigate(paths[newValue]);
         }}
+        sx={{height: 70}}
       >
         <BottomNavigationAction label="Meus treinos" icon={<SportsGymnasticsIcon />} />
       </BottomNavigation>

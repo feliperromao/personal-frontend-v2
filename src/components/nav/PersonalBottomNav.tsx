@@ -44,6 +44,7 @@ const PersonalBottomNav: React.FC = () => {
           const paths = ['/', '/students', '/exercises', '/trainings'];
           navigate(paths[newValue]);
         }}
+        sx={{height: 70}}
       >
         <BottomNavigationAction label="Dashboard" icon={<DashboardIcon />} />
         <BottomNavigationAction label="Alunos" icon={<PeopleIcon />} />
