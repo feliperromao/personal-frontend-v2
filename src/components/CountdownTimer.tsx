@@ -1,44 +1,51 @@
 import { useState, useEffect } from "react";
-import { Button, TextField, Typography, Box, CircularProgress } from "@mui/material";
+import { Button, Typography, Box, CircularProgress } from "@mui/material";
 
 interface CountdownTimerProps {
-  rest: number
+  rest: number; // Tempo de descanso em segundos
 }
 
 const CountdownTimer: React.FC<CountdownTimerProps> = ({ rest }) => {
   const [time, setTime] = useState(rest);
   const [isRunning, setIsRunning] = useState(false);
   const [progress, setProgress] = useState(100);
-  const initialTime = 60;
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (isRunning && time > 0) {
-      timer = setInterval(() => {
-        setTime((prevTime) => {
-          const newTime = prevTime - 1;
-          setProgress((newTime / initialTime) * 100);
-          return newTime;
-        });
-      }, 1000);
-    } else if (time === 0) {
-      setIsRunning(false);
-    }
+    setTime(rest); // Atualiza o tempo ao mudar o `rest`
+    setProgress(100);
+  }, [rest]);
+
+  useEffect(() => {
+    if (!isRunning || time <= 0) return;
+
+    const timer = setInterval(() => {
+      setTime((prevTime) => {
+        const newTime = prevTime - 1;
+        setProgress((newTime / rest) * 100); // Atualiza a barra de progresso
+        if (newTime <= 0) {
+          setIsRunning(false);
+          clearInterval(timer);
+        }
+        return newTime;
+      });
+    }, 1000);
+
     return () => clearInterval(timer);
-  }, [isRunning, time]);
+  }, [isRunning, rest]);
 
   const handleStartPause = () => {
-    setIsRunning(!isRunning);
+    setIsRunning((prev) => !prev);
   };
 
   const handleReset = () => {
     setIsRunning(false);
-    setTime(initialTime);
+    setTime(rest);
     setProgress(100);
   };
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
+      <Typography variant="h6">Tempo de Descanso</Typography>
       <Box position="relative" display="inline-flex">
         <CircularProgress variant="determinate" value={progress} size={200} thickness={4} />
         <Box
@@ -61,7 +68,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ rest }) => {
         <Button color="primary" onClick={handleStartPause}>
           {isRunning ? "Pausar" : "Iniciar"}
         </Button>
-        <Button  color="secondary" onClick={handleReset}>
+        <Button color="secondary" onClick={handleReset}>
           Resetar
         </Button>
       </Box>
