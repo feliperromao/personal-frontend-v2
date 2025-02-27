@@ -16,8 +16,10 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import { AppBar } from './nav/AppBar';
 import { PersonalMenu, SecondaryNavgation, StudentMenu } from './nav/Navgation';
 import MySnackbar from './MySnackbar';
-import { Backdrop, CircularProgress } from '@mui/material';
+import { Backdrop, CircularProgress, useMediaQuery } from '@mui/material';
 import { useGlobalState } from "../GlobalState";
+import PersonalBottomNav from './nav/PersonalBottomNav';
+import StudentBottomNav from './nav/StudentBottomNav';
 
 interface PageTemplateProps {
   pageName: string;
@@ -57,7 +59,10 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const defaultTheme = createTheme();
 
 const Template: React.FC<PageTemplateProps> = ({ children, pageName, type }) => {
+  const userData = localStorage.getItem("user");
+  const user = userData ? JSON.parse(userData) : null
   const { loading, drawerOpen, setDrawerOpen } = useGlobalState();
+  const isMobile = useMediaQuery('(max-width:600px)');
   const toggleDrawer = () => {
     localStorage.setItem("drawerOpen", !drawerOpen ? "1": "")
     setDrawerOpen(!drawerOpen);
@@ -73,18 +78,20 @@ const Template: React.FC<PageTemplateProps> = ({ children, pageName, type }) => 
               pr: '24px', // keep right padding when drawer closed
             }}
           >
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={toggleDrawer}
-              sx={{
-                marginRight: '36px',
-                ...(drawerOpen && { display: 'none' }),
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
+            {!isMobile && (
+              <IconButton
+                edge="start"
+                color="inherit"
+                aria-label="open drawer"
+                onClick={toggleDrawer}
+                sx={{
+                  marginRight: '36px',
+                  ...(drawerOpen && { display: 'none' }),
+                }}
+              >
+                <MenuIcon />
+              </IconButton>
+            )}
             <Typography
               component="h1"
               variant="h6"
@@ -101,36 +108,39 @@ const Template: React.FC<PageTemplateProps> = ({ children, pageName, type }) => 
             </IconButton>
           </Toolbar>
         </AppBar>
-        <Drawer variant="permanent" open={drawerOpen}>
-          <Toolbar
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              px: [1],
-              backgroundColor: 'secondary'
-            }}
-          >
-            <Typography
-              component="h1"
-              variant="h6"
-              color="primary"
-              noWrap
-              style={{ fontWeight: '800' }}
-            >MyPersonal.App</Typography>
-            <IconButton onClick={toggleDrawer}>
-              <ChevronLeftIcon />
-            </IconButton>
-          </Toolbar>
-          <Divider />
-          <List component="nav">
-            { type === "STUDENT" ? <StudentMenu /> : <PersonalMenu /> }
-          </List>
-          <Divider />
-          <List component="nav">
-            <SecondaryNavgation />
-          </List>
-        </Drawer>
+
+        {!isMobile && (
+          <Drawer variant="permanent" open={drawerOpen}>
+            <Toolbar
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                px: [1],
+                backgroundColor: 'secondary'
+              }}
+            >
+              <Typography
+                component="h1"
+                variant="h6"
+                color="primary"
+                noWrap
+                style={{ fontWeight: '800' }}
+              >MyPersonal.App</Typography>
+              <IconButton onClick={toggleDrawer}>
+                <ChevronLeftIcon />
+              </IconButton>
+            </Toolbar>
+            <Divider />
+            <List component="nav">
+              {type === "STUDENT" ? <StudentMenu /> : <PersonalMenu />}
+            </List>
+            <Divider />
+            <List component="nav">
+              <SecondaryNavgation />
+            </List>
+          </Drawer>
+        )}
         <Box
           component="main"
           sx={{
@@ -140,7 +150,7 @@ const Template: React.FC<PageTemplateProps> = ({ children, pageName, type }) => 
             overflow: 'auto',
           }}
         >
-          <Toolbar />
+          {!isMobile && <Toolbar />}
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             {children}
           </Container>
@@ -153,6 +163,7 @@ const Template: React.FC<PageTemplateProps> = ({ children, pageName, type }) => 
         <CircularProgress color="inherit" />
       </Backdrop>
       <MySnackbar />
+      {isMobile && ( user?.type === "PERSONAL" ? <PersonalBottomNav /> : <StudentBottomNav />)}
     </ThemeProvider>
   );
 }

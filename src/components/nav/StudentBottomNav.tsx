@@ -1,0 +1,48 @@
+import React, { useEffect } from 'react';
+import Box from '@mui/material/Box';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
+import SportsGymnasticsIcon from '@mui/icons-material/SportsGymnastics';
+import { useNavigate, useLocation } from 'react-router-dom';
+
+const StudentBottomNav: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Mapeia as rotas para os índices do BottomNavigation
+  const routeMap: { [key: string]: number } = {
+    '/my-workouts': 3,
+  };
+
+  const [value, setValue] = React.useState(routeMap[location.pathname] || 0);
+
+  useEffect(() => {
+    setValue(routeMap[location.pathname] || 0);
+  }, [location.pathname]);
+
+  return (
+    <Box
+      sx={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        width: '100%',
+        zIndex: 1000,
+      }}
+    >
+      <BottomNavigation
+        showLabels
+        value={value}
+        onChange={(event, newValue) => {
+          setValue(newValue);
+          const paths = ['/my-workouts'];
+          navigate(paths[newValue]);
+        }}
+      >
+        <BottomNavigationAction label="Meus treinos" icon={<SportsGymnasticsIcon />} />
+      </BottomNavigation>
+    </Box>
+  );
+}
+
+export default StudentBottomNav;

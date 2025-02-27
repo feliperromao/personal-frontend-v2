@@ -50,7 +50,6 @@ const StudentWorkouts: React.FC = () => {
             <Grid item xs={12} md={6} key={training.id}>
               <TrainingCard handleOpen={handleOpenTraining} training={training} />
             </Grid>
-
           ))}
         </Grid>
       </>
