@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User } from '../../domain/types';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, useMediaQuery } from '@mui/material';
+import { Save, Close } from '@mui/icons-material';
 
 interface UserFormProps {
   user?: User | null;
@@ -82,8 +83,8 @@ const UserForm: React.FC<UserFormProps> = ({ user, isOpen, onSubmit, handleClose
         />
       </DialogContent>
       <DialogActions>
-        <Button color='inherit' onClick={handleClose}>Cancelar</Button>
-        <Button variant='contained' type="submit">{user ? 'Editar' : 'Criar'} Aluno</Button>
+        <Button startIcon={<Close />} onClick={handleClose}>Cancelar</Button>
+        <Button variant="contained" startIcon={<Save />} type="submit">Salvar</Button>
       </DialogActions>
     </Dialog>
   );

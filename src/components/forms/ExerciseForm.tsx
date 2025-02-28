@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Exercise } from '../../domain/types';
+import { Save, Close } from '@mui/icons-material';
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Grid, TextField, useMediaQuery } from '@mui/material';
 import ExerciseType from './Select/ExerciseType';
 
@@ -86,7 +87,7 @@ const ExerciseForm: React.FC<UserFormProps> = ({ exercise, isOpen, onSubmit, han
         Cadastro de exercícios
       </DialogTitle>
 
-      <DialogContent sx={{paddingTop: '20px!important'}}>
+      <DialogContent sx={{ paddingTop: '20px!important' }}>
         <Grid container spacing={1}>
           <Grid item xs={12} md={6}>
             <TextField
@@ -185,8 +186,8 @@ const ExerciseForm: React.FC<UserFormProps> = ({ exercise, isOpen, onSubmit, han
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button color='inherit' onClick={handleClose}>Cancelar</Button>
-        <Button variant='contained' type="submit">{exercise ? 'Editar' : 'Criar'} exercício</Button>
+        <Button startIcon={<Close />} onClick={handleClose}>Cancelar</Button>
+        <Button variant="contained" startIcon={<Save />} type="submit">Salvar</Button>
       </DialogActions>
     </Dialog>
   );
