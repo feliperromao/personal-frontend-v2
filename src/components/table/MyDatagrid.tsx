@@ -13,7 +13,7 @@ interface DatagridProps {
   handleEdit: (id: string) => void,
 }
 
-const MyDatagrid: React.FC<DatagridProps> = ({ rows, columns, totalDocuments, showOptions, setSelected, changePagination, handleDelete, handleEdit }) => {
+const Table: React.FC<DatagridProps> = ({ rows, columns, totalDocuments, showOptions, setSelected, changePagination, handleDelete, handleEdit }) => {
   const onEditClick = (id: GridRowId): void => {
     handleEdit(id.toString())
   };
@@ -48,4 +48,4 @@ const MyDatagrid: React.FC<DatagridProps> = ({ rows, columns, totalDocuments, sh
   )
 }
 
-export default MyDatagrid;
+export default Table;

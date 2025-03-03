@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Template from '../components/Template';
-import { Autocomplete, Box, FormControl, Grid2, Paper, TextField } from '@mui/material';
+import { Autocomplete, Box, Grid2, Paper, TextField } from '@mui/material';
 import Breadcrumb from '../components/Breadcrumb';
 import { DataGrid, GridColDef, GridPaginationModel, GridRowId } from '@mui/x-data-grid';
 import FloatingButton from '../components/FloatingButton';
@@ -187,7 +187,6 @@ const Trainings: React.FC = () => {
                 rowCount={rowCount}
                 initialState={{ pagination: { paginationModel } }}
                 checkboxSelection
-                sx={{ border: 0 }}
                 onPaginationModelChange={onPaginationModelChange}
                 paginationMode="server"
               />

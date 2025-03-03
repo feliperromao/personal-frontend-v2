@@ -157,7 +157,7 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, students,
                   />
                 </FormControl>
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={6} sx={{display: "flex"}}>
                 <FormControlLabel control={<Switch checked={formData.show_to_student} onChange={handleChangeCheckbox} />} label="Exibir para aluno" />
               </Grid>
             </Grid>
@@ -170,8 +170,8 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, students,
         </Stack>
 
         <TableContainer component={Paper} sx={{ mt: 2 }}>
-          <Table size="small">
-            <TableHead>
+          <Table size="small" sx={{border: "1px solid #ddd"}}>
+            <TableHead sx={{backgroundColor: "#ddd"}}>
               <TableRow>
                 <TableCell>Ordem</TableCell>
                 <TableCell>Nome</TableCell>

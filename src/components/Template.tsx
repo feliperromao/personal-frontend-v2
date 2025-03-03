@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
+import type { } from '@mui/x-data-grid/themeAugmentation';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiDrawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
@@ -56,7 +57,13 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 
-const defaultTheme = createTheme();
+const theme = createTheme({
+  mixins: {
+    MuiDataGrid: {
+      containerBackground: "#ddd"
+    },
+  },
+});
 
 const Template: React.FC<PageTemplateProps> = ({ children, pageName, type }) => {
   const userData = localStorage.getItem("user");
@@ -69,7 +76,7 @@ const Template: React.FC<PageTemplateProps> = ({ children, pageName, type }) => 
   };
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={theme}>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
         <AppBar position="absolute" open={drawerOpen}>
