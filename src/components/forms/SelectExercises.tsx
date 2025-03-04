@@ -32,7 +32,6 @@ const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, handleClose, 
   const [search, setSearch] = React.useState<string>('');
   const [checked, setChecked] = React.useState<string[]>([]);
   const [typeFilter, setTypeFilter] = React.useState<string>('');
-  const [exerciseTypes, setExerciseTypes] = React.useState<string[]>([]);
 
   React.useEffect(() => {
     fetchExercises();
@@ -67,14 +66,11 @@ const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, handleClose, 
 
   return (
     <Dialog fullScreen open={isOpen} onClose={handleClose} TransitionComponent={Transition}>
-      <AppBar color="primary" sx={{ position: 'relative' }}>
+      <AppBar color="primary" sx={{ position: 'fixed'}}>
         <Toolbar>
           <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
             <GridCloseIcon />
           </IconButton>
-          <Typography sx={{ ml: 2, flex: 1 }} variant="h6">
-            Exercícios
-          </Typography>
           <TextField
             variant="outlined"
             placeholder="Pesquisar..."
@@ -109,7 +105,7 @@ const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, handleClose, 
         <CircularProgress sx={{ display: 'block', margin: 'auto', mt: 3 }} />
       ) : (
         <>
-          <List>
+          <List sx={{marginTop: "50px"}}>
             {exercises.map((exercise) => (
               <ListItem key={exercise.id}>
                 <ListItemButton onClick={handleToggle(exercise.id)} dense>
