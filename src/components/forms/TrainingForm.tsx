@@ -94,7 +94,6 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, students,
   }
 
   const removeExercise = (id: string) => {
-    console.log("🚀 ~ removeExercise ~ id:", id)
     setSelectedExercises(prev => prev.filter(exercise => exercise.id !== id));
   };
 
@@ -205,7 +204,8 @@ const TrainingForm: React.FC<TrainingFormProps> = ({ training, isOpen, students,
         isOpen={showExerciseModal}
         handleClose={closeExercisesModal}
         addExercise={(item: Exercise) => addExercise(item)}
-        removeExercise={() => { }} />
+        selected={selectedExercises}
+        removeExercise={(item) => removeExercise(item.id)} />
     </Dialog>
   );
 };

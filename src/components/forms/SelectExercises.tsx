@@ -19,12 +19,13 @@ const Transition = React.forwardRef(function Transition(
 
 interface SelectExercisesProps {
   isOpen: boolean;
+  selected?: Exercise[];
   handleClose: () => void;
   addExercise: (item: Exercise) => void;
   removeExercise: (item: Exercise) => void;
 }
 
-const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, handleClose, addExercise, removeExercise }) => {
+const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, selected, handleClose, addExercise, removeExercise }) => {
   const [exercises, setExercises] = React.useState<Exercise[]>([]);
   const [currentPage, setCurrentPage] = React.useState<number>(1);
   const [totalPages, setTotalPages] = React.useState<number>(1);
@@ -35,7 +36,11 @@ const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, handleClose, 
 
   React.useEffect(() => {
     fetchExercises();
-  }, [currentPage, search, typeFilter]);
+    if (selected?.length) {
+      const ids = selected?.map(item => item.id)
+      setChecked(ids)
+    }
+  }, [currentPage, search, typeFilter, selected]);
 
   const fetchExercises = async () => {
     setLoading(true);
