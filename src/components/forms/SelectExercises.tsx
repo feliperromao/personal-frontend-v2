@@ -8,6 +8,9 @@ import SearchIcon from "@mui/icons-material/Search";
 import { GridCloseIcon } from "@mui/x-data-grid";
 import { Exercise, exerciseCategories } from '../../domain/types';
 import api from '../../pages/@shared/api';
+import AddButton from '../AddButton';
+import ExerciseForm from './ExerciseForm';
+import { handleOpenNotification, SNACKBAR_TYPES } from '../MySnackbar';
 const URL = '/exercises';
 
 const Transition = React.forwardRef(function Transition(
@@ -33,6 +36,7 @@ const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, selected, han
   const [search, setSearch] = React.useState<string>('');
   const [checked, setChecked] = React.useState<string[]>([]);
   const [typeFilter, setTypeFilter] = React.useState<string>('');
+  const [showExerciseModal, setShowExerciseModal] = React.useState(false);
 
   React.useEffect(() => {
     fetchExercises();
@@ -68,6 +72,37 @@ const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, selected, han
       wasChecked ? removeExercise(exercise) : addExercise(exercise);
     }
   };
+
+  const handleOpenModalExercises = () => {
+    setShowExerciseModal(true)
+  }
+
+  const handleCloseModalExercises = () => {
+    setShowExerciseModal(false)
+  }
+
+  const handleSaveExercise = async (exercise: Exercise) => {
+    await api.post(URL,
+      {
+        name: exercise.name,
+        type: exercise.type,
+        instructions: exercise.instructions,
+        video: exercise.video,
+        rest: exercise.rest,
+        load: exercise.load,
+        series: exercise.series,
+        load_progress: exercise.load_progress,
+      }).then(async (result) => {
+        await fetchExercises();
+        handleCloseModalExercises();
+        handleOpenNotification("Exercício cadastrado com sucesso!", SNACKBAR_TYPES.success);
+        const exercise: Exercise = result.data.data
+        setChecked([...checked, exercise.id])
+        addExercise(exercise)
+      }).catch(() => {
+        handleOpenNotification("Falha ao cadastrar exercício", SNACKBAR_TYPES.error);
+      })
+  }
 
   return (
     <Dialog fullScreen open={isOpen} onClose={handleClose} TransitionComponent={Transition}>
@@ -136,6 +171,12 @@ const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, selected, han
             onChange={(_, value) => setCurrentPage(value)}
             sx={{ display: 'flex', justifyContent: 'center', mt: 2, mb: 2 }}
           />
+          <ExerciseForm
+            exercise={undefined}
+            isOpen={showExerciseModal}
+            onSubmit={handleSaveExercise}
+            handleClose={handleCloseModalExercises} />
+          <AddButton onClick={handleOpenModalExercises} />
         </>
       )}
     </Dialog>

@@ -68,6 +68,12 @@ const ExerciseForm: React.FC<UserFormProps> = ({ exercise, isOpen, onSubmit, han
     return +value
   }
 
+  const handleSave = () => {
+    onSubmit(formData);
+    setFormData({ id: '', name: '', type: '', instructions: '', video: '', rest: 30, load: 0, series: 0, load_progress: false });
+    handleClose();
+  }
+
   return (
     <Dialog
       fullScreen={isMobile}
@@ -75,12 +81,6 @@ const ExerciseForm: React.FC<UserFormProps> = ({ exercise, isOpen, onSubmit, han
       onClose={handleClose}
       PaperProps={{
         component: 'form',
-        onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-          event.preventDefault();
-          onSubmit(formData);
-          setFormData({ id: '', name: '', type: '', instructions: '', video: '', rest: 30, load: 0, series: 0, load_progress: false });
-          handleClose();
-        },
       }}
     >
       <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white' }}>
@@ -187,7 +187,7 @@ const ExerciseForm: React.FC<UserFormProps> = ({ exercise, isOpen, onSubmit, han
       </DialogContent>
       <DialogActions>
         <Button startIcon={<Close />} onClick={handleClose}>Cancelar</Button>
-        <Button variant="contained" startIcon={<Save />} type="submit">Salvar</Button>
+        <Button variant="contained" startIcon={<Save />} onClick={handleSave}>Salvar</Button>
       </DialogActions>
     </Dialog>
   );

@@ -15,7 +15,6 @@ import ItemsMenu from '../components/table/ItemsMenu';
 import { paginationModel } from './@shared/pagination'
 import api from './@shared/api';
 const URL = '/students'
-const token = localStorage.getItem('auth-token');
 
 const Students: React.FC = () => {
   const [formDialogIsOpen, setOpenFormDialog] = React.useState(false);

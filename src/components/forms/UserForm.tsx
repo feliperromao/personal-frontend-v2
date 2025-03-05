@@ -45,7 +45,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, isOpen, onSubmit, handleClose
       <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white' }}>
         Cadastro de Alunos
       </DialogTitle>
-      <DialogContent sx={{paddingTop: '20px!important'}}>
+      <DialogContent sx={{ paddingTop: '20px!important' }}>
         <TextField
           required
           margin="dense"
