@@ -110,12 +110,6 @@ const Students: React.FC = () => {
     { field: 'name', headerName: 'Nome', width: 300 },
     { field: 'email', headerName: 'E-mail', width: 300 },
     {
-      field: 'blocked',
-      headerName: 'Status',
-      width: 100,
-      valueFormatter: value => (value ? 'Desabilitado' : 'Ativo')
-    },
-    {
       field: 'actions',
       type: 'actions',
       headerName: 'Opções',
@@ -138,8 +132,7 @@ const Students: React.FC = () => {
             <Box display="flex" alignItems="center" gap={1} sx={{ margin: '16px 0' }}>
               <SearchInput handleChange={setSearchQuery} handleSearch={fetchUsers} />
             </Box>
-
-            <Paper sx={{ height: 400, width: '100%' }}>
+            <Paper sx={{ height: 600, width: '100%' }}>
               <DataGrid
                 rows={users}
                 columns={columns}

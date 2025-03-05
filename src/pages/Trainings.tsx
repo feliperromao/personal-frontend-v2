@@ -180,7 +180,7 @@ const Trainings: React.FC = () => {
         </Grid2>
         <Grid2 container spacing={2}>
           <Grid2 size={12}>
-            <Paper sx={{ height: 400, width: '100%' }}>
+            <Paper sx={{ height: 600, width: '100%' }}>
               <DataGrid
                 rows={trainings}
                 columns={columns}

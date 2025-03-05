@@ -127,8 +127,6 @@ const Exercises: React.FC = () => {
     { field: 'name', headerName: 'Nome', width: 200 },
     { field: 'instructions', headerName: 'Instruções', width: 300 },
     { field: 'series', headerName: 'series' },
-    { field: 'rest', headerName: 'Descanço', width: 150 },
-    { field: 'load_progress', headerName: 'PC', valueFormatter: value => (value ? 'Sim' : '-') },
     {
       field: 'actions',
       type: 'actions',
@@ -174,7 +172,7 @@ const Exercises: React.FC = () => {
               />
             </Box>
 
-            <Paper sx={{ height: 400, width: '100%' }}>
+            <Paper sx={{ height: 600, width: '100%' }}>
               <DataGrid
                 rows={exercises}
                 columns={columns}
