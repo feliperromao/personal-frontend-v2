@@ -45,9 +45,9 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ rest }) => {
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
-      <Typography variant="h6">Tempo de Descanso</Typography>
+      <Typography color="info" variant="h6">Tempo de Descanso</Typography>
       <Box position="relative" display="inline-flex">
-        <CircularProgress variant="determinate" value={progress} size={200} thickness={4} />
+        <CircularProgress variant="determinate" value={progress} size={180} thickness={4} />
         <Box
           top={0}
           left={0}

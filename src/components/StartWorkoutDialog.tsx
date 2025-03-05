@@ -78,9 +78,9 @@ const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({ open, training,
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
               {training?.name}
             </Typography>
-            <Button autoFocus color="inherit" onClick={() => { }}>
+            {/* <Button autoFocus color="inherit" onClick={() => { }}>
               iniciar treino
-            </Button>
+            </Button> */}
           </Toolbar>
         </AppBar>
         <List>

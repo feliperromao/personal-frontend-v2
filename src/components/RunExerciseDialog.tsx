@@ -70,7 +70,7 @@ const RunExerciseDialog: React.FC<RunExerciseDialogProps> = ({ open, exercise, h
 
           {/* Controle de Séries */}
           <Grid item xs={12} sm={6} display="flex" alignItems="center">
-            <Typography variant="body1" sx={{ mr: 2 }}>Séries:</Typography>
+            <Typography variant="body1" sx={{ mr: 2 }}><strong>Séries:</strong></Typography>
             <Chip label={`${series} / ${exercise?.series}`} sx={{ fontSize: 16, padding: 1 }} />
             <ButtonGroup sx={{ ml: 2 }}>
               <Button
@@ -97,6 +97,7 @@ const RunExerciseDialog: React.FC<RunExerciseDialogProps> = ({ open, exercise, h
               label="Carga (KG)"
               type="number"
               variant="outlined"
+              disabled
               value={exercise?.load}
               inputProps={{ min: 0 }}
             />
@@ -106,7 +107,7 @@ const RunExerciseDialog: React.FC<RunExerciseDialogProps> = ({ open, exercise, h
         {/* Timer e Vídeo */}
         <Grid container spacing={2} mt={3}>
           <Grid item xs={12} sm={6}>
-            <Paper sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 2 }}>
+            <Paper sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 2, border: '1px solid #ddd' }}>
               <CountdownTimer rest={exercise?.rest ?? 60} />
             </Paper>
           </Grid>
