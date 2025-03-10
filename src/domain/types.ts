@@ -4,6 +4,13 @@ export interface User {
   name: string;
   email: string;
   password: string;
+  confirm_password: string;
+  phone: string;
+  birthdate: string;
+  weight: number;
+  height: number;
+  monthly_value_brl: number;
+  blocked: boolean;
 }
 
 export interface Exercise {

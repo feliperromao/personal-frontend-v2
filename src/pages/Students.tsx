@@ -47,11 +47,11 @@ const Students: React.FC = () => {
   };
 
   const handleEditClick = (id: GridRowId) => {
-    setOpenFormDialog(true)
     const editUser = users.find(user => user.id == id.toString())
     if (editUser) {
-      const { id, name, email } = editUser
-      setEditingUser({ id, name, email } as User)
+      const {id, name, email, password, birthdate, blocked, height, monthly_value_brl, phone, weight } = editUser
+      setEditingUser({id, name, email, password, birthdate, blocked, height, monthly_value_brl, phone, weight} as User)
+      setOpenFormDialog(true)
     }
   }
 
@@ -67,21 +67,30 @@ const Students: React.FC = () => {
   };
 
   const handleSubmit = async (user: User) => {
+    const userData = {
+      name: user.name,
+      email: user.email,
+      password: user.password,
+      confirm_password: user.confirm_password,
+      phone: user.phone,
+      birthdate: user.birthdate,
+      weight: Number(user.weight),
+      height: Number(user.height),
+      monthly_value_brl: Number(user.monthly_value_brl),
+      blocked: user.blocked || false,
+    }
     if (editingUser && editingUser.id) {
       delete user.id
-      await api.put(`${URL}/${editingUser.id}`, {
-        name: user.name,
-        email: user.email,
-        password: user.password,
-      }).then(() => {
+      await api.put(`${URL}/${editingUser.id}`, userData).then(() => {
         handleOpenNotification("Aluno editado com sucesso!", SNACKBAR_TYPES.success);
         fetchUsers();
         closeModal();
-      }).catch(() => {
-        handleOpenNotification("Falha ao editar aluno!", SNACKBAR_TYPES.error);
+      }).catch(error => {
+        const error_messages = get_erros_message(error?.response?.data?.message || [])
+        handleOpenNotification("Falha ao editar aluno!" + error_messages, SNACKBAR_TYPES.error);
       })
     } else {
-      await api.post(URL, user).then(() => {
+      await api.post(URL, userData).then(() => {
         handleOpenNotification("Aluno cadastrado com sucesso!", SNACKBAR_TYPES.success);
         fetchUsers();
         closeModal();
@@ -106,8 +115,9 @@ const Students: React.FC = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: 'name', headerName: 'Nome', width: 300 },
-    { field: 'email', headerName: 'E-mail', width: 300 },
+    { field: 'name', headerName: 'Nome', width: 280 },
+    { field: 'email', headerName: 'E-mail', width: 250 },
+    { field: 'monthly_value_brl', headerName: 'Mensalidade', width: 150 },
     {
       field: 'actions',
       type: 'actions',
@@ -149,7 +159,10 @@ const Students: React.FC = () => {
         </Grid>
         <UserForm user={editingUser} isOpen={formDialogIsOpen} onSubmit={handleSubmit} handleClose={() => setOpenFormDialog(false)} />
         <DeleteDialog title="Excluir Usuario" handleCloseDeleteDialog={handleCloseDeleteDialog} isOpen={deleteDialogIsOpen} />
-        <FloatingButton onClick={() => setOpenFormDialog(true)} />
+        <FloatingButton onClick={() => {
+          setEditingUser(undefined);
+          setOpenFormDialog(true)
+        }} />
       </React.Fragment>
     </Template>
   );
