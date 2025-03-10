@@ -19,7 +19,7 @@ import {
   Typography,
   useMediaQuery,
 } from '@mui/material';
-import { Exercise } from '../domain/types';
+import { Exercise } from '../../domain/types';
 import CountdownTimer from './CountdownTimer';
 import VideoCard from './VideoCard';
 

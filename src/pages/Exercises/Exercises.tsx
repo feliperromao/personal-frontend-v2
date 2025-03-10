@@ -2,18 +2,18 @@ import * as React from 'react';
 import { Box, FormControl, MenuItem, Paper, Select } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { DataGrid, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from '@mui/x-data-grid';
-import Template from '../components/Template';
-import { Exercise, exerciseCategories } from '../domain/types';
-import DeleteDialog from '../components/DeleteDialog';
-import FloatingButton from '../components/FloatingButton';
-import ExerciseForm from '../components/forms/ExerciseForm';
-import { handleOpenNotification, SNACKBAR_TYPES } from '../components/MySnackbar';
-import Breadcrumb from '../components/Breadcrumb';
-import { useGlobalState } from "../GlobalState";
-import ItemsMenu from '../components/table/ItemsMenu';
-import SearchInput from '../components/SearchInput';
-import { paginationModel } from './@shared/pagination'
-import api from './@shared/api';
+import Template from '../../components/Template';
+import { Exercise, exerciseCategories } from '../../domain/types';
+import DeleteDialog from '../../components/DeleteDialog';
+import FloatingButton from '../../components/FloatingButton';
+import { handleOpenNotification, SNACKBAR_TYPES } from '../../components/MySnackbar';
+import Breadcrumb from '../../components/nav/Breadcrumb';
+import { useGlobalState } from "../../GlobalState";
+import ItemsMenu from '../../components/table/ItemsMenu';
+import SearchInput from '../../components/forms/SearchInput';
+import { paginationModel } from '../@shared/pagination'
+import api from '../@shared/api';
+import ExerciseForm from './ExerciseForm';
 const URL = 'exercises';
 
 const Exercises: React.FC = () => {

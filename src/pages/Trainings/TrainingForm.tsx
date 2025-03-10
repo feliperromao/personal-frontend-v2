@@ -26,7 +26,7 @@ import {
   useMediaQuery,
   Stack
 } from '@mui/material';
-import SelectExercises from './SelectExercises';
+import SelectExercises from '../Exercises/SelectExercises';
 import { ArrowDownward, ArrowUpward, Delete, Add, Save, Close } from '@mui/icons-material';
 
 export interface Option {

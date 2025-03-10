@@ -2,17 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { FormControlLabel, Grid, Switch, TextField } from '@mui/material';
 import dayjs, { Dayjs } from "dayjs";
 import { User } from '../../domain/types';
-import DateInput from '../DateInput';
-import Modal from '../Modal';
+import DateInput from '../../components/forms/DateInput';
+import Modal from '../../components/Modal';
 
-interface UserFormProps {
+interface StudentsFormProps {
   user?: User | null;
   isOpen: boolean;
   onSubmit: (user: User) => void;
   handleClose: () => void;
 }
 
-const UserForm: React.FC<UserFormProps> = ({ user, isOpen, onSubmit, handleClose }) => {
+const StudentsForm: React.FC<StudentsFormProps> = ({ user, isOpen, onSubmit, handleClose }) => {
   const [selectedDate] = useState<Dayjs>(dayjs());
   const clearFormData = {
     name: '',
@@ -185,4 +185,4 @@ const UserForm: React.FC<UserFormProps> = ({ user, isOpen, onSubmit, handleClose
   );
 };
 
-export default UserForm;
+export default StudentsForm;

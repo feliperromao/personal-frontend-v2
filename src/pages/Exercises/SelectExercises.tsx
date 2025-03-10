@@ -7,10 +7,10 @@ import { TransitionProps } from 'notistack';
 import SearchIcon from "@mui/icons-material/Search";
 import { GridCloseIcon } from "@mui/x-data-grid";
 import { Exercise, exerciseCategories } from '../../domain/types';
-import api from '../../pages/@shared/api';
-import AddButton from '../AddButton';
+import api from '../@shared/api';
+import AddButton from '../../components/AddButton';
 import ExerciseForm from './ExerciseForm';
-import { handleOpenNotification, SNACKBAR_TYPES } from '../MySnackbar';
+import { handleOpenNotification, SNACKBAR_TYPES } from '../../components/MySnackbar';
 const URL = '/exercises';
 
 const Transition = React.forwardRef(function Transition(

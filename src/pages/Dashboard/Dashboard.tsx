@@ -2,8 +2,8 @@ import React from 'react';
 import PeopleIcon from '@mui/icons-material/People';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import SportsGymnasticsIcon from '@mui/icons-material/SportsGymnastics';
-import Template from '../components/Template';
-import PageCard from '../components/PageCard';
+import Template from '../../components/Template';
+import PageCard from './PageCard';
 import { Grid } from '@mui/material';
 
 const Dashboard: React.FC = () => {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { MenuItem, Select, InputLabel, FormControl, SelectChangeEvent } from "@mui/material";
-import { exerciseCategories } from "../../../domain/types";
+import { exerciseCategories } from "../../domain/types";
 
 interface ExerciseType {
   value: string

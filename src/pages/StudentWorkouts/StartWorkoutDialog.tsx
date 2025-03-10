@@ -13,7 +13,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { Exercise, Training } from '../domain/types';
+import { Exercise, Training } from '../../domain/types';
 import RunExerciseDialog from './RunExerciseDialog';
 
 const Transition = React.forwardRef(function Transition(

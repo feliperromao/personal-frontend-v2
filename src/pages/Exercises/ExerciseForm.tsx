@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Exercise } from '../../domain/types';
 import { Save, Close } from '@mui/icons-material';
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Grid, TextField, useMediaQuery } from '@mui/material';
-import ExerciseType from './Select/ExerciseType';
+import ExerciseType from './ExerciseType';
 
 interface UserFormProps {
   exercise?: Exercise | null;

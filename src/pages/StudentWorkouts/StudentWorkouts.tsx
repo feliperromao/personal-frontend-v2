@@ -1,13 +1,13 @@
 import React from 'react';
 import { Grid } from '@mui/material';
-import Template from '../components/Template';
-import Breadcrumb from '../components/Breadcrumb';
-import TrainingCard from '../components/TrainingCard';
-import { Training } from '../domain/types';
-import api from './@shared/api';
-import { handleOpenNotification, SNACKBAR_TYPES } from '../components/MySnackbar';
-import { useGlobalState } from '../GlobalState';
-import StartWorkoutDialog from '../components/StartWorkoutDialog';
+import Template from '../../components/Template';
+import Breadcrumb from '../../components/nav/Breadcrumb';
+import TrainingCard from './TrainingCard';
+import { Training } from '../../domain/types';
+import api from '../@shared/api';
+import { handleOpenNotification, SNACKBAR_TYPES } from '../../components/MySnackbar';
+import { useGlobalState } from '../../GlobalState';
+import StartWorkoutDialog from './StartWorkoutDialog';
 
 const StudentWorkouts: React.FC = () => {
   const { setLoading } = useGlobalState();

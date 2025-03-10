@@ -1,6 +1,6 @@
 import { Button, Card, CardActions, CardContent, Typography } from "@mui/material"
 import React from "react"
-import { Training } from "../domain/types"
+import { Training } from "../../domain/types"
 
 interface TrainingCardProps {
   training: Training;
