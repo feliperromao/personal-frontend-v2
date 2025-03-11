@@ -30,7 +30,9 @@ const Exercises: React.FC = () => {
   const [exerciseType, setExerciseType] = React.useState<string>('');
 
   React.useEffect(() => {
+    console.log("Vai fazer a request")
     fetchExercises();
+    console.log("Fez a request")
   }, [currentPage, exerciseType]);
 
   const handleEditClick = (id: GridRowId) => {

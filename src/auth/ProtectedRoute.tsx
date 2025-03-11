@@ -9,6 +9,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, allowedType }) => {
   const location = useLocation();
+  console.log("🚀 ~ location:", location)
   const [userType, setUserType] = useState<"PERSONAL" | "STUDENT" | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
