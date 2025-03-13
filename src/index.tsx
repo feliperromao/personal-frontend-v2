@@ -20,19 +20,17 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-  <React.StrictMode>
-    <GlobalStateProvider>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={<ProtectedRoute allowedType="PERSONAL" element={<Dashboard />} />} />
-          <Route path="/students" element={<ProtectedRoute allowedType="PERSONAL" element={<Students />} />} />
-          <Route path="/exercises" element={<ProtectedRoute allowedType="PERSONAL" element={<Exercises />} />} />
-          <Route path="/trainings" element={<ProtectedRoute allowedType="PERSONAL" element={<Trainings />} />} />
-          <Route path="/calendar" element={<ProtectedRoute allowedType="PERSONAL" element={<Calendar />} />} />
-          <Route path="/my-workouts" element={<ProtectedRoute allowedType="STUDENT" element={<StudentWorkouts />} />} />
-        </Routes>
-      </Router>
-    </GlobalStateProvider>
-  </React.StrictMode>
+  <GlobalStateProvider>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<ProtectedRoute allowedType="PERSONAL" element={<Dashboard />} />} />
+        <Route path="/students" element={<ProtectedRoute allowedType="PERSONAL" element={<Students />} />} />
+        <Route path="/exercises" element={<ProtectedRoute allowedType="PERSONAL" element={<Exercises />} />} />
+        <Route path="/trainings" element={<ProtectedRoute allowedType="PERSONAL" element={<Trainings />} />} />
+        <Route path="/calendar" element={<ProtectedRoute allowedType="PERSONAL" element={<Calendar />} />} />
+        <Route path="/my-workouts" element={<ProtectedRoute allowedType="STUDENT" element={<StudentWorkouts />} />} />
+      </Routes>
+    </Router>
+  </GlobalStateProvider>
 );
