@@ -4,12 +4,11 @@ import api from "../pages/@shared/api";
 
 interface ProtectedRouteProps {
   element: React.ReactElement;
-  allowedType: "PERSONAL" | "STUDENT";
+  allowedType: "PERSONAL" | "STUDENT" | "ALL";
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, allowedType }) => {
   const location = useLocation();
-  console.log("🚀 ~ location:", location)
   const [userType, setUserType] = useState<"PERSONAL" | "STUDENT" | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -27,7 +26,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, allowedType })
       const userData = JSON.parse(user);
       setUserType(userData.type);
 
-      if (userData.type === allowedType) {
+      if (userData.type === allowedType || allowedType == "ALL") {
         setIsAuthorized(true);
         setIsLoading(false);
         return;
@@ -60,6 +59,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, allowedType })
 
   if (!localStorage.getItem("user") || !localStorage.getItem("auth-token")) {
     return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (allowedType === "ALL") {
+    return element;
   }
 
   if (userType === "STUDENT" && allowedType !== "STUDENT") {

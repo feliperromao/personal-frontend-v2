@@ -5,6 +5,7 @@ import ListItemText from '@mui/material/ListItemText';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import PeopleIcon from '@mui/icons-material/People';
 import SportsGymnasticsIcon from '@mui/icons-material/SportsGymnastics';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import { useNavigate } from 'react-router-dom';
 import { Dashboard, Logout } from '@mui/icons-material';
 
@@ -56,6 +57,10 @@ export const SecondaryNavgation = () => {
   }
   return (
     <React.Fragment>
+      <ListItemButton onClick={() => navigate('/profile')}>
+        <ListItemIcon><ManageAccountsIcon /></ListItemIcon>
+        <ListItemText primary="Perfil" />
+      </ListItemButton>
       <ListItemButton onClick={() => logout()}>
         <ListItemIcon><Logout /></ListItemIcon>
         <ListItemText primary="Sair" />

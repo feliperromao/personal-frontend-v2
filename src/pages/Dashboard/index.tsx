@@ -9,7 +9,7 @@ import { Grid } from '@mui/material';
 const Dashboard: React.FC = () => {
   return (
     <Template pageName='Dashboard' >
-      <Grid container mt={2} spacing={0} sx={{display: 'flex', justifyContent: 'center', paddingTop: '20px'}}>
+      <Grid container mt={2} spacing={0} sx={{display: 'flex', justifyContent: 'center', paddingTop: '40px', marginBottom: '100px'}}>
         <Grid item sm={6} md={3}>
           <PageCard
             title='Alunos'

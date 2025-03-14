@@ -15,6 +15,7 @@ import { GlobalStateProvider } from './GlobalState';
 import Trainings from './pages/Trainings';
 import StudentWorkouts from './pages/StudentWorkouts';
 import Calendar from './pages/Calendar/Calendar';
+import Profile from './pages/Profile';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -30,6 +31,7 @@ root.render(
         <Route path="/trainings" element={<ProtectedRoute allowedType="PERSONAL" element={<Trainings />} />} />
         <Route path="/calendar" element={<ProtectedRoute allowedType="PERSONAL" element={<Calendar />} />} />
         <Route path="/my-workouts" element={<ProtectedRoute allowedType="STUDENT" element={<StudentWorkouts />} />} />
+        <Route path="/profile" element={<ProtectedRoute allowedType="ALL" element={<Profile />} />} />
       </Routes>
     </Router>
   </GlobalStateProvider>
