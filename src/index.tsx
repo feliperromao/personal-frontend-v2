@@ -6,14 +6,14 @@ import '@fontsource/roboto/700.css';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-import Login from './pages/Login/Login';
+import Login from './pages/Login';
 import ProtectedRoute from './auth/ProtectedRoute';
-import Dashboard from './pages/Dashboard/Dashboard';
-import Students from './pages/Students/Students';
-import Exercises from './pages/Exercises/Exercises';
+import Dashboard from './pages/Dashboard';
+import Students from './pages/Students';
+import Exercises from './pages/Exercises';
 import { GlobalStateProvider } from './GlobalState';
-import Trainings from './pages/Trainings/Trainings';
-import StudentWorkouts from './pages/StudentWorkouts/StudentWorkouts';
+import Trainings from './pages/Trainings';
+import StudentWorkouts from './pages/StudentWorkouts';
 import Calendar from './pages/Calendar/Calendar';
 
 const root = ReactDOM.createRoot(
