@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Box,  Grid, Paper } from "@mui/material";
+import { Box, Grid, MenuItem, Paper } from "@mui/material";
+import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import { DataGrid, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from '@mui/x-data-grid';
 import DeleteDialog from '../../components/DeleteDialog';
 import FloatingButton from '../../components/FloatingButton';
@@ -14,6 +15,7 @@ import SearchInput from '../../components/forms/SearchInput';
 import ItemsMenu from '../../components/table/ItemsMenu';
 import { paginationModel } from '../@shared/pagination'
 import api from '../@shared/api';
+import ShowTrainings from './ShowTrainings';
 const URL = '/students'
 
 const Students: React.FC = () => {
@@ -27,6 +29,8 @@ const Students: React.FC = () => {
   const [searchQuery, setSearchQuery] = React.useState<string>('');
   const [rowCount, setRowCount] = React.useState<number>(0);
   const [currentPage, setCurrentPage] = React.useState<number>(0);
+  const [showModalTrainings, setShowModalTrainings] = React.useState(false)
+  const [studentShowTraining, setStudentShowTraining] = React.useState<User | undefined>(undefined);
 
   React.useEffect(() => {
     fetchUsers();
@@ -49,8 +53,8 @@ const Students: React.FC = () => {
   const handleEditClick = (id: GridRowId) => {
     const editUser = users.find(user => user.id == id.toString())
     if (editUser) {
-      const {id, name, email, password, birthdate, blocked, height, monthly_value_brl, phone, weight } = editUser
-      setEditingUser({id, name, email, password, birthdate, blocked, height, monthly_value_brl, phone, weight} as User)
+      const { id, name, email, password, birthdate, blocked, height, monthly_value_brl, phone, weight } = editUser
+      setEditingUser({ id, name, email, password, birthdate, blocked, height, monthly_value_brl, phone, weight } as User)
       setOpenFormDialog(true)
     }
   }
@@ -106,6 +110,18 @@ const Students: React.FC = () => {
     setOpenDeleteDialog(true)
   }
 
+  const handleShowTrainings = (id: GridRowId) => {
+    const student = users.find(student => student.id == id)
+    if (student) {
+      setStudentShowTraining(student)
+      setShowModalTrainings(true)
+    }
+  }
+
+  const handleCloseTrainings = () => {
+    setShowModalTrainings(false)
+  }
+
   const handleCloseDeleteDialog = async (confirm: boolean) => {
     if (confirm && deleteUserId) {
       api.delete(`${URL}/${deleteUserId}`)
@@ -125,7 +141,16 @@ const Students: React.FC = () => {
       width: 100,
       getActions: ({ id }) => {
         return [
-          <ItemsMenu rowId={id} handleDelete={handleDeleteUserClick} handleEdit={() => handleEditClick(id)} />
+          <ItemsMenu
+            children={
+              <MenuItem onClick={() => handleShowTrainings(id)} disableRipple>
+                <FormatListNumberedIcon />
+                Ver treinos
+              </MenuItem>}
+            rowId={id}
+            handleDelete={handleDeleteUserClick}
+            handleEdit={() => handleEditClick(id)}
+          />
         ];
       },
     },
@@ -157,6 +182,7 @@ const Students: React.FC = () => {
             </Paper>
           </Grid>
         </Grid>
+        <ShowTrainings handleClose={handleCloseTrainings} open={showModalTrainings} student={studentShowTraining} />
         <UserForm user={editingUser} isOpen={formDialogIsOpen} onSubmit={handleSubmit} handleClose={() => setOpenFormDialog(false)} />
         <DeleteDialog title="Excluir Usuario" handleCloseDeleteDialog={handleCloseDeleteDialog} isOpen={deleteDialogIsOpen} />
         <FloatingButton onClick={() => {

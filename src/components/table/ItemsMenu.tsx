@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { ReactNode } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import Menu, { MenuProps } from '@mui/material/Menu';
@@ -11,6 +11,7 @@ import { GridRowId } from '@mui/x-data-grid';
 
 interface ItemsMenuProps {
   rowId: GridRowId;
+  children?: ReactNode;
   handleDelete: (id: GridRowId) => void;
   handleEdit: (id: GridRowId) => void;
 }
@@ -58,7 +59,7 @@ const StyledMenu = styled((props: MenuProps) => (
   },
 }));
 
-const ItemsMenu: React.FC<ItemsMenuProps> = ({ rowId, handleDelete, handleEdit }) => {
+const ItemsMenu: React.FC<ItemsMenuProps> = ({ rowId, children, handleDelete, handleEdit }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -99,11 +100,12 @@ const ItemsMenu: React.FC<ItemsMenuProps> = ({ rowId, handleDelete, handleEdit }
         open={open}
         onClose={handleClose}
       >
+        { children }
+        { children ? (<Divider sx={{ my: 0.5 }} />) : null}
         <MenuItem onClick={onEditClick} disableRipple>
           <EditIcon />
           Editar
         </MenuItem>
-        {/* <Divider sx={{ my: 0.5 }} /> */}
         <MenuItem onClick={onDeleteClick} disableRipple>
           <DeleteIcon />
           Excluir
