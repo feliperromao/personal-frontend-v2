@@ -1,6 +1,10 @@
 import * as React from 'react';
-import { Box, Grid, MenuItem, Paper } from "@mui/material";
+import { Box, Grid, MenuItem, Paper, Typography, IconButton, Tooltip } from "@mui/material";
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import TableRowsIcon from '@mui/icons-material/TableRows';
+import GridViewIcon from '@mui/icons-material/GridView';
 import { DataGrid, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from '@mui/x-data-grid';
 import DeleteDialog from '../../components/DeleteDialog';
 import FloatingButton from '../../components/FloatingButton';
@@ -31,8 +35,13 @@ const Students: React.FC = () => {
   const [currentPage, setCurrentPage] = React.useState<number>(0);
   const [showModalTrainings, setShowModalTrainings] = React.useState(false)
   const [studentShowTraining, setStudentShowTraining] = React.useState<User | undefined>(undefined);
+  const [viewMode, setViewMode] = React.useState<'table' | 'cards'>('table');
 
   React.useEffect(() => {
+    const view = localStorage.getItem('viewMode')
+    if (view) {
+      setViewMode(view as 'table' | 'cards')
+    }
     fetchUsers();
   }, [currentPage]);
 
@@ -50,8 +59,8 @@ const Students: React.FC = () => {
     }
   };
 
-  const handleEditClick = (id: GridRowId) => {
-    const editUser = users.find(user => user.id == id.toString())
+  const handleEditClick = (id?: GridRowId) => {
+    const editUser = users.find(user => user.id == id?.toString())
     if (editUser) {
       const { id, name, email, password, birthdate, blocked, height, monthly_value_brl, phone, weight } = editUser
       setEditingUser({ id, name, email, password, birthdate, blocked, height, monthly_value_brl, phone, weight } as User)
@@ -105,12 +114,14 @@ const Students: React.FC = () => {
     }
   };
 
-  const handleDeleteUserClick = (id: GridRowId) => {
-    setDeleteUserId(id.toString())
+  const handleDeleteUserClick = (id?: GridRowId) => {
+    if (id) {
+      setDeleteUserId(id?.toString())
+    }
     setOpenDeleteDialog(true)
   }
 
-  const handleShowTrainings = (id: GridRowId) => {
+  const handleShowTrainings = (id?: GridRowId) => {
     const student = users.find(student => student.id == id)
     if (student) {
       setStudentShowTraining(student)
@@ -128,6 +139,33 @@ const Students: React.FC = () => {
     }
     setOpenDeleteDialog(false);
     fetchUsers()
+  };
+
+  const StudentsCardView = () => {
+    return (
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 2, p: 2, height: 600, overflow: 'auto' }}>
+        {users.map((user) => (
+          <Paper key={user.id} sx={{ padding: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="h6" noWrap>{user.name}</Typography>
+              <Typography variant="body2" color="text.secondary" noWrap>{user.email}</Typography>
+              <Typography variant="body2">Mensalidade: R$ {user.monthly_value_brl ?? 0}</Typography>
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 'auto', gap: 1 }}>
+              <IconButton size="small" onClick={() => handleShowTrainings(user?.id)}>
+                <FormatListNumberedIcon fontSize="small" />
+              </IconButton>
+              <IconButton size="small" onClick={() => handleEditClick(user?.id)}>
+                <EditIcon fontSize="small" />
+              </IconButton>
+              <IconButton size="small" onClick={() => handleDeleteUserClick(user?.id)}>
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </Box>
+          </Paper>
+        ))}
+      </Box>
+    );
   };
 
   const columns: GridColDef[] = [
@@ -165,20 +203,48 @@ const Students: React.FC = () => {
 
             <Box display="flex" alignItems="center" gap={1} sx={{ margin: '16px 0' }}>
               <SearchInput handleChange={setSearchQuery} handleSearch={fetchUsers} />
+              <Box display="flex" alignItems="center">
+                <Tooltip title="Visualização em tabela">
+                  <IconButton 
+                    color={viewMode === 'table' ? 'primary' : 'default'} 
+                    onClick={() => {
+                      setViewMode('table')
+                      localStorage.setItem('viewMode', 'table')
+                    }}
+                  >
+                    <TableRowsIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Visualização em cards">
+                  <IconButton 
+                    color={viewMode === 'cards' ? 'primary' : 'default'} 
+                    onClick={() => {
+                      setViewMode('cards')
+                      localStorage.setItem('viewMode', 'cards')
+                    }}
+                  >
+                    <GridViewIcon />
+                  </IconButton>
+                </Tooltip>
+              </Box>
             </Box>
             <Paper sx={{ height: 600, width: '100%' }}>
-              <DataGrid
-                rows={users}
-                columns={columns}
-                initialState={{ pagination: { paginationModel } }}
-                onRowSelectionModelChange={setSelected}
-                checkboxSelection
-                disableColumnSelector
-                sx={{ border: 0 }}
-                onPaginationModelChange={onPaginationModelChange}
-                paginationMode="server"
-                rowCount={rowCount}
-              />
+              {viewMode === 'table' ? (
+                <DataGrid
+                  rows={users}
+                  columns={columns}
+                  initialState={{ pagination: { paginationModel } }}
+                  onRowSelectionModelChange={setSelected}
+                  checkboxSelection
+                  disableColumnSelector
+                  sx={{ border: 0 }}
+                  onPaginationModelChange={onPaginationModelChange}
+                  paginationMode="server"
+                  rowCount={rowCount}
+                />
+              ) : (
+                <StudentsCardView />
+              )}
             </Paper>
           </Grid>
         </Grid>
