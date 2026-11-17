@@ -44,4 +44,8 @@ test('treino ativo não tem violações axe sérias ou críticas', async ({ page
   await page.goto('/my-workouts/t1/exercises/e1');
   await expect(page.getByRole('heading', { name: 'Supino inclinado' })).toBeVisible();
   await expectNoSeriousViolations(page);
+  await page.getByRole('button', { name: /Exercícios ·/ }).click();
+  await expect(page.getByRole('dialog', { name: 'Exercícios do treino' })).toBeVisible();
+  await page.waitForTimeout(300);
+  await expectNoSeriousViolations(page);
 });

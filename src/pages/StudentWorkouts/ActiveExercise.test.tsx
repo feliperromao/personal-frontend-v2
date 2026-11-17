@@ -19,6 +19,13 @@ const exercise = {
   load_progress: true,
 };
 
+const secondExercise = {
+  ...exercise,
+  id: 'e2',
+  name: 'Crucifixo com halteres',
+  load: 12,
+};
+
 const training = {
   id: 't1',
   name: 'Treino A',
@@ -69,5 +76,65 @@ describe('execução do exercício', () => {
     }));
     expect(sessionStorage.getItem('load:p1:e1')).toBe('22.5');
     expect(await screen.findByText('Série 2 de 3')).toBeInTheDocument();
+  });
+
+  it('permite pular um exercício e continuar no próximo pendente', async () => {
+    const flexibleTraining = { ...training, exercises: [exercise, secondExercise] };
+    sessionStorage.setItem('active-training-progress', JSON.stringify({
+      id: 'p1',
+      training_id: 't1',
+      exercises: flexibleTraining.exercises,
+      completed_series: [],
+    }));
+    vi.mocked(api.get).mockResolvedValue({ data: flexibleTraining } as never);
+
+    render(
+      <MemoryRouter initialEntries={['/my-workouts/t1/exercises/e1']}>
+        <Routes>
+          <Route path="/my-workouts/:trainingId/exercises/:exerciseId" element={<ActiveExercise />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Pular por agora' }));
+
+    expect(await screen.findByRole('heading', { name: 'Crucifixo com halteres' })).toBeInTheDocument();
+    expect(api.post).not.toHaveBeenCalled();
+  });
+
+  it('permite escolher exercícios fora de ordem e finalizar com pendências', async () => {
+    const flexibleTraining = { ...training, exercises: [exercise, secondExercise] };
+    sessionStorage.setItem('active-training-progress', JSON.stringify({
+      id: 'p1',
+      training_id: 't1',
+      exercises: flexibleTraining.exercises,
+      completed_series: [],
+    }));
+    vi.mocked(api.get).mockResolvedValue({ data: flexibleTraining } as never);
+    vi.mocked(api.post).mockResolvedValue({ data: {} } as never);
+
+    render(
+      <MemoryRouter initialEntries={['/my-workouts/t1/exercises/e1']}>
+        <Routes>
+          <Route path="/my-workouts/:trainingId/exercises/:exerciseId" element={<ActiveExercise />} />
+          <Route path="/my-workouts" element={<h1>Meus treinos</h1>} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(await screen.findByRole('button', { name: /Exercícios · 0\/2/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fazer Crucifixo com halteres' }));
+    expect(await screen.findByRole('heading', { name: 'Crucifixo com halteres' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Exercícios · 0\/2/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Finalizar treino' }));
+    expect(await screen.findByText(/O que ficou pendente será registrado como não realizado/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Concluir treino' }));
+
+    await waitFor(() => expect(api.post).toHaveBeenCalledWith('/training-progress/finish', {
+      id: 'p1',
+      status: 'MODERADA',
+      feedback: undefined,
+    }));
   });
 });

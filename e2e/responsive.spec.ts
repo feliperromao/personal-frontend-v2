@@ -39,5 +39,10 @@ test('reproduz a hierarquia aprovada no treino ativo', async ({ page }) => {
   await page.goto('/my-workouts/t1/exercises/e1');
   await expect(page.getByRole('heading', { name: 'Supino inclinado' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Concluir série' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Pular por agora' })).toBeVisible();
+  await page.getByRole('button', { name: /Exercícios ·/ }).click();
+  await expect(page.getByRole('dialog', { name: 'Exercícios do treino' })).toBeVisible();
+  const dialogOverflows = await page.getByRole('dialog', { name: 'Exercícios do treino' }).evaluate((element) => element.scrollWidth > element.clientWidth);
+  expect(dialogOverflows).toBe(false);
   await page.screenshot({ path: '.impeccable/review/hero-repro.png', fullPage: true });
 });

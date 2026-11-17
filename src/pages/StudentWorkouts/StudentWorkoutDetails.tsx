@@ -7,6 +7,7 @@ import { Training, TrainingProgress } from '../../domain/types';
 import { usePwa } from '../../platform/PwaContext';
 import { tokens } from '../../theme';
 import api from '../@shared/api';
+import { findFirstPendingExercise, getExerciseProgress } from './workoutProgress';
 
 export default function StudentWorkoutDetails() {
   const { trainingId = '' } = useParams();
@@ -36,8 +37,9 @@ export default function StudentWorkoutDetails() {
 
   useEffect(() => { load(); }, [load]);
 
-  const firstExercisePath = (data: TrainingProgress | Training) => {
-    const exercise = data.exercises?.[0];
+  const firstExercisePath = (data: TrainingProgress | Training, activeProgress: TrainingProgress | null = null) => {
+    const exercises = data.exercises || [];
+    const exercise = activeProgress ? findFirstPendingExercise(exercises, activeProgress) || exercises[0] : exercises[0];
     return exercise ? `/my-workouts/${trainingId}/exercises/${exercise.id}` : `/my-workouts/${trainingId}`;
   };
 
@@ -65,7 +67,7 @@ export default function StudentWorkoutDetails() {
   const resume = () => {
     if (!progress) return;
     sessionStorage.setItem('active-training-progress', JSON.stringify(progress));
-    navigate(firstExercisePath(progress));
+    navigate(firstExercisePath(progress, progress));
   };
 
   const cancel = async () => {
@@ -111,16 +113,21 @@ export default function StudentWorkoutDetails() {
               </Box>
               <Divider />
               <Stack divider={<Divider flexItem />}>
-                {training.exercises?.map((exercise, index) => (
+                {training.exercises?.map((exercise, index) => {
+                  const exerciseProgress = getExerciseProgress(exercise, progress);
+                  return (
                   <Box key={exercise.id} sx={{ p: 2.5, display: 'grid', gridTemplateColumns: '44px 1fr auto', gap: 1.5, alignItems: 'center' }}>
-                    <Chip label={index + 1} variant="outlined" aria-label={`Exercício ${index + 1}`} />
+                    <Chip label={exerciseProgress.complete ? '✓' : index + 1} color={exerciseProgress.complete ? 'success' : 'default'} variant={exerciseProgress.complete ? 'filled' : 'outlined'} aria-label={`Exercício ${index + 1}${exerciseProgress.complete ? ' concluído' : ''}`} />
                     <Box minWidth={0}>
                       <Typography fontWeight={750}>{exercise.name}</Typography>
-                      <Typography variant="body2" color="text.secondary">{exercise.series} séries · descanso de {exercise.rest}s</Typography>
+                      <Typography variant="body2" color={exerciseProgress.complete ? 'success.main' : 'text.secondary'}>
+                        {progress ? `${exerciseProgress.completedSeries} de ${exercise.series} séries` : `${exercise.series} séries · descanso de ${exercise.rest}s`}
+                      </Typography>
                     </Box>
                     {progress && <Button component={Link} to={`/my-workouts/${trainingId}/exercises/${exercise.id}`} aria-label={`Abrir ${exercise.name}`}><ArrowForward /></Button>}
                   </Box>
-                ))}
+                  );
+                })}
               </Stack>
             </Paper>
           </>

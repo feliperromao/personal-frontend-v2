@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Add, Check, Close, Remove } from '@mui/icons-material';
+import { Add, Check, Close, FormatListNumbered, Remove, SkipNext } from '@mui/icons-material';
 import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormLabel, IconButton, InputAdornment, Paper, Radio, RadioGroup, Stack, TextField, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import Template from '../../components/Template';
@@ -8,6 +8,8 @@ import { usePwa } from '../../platform/PwaContext';
 import { tokens } from '../../theme';
 import api from '../@shared/api';
 import VideoCard from './VideoCard';
+import WorkoutExerciseNavigator from './WorkoutExerciseNavigator';
+import { findNextPendingExercise, getExerciseProgress, getWorkoutProgress } from './workoutProgress';
 
 const statuses: Array<{ value: FinishStatus; label: string }> = [
   { value: 'LEVE', label: 'Leve' },
@@ -38,6 +40,7 @@ export default function ActiveExercise() {
   const [feedback, setFeedback] = useState('');
   const [finishing, setFinishing] = useState(false);
   const [savingSeries, setSavingSeries] = useState(false);
+  const [exercisesOpen, setExercisesOpen] = useState(false);
 
   useEffect(() => {
     const beforeUnload = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = ''; };
@@ -85,8 +88,10 @@ export default function ActiveExercise() {
 
   const exerciseIndex = training?.exercises?.findIndex((item) => item.id === exerciseId) ?? -1;
   const exercise = exerciseIndex >= 0 ? training?.exercises?.[exerciseIndex] : undefined;
-  const nextExercise = exerciseIndex >= 0 ? training?.exercises?.[exerciseIndex + 1] : undefined;
   const allSeriesDone = Boolean(exercise && completedSeries >= exercise.series);
+  const exercises = useMemo(() => training?.exercises || [], [training?.exercises]);
+  const nextPendingExercise = useMemo(() => findNextPendingExercise(exercises, progress, exerciseId), [exerciseId, exercises, progress]);
+  const workoutSummary = useMemo(() => getWorkoutProgress(exercises, progress), [exercises, progress]);
 
   useEffect(() => {
     if (restSeconds <= 0) return;
@@ -139,8 +144,19 @@ export default function ActiveExercise() {
   };
 
   const continueWorkout = () => {
-    if (nextExercise) navigate(`/my-workouts/${trainingId}/exercises/${nextExercise.id}`);
+    if (nextPendingExercise) navigate(`/my-workouts/${trainingId}/exercises/${nextPendingExercise.id}`);
     else setFinishOpen(true);
+  };
+
+  const skipExercise = () => {
+    setRestSeconds(0);
+    if (nextPendingExercise) navigate(`/my-workouts/${trainingId}/exercises/${nextPendingExercise.id}`);
+    else setFinishOpen(true);
+  };
+
+  const openFinish = () => {
+    setExercisesOpen(false);
+    setFinishOpen(true);
   };
 
   const finish = async () => {
@@ -164,6 +180,11 @@ export default function ActiveExercise() {
         {error && <Alert severity="error">{error}</Alert>}
         {loading ? <Typography role="status">Carregando exercício…</Typography> : exercise ? (
           <>
+            <Stack direction="row" justifyContent="flex-end" sx={{ mb: 1 }}>
+              <Button startIcon={<FormatListNumbered />} onClick={() => setExercisesOpen(true)}>
+                Exercícios · {workoutSummary.completedExercises}/{workoutSummary.totalExercises}
+              </Button>
+            </Stack>
             <Box sx={{ position: 'relative', minHeight: { xs: 154, sm: 190 }, borderBottom: `1px solid ${tokens.color.line}`, pb: 2, mt: '-6px!important' }}>
               <Box component="svg" viewBox="0 0 320 210" aria-hidden="true" sx={{ position: 'absolute', right: -16, top: -68, width: { xs: '68%', sm: '52%' }, height: 220, color: tokens.color.line, opacity: 0.7, pointerEvents: 'none' }}>
                 <path d="M318 12C232 44 218 84 154 102S45 134 8 205" fill="none" stroke="currentColor" strokeWidth="1.2" />
@@ -172,7 +193,7 @@ export default function ActiveExercise() {
               </Box>
               <Typography component="h2" variant="h1" sx={{ maxWidth: { xs: '62%', sm: '70%' }, position: 'relative', zIndex: 1, fontSize: { xs: 'clamp(3rem, 13vw, 4rem)', sm: '4.75rem' }, transform: 'translateY(-10px)' }}>{exercise.name}</Typography>
               <Typography sx={{ mt: 1, color: 'text.secondary', fontSize: '1.15rem', fontWeight: 650 }}>Série {Math.min(completedSeries + 1, exercise.series)} de {exercise.series}</Typography>
-              <Typography aria-hidden="true" sx={{ position: 'absolute', right: 0, top: -34, color: '#8989A3', fontSize: { xs: '8rem', sm: '11rem' }, lineHeight: 1, fontWeight: 850, letterSpacing: '-0.04em', fontVariantNumeric: 'tabular-nums' }}>
+              <Typography aria-hidden="true" sx={{ position: 'absolute', right: 0, top: -34, color: '#8989A3', fontSize: { xs: '8rem', sm: '11rem' }, lineHeight: 1, fontWeight: 850, letterSpacing: '-0.04em', fontVariantNumeric: 'tabular-nums', pointerEvents: 'none' }}>
                 {String(exerciseIndex + 1).padStart(2, '0')}
               </Typography>
             </Box>
@@ -262,23 +283,50 @@ export default function ActiveExercise() {
               <VideoCard url={exercise.video} title={exercise.name} />
             )}
 
-            {nextExercise && allSeriesDone && (
+            {nextPendingExercise && allSeriesDone && (
               <Stack direction="row" alignItems="center" spacing={2} sx={{ mt: 2 }}>
                 <Typography aria-hidden="true" color="info.main" sx={{ pl: 1, pr: 2, borderRight: `1px solid ${tokens.color.muted}`, fontSize: '2.5rem', lineHeight: 1 }}>→</Typography>
-                <Box sx={{ minWidth: 0 }}><Typography color="text.secondary">A seguir</Typography><Typography variant="h4" noWrap sx={{ fontSize: '1.45rem' }}>{nextExercise.name}</Typography></Box>
+                <Box sx={{ minWidth: 0 }}><Typography color="text.secondary">Próximo pendente</Typography><Typography variant="h4" noWrap sx={{ fontSize: '1.45rem' }}>{nextPendingExercise.name}</Typography></Box>
               </Stack>
             )}
-            <Button variant="contained" size="large" disabled={savingSeries || (!allSeriesDone && !online)} onClick={allSeriesDone ? continueWorkout : completeSeries} sx={{ mt: { xs: restSeconds > 0 ? -1 : 2, md: 2 }, minHeight: 56, fontSize: '1.15rem', scrollMarginBottom: { xs: 'calc(var(--app-bottom-nav) + 16px)', md: 0 } }}>
-              {savingSeries ? 'Registrando série…' : allSeriesDone ? (nextExercise ? 'Próximo exercício' : 'Finalizar treino') : 'Concluir série'}
-            </Button>
+            <Stack spacing={1} sx={{ mt: { xs: restSeconds > 0 ? -1 : 2, md: 2 }, scrollMarginBottom: { xs: 'calc(var(--app-bottom-nav) + 16px)', md: 0 } }}>
+              <Button variant="contained" size="large" disabled={savingSeries || (!allSeriesDone && !online)} onClick={allSeriesDone ? continueWorkout : completeSeries} sx={{ minHeight: 56, fontSize: '1.15rem' }}>
+                {savingSeries ? 'Registrando série…' : allSeriesDone ? (nextPendingExercise ? 'Próximo exercício pendente' : 'Finalizar treino') : 'Concluir série'}
+              </Button>
+              {!allSeriesDone && (
+                <Button variant="text" startIcon={<SkipNext />} disabled={savingSeries} onClick={skipExercise} sx={{ minHeight: 48 }}>
+                  Pular por agora
+                </Button>
+              )}
+            </Stack>
           </>
         ) : !error && <Alert severity="error">Exercício não encontrado neste treino.</Alert>}
       </Stack>
+
+      <WorkoutExerciseNavigator
+        open={exercisesOpen}
+        exercises={exercises}
+        progress={progress}
+        currentExerciseId={exerciseId}
+        onClose={() => setExercisesOpen(false)}
+        onSelect={(selected) => {
+          setExercisesOpen(false);
+          navigate(`/my-workouts/${trainingId}/exercises/${selected.id}`);
+        }}
+        onFinish={openFinish}
+      />
 
       <Dialog open={finishOpen} onClose={() => !finishing && setFinishOpen(false)} fullWidth maxWidth="sm" aria-labelledby="finish-title">
         <DialogTitle id="finish-title">Como foi o treino?</DialogTitle>
         <DialogContent>
           <Stack spacing={3} sx={{ pt: 1 }}>
+            {workoutSummary.pendingExercises > 0 ? (
+              <Alert severity="warning">
+                Você concluiu {workoutSummary.completedSeries} de {workoutSummary.totalSeries} séries em {workoutSummary.completedExercises} de {workoutSummary.totalExercises} exercícios. O que ficou pendente será registrado como não realizado nesta execução.
+              </Alert>
+            ) : (
+              <Alert severity="success">Todos os exercícios e séries foram concluídos.</Alert>
+            )}
             <FormControl>
               <FormLabel id="intensity-label">Intensidade percebida</FormLabel>
               <RadioGroup aria-labelledby="intensity-label" value={status} onChange={(event) => setStatus(event.target.value as FinishStatus)}>
