@@ -1,0 +1,822 @@
+{
+  "tool": "comp-diff",
+  "version": 1,
+  "createdAt": "2026-11-17T18:36:44.357Z",
+  "label": "hero",
+  "comp": ".impeccable/mocks/active-workout-control-ledger.png",
+  "build": ".impeccable/review/hero-repro.png",
+  "spec": ".impeccable/build/spec.json",
+  "compSize": "852x1846",
+  "buildSize": "852x1846",
+  "align": "top",
+  "overall": 0.7882,
+  "verdict": "drift",
+  "scores": {
+    "overall": 0.7882,
+    "structure": 0.6246,
+    "color": 0.9284,
+    "colorIntersection": 0.8712,
+    "paletteMatch": 0.9593,
+    "detail": 0.75,
+    "detailRaw": 0.7656,
+    "detailAdded": 0.0313,
+    "bands": 1
+  },
+  "palette": {
+    "comp": [
+      {
+        "hex": "#f8f8f8",
+        "coverage": 0.8386
+      },
+      {
+        "hex": "#5717c8",
+        "coverage": 0.0593
+      },
+      {
+        "hex": "#090a17",
+        "coverage": 0.0494
+      },
+      {
+        "hex": "#b6b6cf",
+        "coverage": 0.0421
+      },
+      {
+        "hex": "#595c6b",
+        "coverage": 0.0071
+      },
+      {
+        "hex": "#080a30",
+        "coverage": 0.0035
+      }
+    ],
+    "build": [
+      {
+        "hex": "#f8f8f8",
+        "coverage": 0.8396
+      },
+      {
+        "hex": "#611bd3",
+        "coverage": 0.069
+      },
+      {
+        "hex": "#091527",
+        "coverage": 0.0483
+      },
+      {
+        "hex": "#c2c2d1",
+        "coverage": 0.0325
+      },
+      {
+        "hex": "#585c6c",
+        "coverage": 0.0055
+      },
+      {
+        "hex": "#487818",
+        "coverage": 0.005
+      }
+    ]
+  },
+  "regions": [
+    {
+      "id": "brand-mark",
+      "x": 0,
+      "y": 0,
+      "w": 0.2,
+      "h": 0.1,
+      "kind": "chrome",
+      "score": {
+        "overall": 0.7316,
+        "structure": 0.7168,
+        "color": 0.9385,
+        "colorIntersection": 0.9035,
+        "paletteMatch": 0.9574,
+        "detail": 0.5444,
+        "detailRaw": 0.6121,
+        "detailAdded": 0.1354,
+        "bands": 0.7333
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 37,
+          "y": 41,
+          "w": 133,
+          "h": 130
+        },
+        "build": {
+          "x": 36,
+          "y": 26,
+          "w": 134,
+          "h": 148
+        }
+      }
+    },
+    {
+      "id": "brand-name",
+      "x": 0.1631,
+      "y": 0.0228,
+      "w": 0.3662,
+      "h": 0.0293,
+      "kind": "text",
+      "score": {
+        "overall": 0.5135,
+        "structure": 0.3937,
+        "color": 0.8031,
+        "colorIntersection": 0.7619,
+        "paletteMatch": 0.8253,
+        "detail": 0.5032,
+        "detailRaw": 0.5814,
+        "detailAdded": 0.1563,
+        "bands": 0.4036
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 11,
+          "y": 8,
+          "w": 294,
+          "h": 36
+        },
+        "build": {
+          "x": 7,
+          "y": 0,
+          "w": 259,
+          "h": 40
+        }
+      }
+    },
+    {
+      "id": "workout-title",
+      "x": 0.0352,
+      "y": 0.1381,
+      "w": 0.331,
+      "h": 0.0618,
+      "kind": "text",
+      "score": {
+        "overall": 0.5714,
+        "structure": 0.3778,
+        "color": 0.7752,
+        "colorIntersection": 0.6272,
+        "paletteMatch": 0.8549,
+        "detail": 0.68,
+        "detailRaw": 0.7061,
+        "detailAdded": 0.0521,
+        "bands": 0.8667
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 9,
+          "y": 7,
+          "w": 261,
+          "h": 101
+        },
+        "build": {
+          "x": 9,
+          "y": 8,
+          "w": 273,
+          "h": 106
+        }
+      }
+    },
+    {
+      "id": "section-progress",
+      "x": 0,
+      "y": 0.1,
+      "w": 1,
+      "h": 0.1,
+      "kind": "chrome",
+      "score": {
+        "overall": 0.6924,
+        "structure": 0.5812,
+        "color": 0.8602,
+        "colorIntersection": 0.761,
+        "paletteMatch": 0.9136,
+        "detail": 0.5408,
+        "detailRaw": 0.6554,
+        "detailAdded": 0.2292,
+        "bands": 0.925
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 36,
+          "y": 20,
+          "w": 779,
+          "h": 164
+        },
+        "build": {
+          "x": 35,
+          "y": 30,
+          "w": 784,
+          "h": 154
+        }
+      }
+    },
+    {
+      "id": "exercise-name",
+      "x": 0.0352,
+      "y": 0.136,
+      "w": 0.4472,
+      "h": 0.1479,
+      "kind": "text",
+      "score": {
+        "overall": 0.618,
+        "structure": 0.4644,
+        "color": 0.8256,
+        "colorIntersection": 0.7029,
+        "paletteMatch": 0.8917,
+        "detail": 0.6359,
+        "detailRaw": 0.6567,
+        "detailAdded": 0.0417,
+        "bands": 0.84
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 9,
+          "y": 11,
+          "w": 362,
+          "h": 249
+        },
+        "build": {
+          "x": 9,
+          "y": 12,
+          "w": 372,
+          "h": 193
+        }
+      }
+    },
+    {
+      "id": "exercise-index",
+      "x": 0.635,
+      "y": 0.1311,
+      "w": 0.3415,
+      "h": 0.1625,
+      "kind": "text",
+      "score": {
+        "overall": 0.6253,
+        "structure": 0.6975,
+        "color": 0.7604,
+        "colorIntersection": 0.5905,
+        "paletteMatch": 0.8518,
+        "detail": 0.3096,
+        "detailRaw": 0.3721,
+        "detailAdded": 0.125,
+        "bands": 0.4
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 0,
+          "y": 0,
+          "w": 291,
+          "h": 300
+        },
+        "build": {
+          "x": 27,
+          "y": 4,
+          "w": 251,
+          "h": 194
+        }
+      }
+    },
+    {
+      "id": "series-summary",
+      "x": 0.0352,
+      "y": 0.1999,
+      "w": 0.4437,
+      "h": 0.052,
+      "kind": "text",
+      "score": {
+        "overall": 0.6005,
+        "structure": 0.4716,
+        "color": 0.7185,
+        "colorIntersection": 0.5304,
+        "paletteMatch": 0.8198,
+        "detail": 0.6297,
+        "detailRaw": 0.6714,
+        "detailAdded": 0.0833,
+        "bands": 0.9067
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 0,
+          "y": 0,
+          "w": 378,
+          "h": 96
+        },
+        "build": {
+          "x": 10,
+          "y": 3,
+          "w": 368,
+          "h": 84
+        }
+      }
+    },
+    {
+      "id": "exercise-cue",
+      "x": 0.0845,
+      "y": 0.3196,
+      "w": 0.8662,
+      "h": 0.0325,
+      "kind": "text",
+      "score": {
+        "overall": 0.6712,
+        "structure": 0.5581,
+        "color": 0.8675,
+        "colorIntersection": 0.8304,
+        "paletteMatch": 0.8874,
+        "detail": 0.6016,
+        "detailRaw": 0.6276,
+        "detailAdded": 0.0521,
+        "bands": 0.85
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 9,
+          "y": 8,
+          "w": 719,
+          "h": 45
+        },
+        "build": {
+          "x": 0,
+          "y": 9,
+          "w": 574,
+          "h": 42
+        }
+      }
+    },
+    {
+      "id": "load-label",
+      "x": 0.0563,
+      "y": 0.416,
+      "w": 0.2887,
+      "h": 0.0683,
+      "kind": "text",
+      "score": {
+        "overall": 0.4831,
+        "structure": 0.3226,
+        "color": 0.7868,
+        "colorIntersection": 0.6289,
+        "paletteMatch": 0.8719,
+        "detail": 0.4336,
+        "detailRaw": 0.4909,
+        "detailAdded": 0.1146,
+        "bands": 0.6
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 10,
+          "y": 10,
+          "w": 227,
+          "h": 108
+        },
+        "build": {
+          "x": 0,
+          "y": 25,
+          "w": 240,
+          "h": 101
+        }
+      }
+    },
+    {
+      "id": "load-value",
+      "x": 0.0563,
+      "y": 0.416,
+      "w": 0.2887,
+      "h": 0.0683,
+      "kind": "text",
+      "score": {
+        "overall": 0.4831,
+        "structure": 0.3226,
+        "color": 0.7868,
+        "colorIntersection": 0.6289,
+        "paletteMatch": 0.8719,
+        "detail": 0.4336,
+        "detailRaw": 0.4909,
+        "detailAdded": 0.1146,
+        "bands": 0.6
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 10,
+          "y": 10,
+          "w": 227,
+          "h": 108
+        },
+        "build": {
+          "x": 0,
+          "y": 25,
+          "w": 240,
+          "h": 101
+        }
+      }
+    },
+    {
+      "id": "repetitions-label",
+      "x": 0.5563,
+      "y": 0.416,
+      "w": 0.1338,
+      "h": 0.0618,
+      "kind": "text",
+      "score": {
+        "overall": 0.5129,
+        "structure": 0.5322,
+        "color": 0.76,
+        "colorIntersection": 0.5725,
+        "paletteMatch": 0.861,
+        "detail": 0.379,
+        "detailRaw": 0.4831,
+        "detailAdded": 0.2083,
+        "bands": 0
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 9,
+          "y": 9,
+          "w": 95,
+          "h": 96
+        },
+        "build": {
+          "x": 0,
+          "y": 23,
+          "w": 102,
+          "h": 90
+        }
+      }
+    },
+    {
+      "id": "repetitions-value",
+      "x": 0.5563,
+      "y": 0.416,
+      "w": 0.1338,
+      "h": 0.0618,
+      "kind": "text",
+      "score": {
+        "overall": 0.5129,
+        "structure": 0.5322,
+        "color": 0.76,
+        "colorIntersection": 0.5725,
+        "paletteMatch": 0.861,
+        "detail": 0.379,
+        "detailRaw": 0.4831,
+        "detailAdded": 0.2083,
+        "bands": 0
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 9,
+          "y": 9,
+          "w": 95,
+          "h": 96
+        },
+        "build": {
+          "x": 0,
+          "y": 23,
+          "w": 102,
+          "h": 90
+        }
+      }
+    },
+    {
+      "id": "set-progress",
+      "x": 0.0704,
+      "y": 0.5293,
+      "w": 0.8662,
+      "h": 0.071,
+      "kind": "control",
+      "score": {
+        "overall": 0.6851,
+        "structure": 0.6585,
+        "color": 0.8729,
+        "colorIntersection": 0.8078,
+        "paletteMatch": 0.9079,
+        "detail": 0.4165,
+        "detailRaw": 0.4633,
+        "detailAdded": 0.0938,
+        "bands": 0.2083
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 6,
+          "y": 10,
+          "w": 723,
+          "h": 121
+        },
+        "build": {
+          "x": 27,
+          "y": 20,
+          "w": 678,
+          "h": 111
+        }
+      }
+    },
+    {
+      "id": "rest-controls",
+      "x": 0,
+      "y": 0.6,
+      "w": 1,
+      "h": 0.2,
+      "kind": "chrome",
+      "score": {
+        "overall": 0.7209,
+        "structure": 0.6029,
+        "color": 0.942,
+        "colorIntersection": 0.8959,
+        "paletteMatch": 0.9669,
+        "detail": 0.6474,
+        "detailRaw": 0.7256,
+        "detailAdded": 0.1563,
+        "bands": 0.75
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 30,
+          "y": 0,
+          "w": 792,
+          "h": 369
+        },
+        "build": {
+          "x": 48,
+          "y": 0,
+          "w": 757,
+          "h": 369
+        }
+      }
+    },
+    {
+      "id": "next-label",
+      "x": 0.0998,
+      "y": 0.8397,
+      "w": 0.3005,
+      "h": 0.0601,
+      "kind": "text",
+      "score": {
+        "overall": 0.8267,
+        "structure": 0.8876,
+        "color": 0.958,
+        "colorIntersection": 0.9242,
+        "paletteMatch": 0.9762,
+        "detail": 0.4895,
+        "detailRaw": 0.4947,
+        "detailAdded": 0.0104,
+        "bands": 0.7
+      },
+      "verdict": "match",
+      "inkBox": {
+        "comp": {
+          "x": 0,
+          "y": 0,
+          "w": 256,
+          "h": 79
+        },
+        "build": {
+          "x": 0,
+          "y": 0,
+          "w": 256,
+          "h": 84
+        }
+      }
+    },
+    {
+      "id": "next-exercise",
+      "x": 0.0998,
+      "y": 0.8424,
+      "w": 0.8005,
+      "h": 0.058,
+      "kind": "text",
+      "score": {
+        "overall": 0.6723,
+        "structure": 0.7877,
+        "color": 0.6905,
+        "colorIntersection": 0.4212,
+        "paletteMatch": 0.8355,
+        "detail": 0.517,
+        "detailRaw": 0.5482,
+        "detailAdded": 0.0625,
+        "bands": 0.2833
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 0,
+          "y": 0,
+          "w": 682,
+          "h": 74
+        },
+        "build": {
+          "x": 0,
+          "y": 0,
+          "w": 682,
+          "h": 79
+        }
+      }
+    },
+    {
+      "id": "primary-action",
+      "x": 0.0282,
+      "y": 0.8424,
+      "w": 0.9437,
+      "h": 0.058,
+      "kind": "control",
+      "score": {
+        "overall": 0.7112,
+        "structure": 0.7818,
+        "color": 0.7038,
+        "colorIntersection": 0.4496,
+        "paletteMatch": 0.8407,
+        "detail": 0.5653,
+        "detailRaw": 0.5913,
+        "detailAdded": 0.0521,
+        "bands": 0.3333
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 0,
+          "y": 0,
+          "w": 804,
+          "h": 107
+        },
+        "build": {
+          "x": 0,
+          "y": 0,
+          "w": 804,
+          "h": 107
+        }
+      }
+    },
+    {
+      "id": "bottom-navigation",
+      "x": 0,
+      "y": 0.9,
+      "w": 1,
+      "h": 0.1,
+      "kind": "chrome",
+      "score": {
+        "overall": 0.7139,
+        "structure": 0.7168,
+        "color": 0.9571,
+        "colorIntersection": 0.9112,
+        "paletteMatch": 0.9818,
+        "detail": 0.5431,
+        "detailRaw": 0.5535,
+        "detailAdded": 0.0208,
+        "bands": 0.5867
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 12,
+          "y": 0,
+          "w": 828,
+          "h": 174
+        },
+        "build": {
+          "x": 35,
+          "y": 0,
+          "w": 783,
+          "h": 142
+        }
+      }
+    },
+    {
+      "id": "workouts-nav-label",
+      "x": 0.1702,
+      "y": 0.9615,
+      "w": 0.2113,
+      "h": 0.0195,
+      "kind": "text",
+      "score": {
+        "overall": 0.6768,
+        "structure": 0.5355,
+        "color": 0.8904,
+        "colorIntersection": 0.8375,
+        "paletteMatch": 0.9189,
+        "detail": 0.6064,
+        "detailRaw": 0.6689,
+        "detailAdded": 0.125,
+        "bands": 0.9556
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 8,
+          "y": 11,
+          "w": 165,
+          "h": 24
+        },
+        "build": {
+          "x": 0,
+          "y": 8,
+          "w": 160,
+          "h": 26
+        }
+      }
+    },
+    {
+      "id": "profile-nav-label",
+      "x": 0.6913,
+      "y": 0.9258,
+      "w": 0.0986,
+      "h": 0.0553,
+      "kind": "text",
+      "score": {
+        "overall": 0.6646,
+        "structure": 0.6318,
+        "color": 0.9414,
+        "colorIntersection": 0.8908,
+        "paletteMatch": 0.9687,
+        "detail": 0.4268,
+        "detailRaw": 0.5102,
+        "detailAdded": 0.1667,
+        "bands": 0.4933
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 8,
+          "y": 10,
+          "w": 69,
+          "h": 84
+        },
+        "build": {
+          "x": 14,
+          "y": 15,
+          "w": 70,
+          "h": 79
+        }
+      }
+    },
+    {
+      "id": "contour-field",
+      "x": 0.6,
+      "y": 0,
+      "w": 0.4,
+      "h": 0.4,
+      "kind": "chrome",
+      "score": {
+        "overall": 0.6666,
+        "structure": 0.7608,
+        "color": 0.9008,
+        "colorIntersection": 0.8289,
+        "paletteMatch": 0.9395,
+        "detail": 0.3005,
+        "detailRaw": 0.3422,
+        "detailAdded": 0.0833,
+        "bands": 0.6667
+      },
+      "verdict": "drift",
+      "inkBox": {
+        "comp": {
+          "x": 0,
+          "y": 208,
+          "w": 313,
+          "h": 530
+        },
+        "build": {
+          "x": 0,
+          "y": 22,
+          "w": 308,
+          "h": 716
+        }
+      }
+    }
+  ],
+  "files": {
+    "sideBySide": "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/side-by-side.png",
+    "heatmap": "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/heatmap.png",
+    "regionFiles": [
+      "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/regions/brand-mark.png",
+      "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/regions/brand-name.png",
+      "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/regions/workout-title.png",
+      "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/regions/section-progress.png",
+      "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/regions/exercise-name.png",
+      "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/regions/exercise-index.png",
+      "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/regions/series-summary.png",
+      "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/regions/exercise-cue.png",
+      "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/regions/load-label.png",
+      "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/regions/load-value.png",
+      "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/regions/repetitions-label.png",
+      "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/regions/repetitions-value.png",
+      "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/regions/set-progress.png",
+      "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/regions/rest-controls.png",
+      "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/regions/next-label.png",
+      "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/regions/next-exercise.png",
+      "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/regions/primary-action.png",
+      "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/regions/bottom-navigation.png",
+      "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/regions/workouts-nav-label.png",
+      "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/regions/profile-nav-label.png",
+      "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/regions/contour-field.png"
+    ]
+  }
+}

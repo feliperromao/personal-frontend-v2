@@ -1,0 +1,25 @@
+{
+  "regions": [
+    { "id": "brand-mark", "kind": "chrome", "grid": "A0:B0", "note": "three-beat vector brand mark", "codeDrawn": true },
+    { "id": "brand-name", "kind": "text", "grid": "B0:F0", "note": "compact MyPersonal.App wordmark" },
+    { "id": "workout-title", "kind": "text", "grid": "A0:F1", "note": "contextual workout title and muscle group" },
+    { "id": "section-progress", "kind": "chrome", "grid": "A1:J1", "note": "thin violet progress rail" },
+    { "id": "exercise-name", "kind": "text", "grid": "A1:F2", "note": "large current exercise heading" },
+    { "id": "exercise-index", "kind": "text", "grid": "G1:J2", "note": "structural checkpoint numeral 04" },
+    { "id": "series-summary", "kind": "text", "grid": "A2:E2", "note": "current set and total sets summary" },
+    { "id": "exercise-cue", "kind": "text", "grid": "A3:J3", "note": "movement instruction" },
+    { "id": "load-label", "kind": "text", "grid": "A4:D4", "note": "small load metric label" },
+    { "id": "load-value", "kind": "text", "grid": "A4:D4", "note": "large load value with kilogram unit" },
+    { "id": "repetitions-label", "kind": "text", "grid": "F4:J4", "note": "small repetition metric label" },
+    { "id": "repetitions-value", "kind": "text", "grid": "F4:H4", "note": "large repetition count value" },
+    { "id": "set-progress", "kind": "control", "grid": "A5:J5", "note": "four labeled stops; completed, active and upcoming states" },
+    { "id": "rest-controls", "kind": "chrome", "grid": "A6:J7", "note": "composite rest rail containing the countdown and two 10-second adjustment controls" },
+    { "id": "next-label", "kind": "text", "grid": "B7:D8", "note": "small upcoming exercise label" },
+    { "id": "next-exercise", "kind": "text", "grid": "B8:I8", "note": "upcoming exercise name" },
+    { "id": "primary-action", "kind": "control", "grid": "A8:J8", "note": "Concluir série button" },
+    { "id": "bottom-navigation", "kind": "chrome", "grid": "A9:J9", "note": "safe-area-aware student navigation" },
+    { "id": "workouts-nav-label", "kind": "text", "grid": "B9:E9", "note": "active workouts navigation label" },
+    { "id": "profile-nav-label", "kind": "text", "grid": "G9:I9", "note": "inactive profile navigation label" },
+    { "id": "contour-field", "kind": "chrome", "grid": "G0:J3", "note": "subtle route contours; decorative and aria-hidden", "codeDrawn": true }
+  ]
+}

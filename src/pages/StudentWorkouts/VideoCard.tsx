@@ -1,148 +1,159 @@
-import React from "react";
-import { Card, CardMedia, CardContent, Typography, Button, Box } from "@mui/material";
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { useMemo } from 'react';
+import { OpenInNew, PlayCircleOutline } from '@mui/icons-material';
+import { Alert, Box, Button, Stack, Typography } from '@mui/material';
+import { tokens } from '../../theme';
 
 interface VideoCardProps {
   url: string;
+  title?: string;
 }
 
-const VideoCard: React.FC<VideoCardProps> = ({ url }) => {
-  // Determina se a URL é do YouTube, iCloud ou Google Drive
-  const isYoutubeUrl = (url: string): boolean => {
-    return url.includes('youtube.com') || url.includes('youtu.be');
-  };
+export type VideoSource =
+  | { kind: 'iframe'; embedUrl: string; originalUrl: string; provider: string }
+  | { kind: 'file'; embedUrl: string; originalUrl: string; provider: string }
+  | { kind: 'external'; originalUrl: string; provider: string }
+  | { kind: 'unavailable' };
 
-  const isICloudUrl = (url: string): boolean => {
-    return url.includes('icloud.com');
-  };
+const youtubeHosts = new Set(['youtube.com', 'www.youtube.com', 'm.youtube.com', 'youtu.be', 'www.youtube-nocookie.com']);
+const driveHosts = new Set(['drive.google.com', 'docs.google.com']);
+const vimeoHosts = new Set(['vimeo.com', 'www.vimeo.com', 'player.vimeo.com']);
+const directVideoExtensions = /\.(mp4|webm|ogg|mov)$/i;
 
-  const isGoogleDriveUrl = (url: string): boolean => {
-    return url.includes('drive.google.com') || url.includes('docs.google.com');
-  };
+function validYouTubeId(value: string | null | undefined) {
+  return value && /^[a-zA-Z0-9_-]{11}$/.test(value) ? value : null;
+}
 
-  // Extrai o ID do vídeo do YouTube
-  const extractYouTubeVideoId = (url: string): string | null => {
-    const regex =
-      /(?:youtube\.com\/(?:.*v=|.*\/|.*embed\/|.*shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-    const match = url.match(regex);
-    return match ? match[1] : null;
+export function resolveVideoSource(rawUrl: string): VideoSource {
+  try {
+    const parsed = new URL(rawUrl.trim());
+    if (!['http:', 'https:'].includes(parsed.protocol)) return { kind: 'unavailable' };
+    const hostname = parsed.hostname.toLowerCase();
+    const parts = parsed.pathname.split('/').filter(Boolean);
+
+    if (youtubeHosts.has(hostname)) {
+      const candidate = hostname === 'youtu.be'
+        ? parts[0]
+        : parsed.pathname === '/watch'
+          ? parsed.searchParams.get('v')
+          : ['embed', 'shorts', 'live'].includes(parts[0])
+            ? parts[1]
+            : null;
+      const id = validYouTubeId(candidate);
+      if (id) {
+        return {
+          kind: 'iframe',
+          embedUrl: `https://www.youtube-nocookie.com/embed/${id}?rel=0`,
+          originalUrl: parsed.toString(),
+          provider: 'YouTube',
+        };
+      }
+    }
+
+    if (driveHosts.has(hostname)) {
+      const fileIndex = parts.indexOf('d');
+      const id = fileIndex >= 0 ? parts[fileIndex + 1] : parsed.searchParams.get('id');
+      if (id && /^[a-zA-Z0-9_-]+$/.test(id)) {
+        return {
+          kind: 'iframe',
+          embedUrl: `https://drive.google.com/file/d/${id}/preview`,
+          originalUrl: parsed.toString(),
+          provider: 'Google Drive',
+        };
+      }
+    }
+
+    if (vimeoHosts.has(hostname)) {
+      const id = [...parts].reverse().find((part) => /^\d+$/.test(part));
+      if (id) {
+        return {
+          kind: 'iframe',
+          embedUrl: `https://player.vimeo.com/video/${id}`,
+          originalUrl: parsed.toString(),
+          provider: 'Vimeo',
+        };
+      }
+    }
+
+    if (directVideoExtensions.test(parsed.pathname)) {
+      return { kind: 'file', embedUrl: parsed.toString(), originalUrl: parsed.toString(), provider: 'Arquivo de vídeo' };
+    }
+
+    return { kind: 'external', originalUrl: parsed.toString(), provider: hostname };
+  } catch {
+    return { kind: 'unavailable' };
+  }
+}
+
+export default function VideoCard({ url, title = 'exercício' }: VideoCardProps) {
+  const source = useMemo(() => resolveVideoSource(url), [url]);
+  const accessibleTitle = `Demonstração em vídeo: ${title}`;
+
+  if (source.kind === 'unavailable') {
+    return <Alert severity="warning">O endereço do vídeo é inválido. Avise seu personal para atualizar o exercício.</Alert>;
   }
 
-  // Extrai o ID do arquivo do Google Drive
-  const extractGoogleDriveFileId = (url: string): string | null => {
-    // Para URLs tipo: https://drive.google.com/file/d/{FILE_ID}/view
-    let regex = /\/file\/d\/([a-zA-Z0-9_-]+)(?:\/|$)/;
-    let match = url.match(regex);
-    
-    if (match) {
-      return match[1];
-    }
-    
-    // Para URLs tipo: https://drive.google.com/open?id={FILE_ID}
-    regex = /[?&]id=([a-zA-Z0-9_-]+)(?:&|$)/;
-    match = url.match(regex);
-    
-    return match ? match[1] : null;
+  if (source.kind === 'external') {
+    return (
+      <Alert
+        severity="info"
+        icon={<PlayCircleOutline />}
+        action={
+          <Button component="a" href={source.originalUrl} target="_blank" rel="noopener noreferrer" color="inherit" startIcon={<OpenInNew />}>
+            Abrir
+          </Button>
+        }
+      >
+        Este provedor não permite reprodução dentro do aplicativo. Abra o vídeo em uma nova aba.
+      </Alert>
+    );
   }
-  
-  // Renderiza o conteúdo com base no tipo de URL
-  const renderContent = () => {
-    if (isYoutubeUrl(url)) {
-      // Para YouTube, usar o embed padrão
-      return (
-        <CardMedia
-          component="iframe"
-          height="315"
-          src={`https://www.youtube.com/embed/${extractYouTubeVideoId(url)}`}
-          allowFullScreen
-        />
-      );
-    } else if (isICloudUrl(url)) {
-      // Para iCloud, mostrar uma visualização alternativa com botão
-      return (
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Vídeo do iCloud
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            O conteúdo do iCloud não pode ser incorporado diretamente por motivos de segurança.
-          </Typography>
-          <Box 
-            sx={{ 
-              bgcolor: '#f5f5f7', 
-              p: 2, 
-              mb: 2, 
-              borderRadius: 1,
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '200px',
-              border: '1px dashed #ccc',
-              backgroundImage: 'url(https://www.apple.com/v/icloud/b/images/overview/icloud_icon__er1ur1j3rqee_large_2x.jpg)',
-              backgroundSize: '64px',
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'center top 30px'
-            }}
-          >
-            <Box textAlign="center" sx={{ mt: 5 }}>
-              <Typography variant="body1" gutterBottom sx={{ fontWeight: 'medium', color: '#454545' }}>
-                Clique abaixo para visualizar o vídeo
-              </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                startIcon={<OpenInNewIcon />}
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                sx={{ mt: 1 }}
-              >
-                Abrir no iCloud
-              </Button>
-            </Box>
-          </Box>
-        </CardContent>
-      );
-    } else if (isGoogleDriveUrl(url)) {
-      // Para Google Drive, usar o embed padrão
-      return (
-        <CardMedia
-          component="iframe"
-          height="315"
-          src={`https://drive.google.com/file/d/${extractGoogleDriveFileId(url)}/preview`}
-          allowFullScreen
-        />
-      );
-    } else {
-      // Para URLs não reconhecidas
-      return (
-        <CardContent>
-          <Typography variant="body2" color="error">
-            Formato de vídeo não suportado
-          </Typography>
-          <Box mt={1}>
-            <Button
-              variant="outlined"
-              size="small"
-              startIcon={<OpenInNewIcon />}
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Abrir vídeo
-            </Button>
-          </Box>
-        </CardContent>
-      );
-    }
-  };
 
   return (
-    <Card sx={{ maxWidth: 600, margin: "auto", boxShadow: 3 }}>
-      {renderContent()}
-    </Card>
+    <Box component="section" aria-label={accessibleTitle} sx={{ mt: 2 }}>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" gap={2} sx={{ mb: 1 }}>
+        <Box minWidth={0}>
+          <Typography component="h3" variant="h5">Demonstração em vídeo</Typography>
+          <Typography variant="body2" color="text.secondary">Reprodução via {source.provider}</Typography>
+        </Box>
+        <Button
+          component="a"
+          href={source.originalUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          size="small"
+          startIcon={<OpenInNew />}
+          aria-label={`Abrir vídeo de ${title} em nova aba`}
+          sx={{ flexShrink: 0 }}
+        >
+          Abrir
+        </Button>
+      </Stack>
+      <Box sx={{ aspectRatio: '16 / 9', bgcolor: tokens.color.ink, borderRadius: 2, overflow: 'hidden' }}>
+        {source.kind === 'file' ? (
+          <Box
+            component="video"
+            src={source.embedUrl}
+            title={accessibleTitle}
+            controls
+            playsInline
+            preload="metadata"
+            sx={{ width: '100%', height: '100%', display: 'block', objectFit: 'contain' }}
+          >
+            Seu navegador não consegue reproduzir este vídeo.
+          </Box>
+        ) : (
+          <Box
+            component="iframe"
+            src={source.embedUrl}
+            title={accessibleTitle}
+            loading="lazy"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            sx={{ width: '100%', height: '100%', display: 'block', border: 0 }}
+          />
+        )}
+      </Box>
+    </Box>
   );
-};
-
-export default VideoCard;
+}

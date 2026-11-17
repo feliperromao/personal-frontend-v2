@@ -1,196 +1,65 @@
-import React, { useState, useEffect } from 'react';
-import { Exercise } from '../../domain/types';
-import { Save, Close } from '@mui/icons-material';
-import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControlLabel, Grid, TextField, useMediaQuery } from '@mui/material';
-import ExerciseType from './ExerciseType';
+import { useEffect, useMemo, useState } from 'react';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Alert, Checkbox, FormControlLabel, Grid, MenuItem, TextField } from '@mui/material';
+import { Controller, useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import Modal from '../../components/Modal';
+import { Exercise, ExerciseInput, exerciseCategories } from '../../domain/types';
 
-interface UserFormProps {
+interface ExerciseFormProps {
   exercise?: Exercise | null;
   isOpen: boolean;
-  onSubmit: (exercise: Exercise) => void;
+  onSubmit: (exercise: ExerciseInput) => Promise<void> | void;
   handleClose: () => void;
 }
 
-const ExerciseForm: React.FC<UserFormProps> = ({ exercise, isOpen, onSubmit, handleClose }) => {
-  const isMobile = useMediaQuery('(max-width:600px)');
-  const [formData, setFormData] = useState<Exercise>({
-    id: '',
-    name: '',
-    type: '',
-    instructions: '',
-    video: '',
-    rest: 30,
-    load: 0,
-    series: 4,
-    load_progress: false
-  });
+const emptyExercise: ExerciseInput = { name: '', type: '', instructions: '', video: '', rest: 30, load: 0, series: 4, load_progress: false };
 
-  useEffect(() => {
-    if (exercise) {
-      setFormData(exercise);
-    } else {
-      setFormData({
-        id: '',
-        name: '',
-        type: '',
-        instructions: '',
-        video: '',
-        rest: 30,
-        load: 0,
-        series: 4,
-        load_progress: false
-      })
-    }
-  }, [exercise]);
+export const toExerciseInput = (exercise?: Exercise | null): ExerciseInput => ({
+  name: exercise?.name ?? '',
+  type: exercise?.type ?? '',
+  instructions: exercise?.instructions ?? '',
+  video: exercise?.video ?? '',
+  rest: Number(exercise?.rest ?? 30),
+  load: Number(exercise?.load ?? 0),
+  series: Number(exercise?.series ?? 4),
+  load_progress: exercise?.load_progress ?? false,
+});
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    switch (name) {
-      case "rest":
-      case "load":
-      case "series":
-        return setFormData((prev) => ({ ...prev, [name]: convertToNumber(value) }));
-      default:
-        setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-  };
+const schema: yup.ObjectSchema<ExerciseInput> = yup.object({
+  name: yup.string().trim().min(3, 'Informe pelo menos 3 caracteres.').required('Informe o nome.'),
+  type: yup.string().required('Selecione o grupo muscular.'),
+  instructions: yup.string().trim().required('Explique como executar o exercício.'),
+  video: yup.string().url('Informe uma URL válida.').optional().default(''),
+  rest: yup.number().typeError('Informe um número.').min(0, 'O descanso não pode ser negativo.').required(),
+  load: yup.number().typeError('Informe um número.').min(0, 'A carga não pode ser negativa.').required(),
+  series: yup.number().typeError('Informe um número.').integer('Use um número inteiro.').min(1, 'Informe ao menos 1 série.').required(),
+  load_progress: yup.boolean().required(),
+}).noUnknown();
 
-  const handleChangeCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: checked }));
-  };
-
-  const setExerciseType = (type: string) => {
-    setFormData((prev) => ({ ...prev, type: type }));
-  }
-
-  const convertToNumber = (value: string): number => {
-    return +value
-  }
-
-  const handleSave = () => {
-    onSubmit(formData);
-    setFormData({ id: '', name: '', type: '', instructions: '', video: '', rest: 30, load: 0, series: 0, load_progress: false });
-    handleClose();
-  }
+export default function ExerciseForm({ exercise, isOpen, onSubmit, handleClose }: ExerciseFormProps) {
+  const [submitError, setSubmitError] = useState('');
+  const { control, handleSubmit, reset, formState: { errors, isSubmitting, isDirty } } = useForm<ExerciseInput>({ resolver: yupResolver(schema), defaultValues: emptyExercise });
+  useEffect(() => { if (isOpen) { reset(toExerciseInput(exercise)); setSubmitError(''); } }, [exercise, isOpen, reset]);
+  const close = () => { if (isDirty && !window.confirm('Descartar as alterações deste exercício?')) return; handleClose(); };
+  const submit = handleSubmit(async (values) => { setSubmitError(''); try { await onSubmit(values); } catch { setSubmitError('Não foi possível salvar. Revise os campos e tente novamente.'); } });
+  const numericFields = useMemo(() => [
+    { name: 'rest' as const, label: 'Descanso (segundos)' },
+    { name: 'load' as const, label: 'Carga (kg/placas)' },
+    { name: 'series' as const, label: 'Séries' },
+  ], []);
 
   return (
-    <Dialog
-      fullScreen={isMobile}
-      open={isOpen}
-      onClose={handleClose}
-      PaperProps={{
-        component: 'form',
-      }}
-    >
-      <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white' }}>
-        Cadastro de exercícios
-      </DialogTitle>
-
-      <DialogContent sx={{ paddingTop: '20px!important' }}>
-        <Grid container spacing={1}>
-          <Grid item xs={12} md={6}>
-            <TextField
-              required
-              margin="dense"
-              id="name"
-              name="name"
-              label="Nome"
-              fullWidth
-              variant="outlined"
-              value={formData.name}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <ExerciseType value={formData.type} onChange={setExerciseType} />
-          </Grid>
-        </Grid>
-
-        <TextField
-          id="instructions"
-          name="instructions"
-          label="Instruções"
-          multiline
-          fullWidth
-          rows={4}
-          margin="dense"
-          value={formData.instructions}
-          onChange={handleChange}
-        />
-        <TextField
-          margin="dense"
-          id="video"
-          name="video"
-          label="URL do video"
-          fullWidth
-          variant="outlined"
-          value={formData.video}
-          onChange={handleChange}
-        />
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <TextField
-              required
-              margin="dense"
-              type="number"
-              id="rest"
-              name="rest"
-              label="Descanço (segundos)"
-              fullWidth
-              variant="outlined"
-              value={formData.rest}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <TextField
-              required
-              margin="dense"
-              type="number"
-              id="load"
-              name="load"
-              label="Carga (kg/placas)"
-              fullWidth
-              variant="outlined"
-              value={formData.load}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <TextField
-              required
-              type="number"
-              id="series"
-              name="series"
-              label="Séries"
-              fullWidth
-              variant="outlined"
-              value={formData.series}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <FormControlLabel
-              label="Progressão de carga"
-              control={
-                <Checkbox
-                  id="load_progress"
-                  name="load_progress"
-                  value={formData.load_progress}
-                  checked={formData.load_progress}
-                  onChange={handleChangeCheckbox} />
-              }
-            />
-          </Grid>
-        </Grid>
-      </DialogContent>
-      <DialogActions>
-        <Button startIcon={<Close />} onClick={handleClose}>Cancelar</Button>
-        <Button variant="contained" startIcon={<Save />} onClick={handleSave}>Salvar</Button>
-      </DialogActions>
-    </Dialog>
+    <Modal open={isOpen} title={exercise ? 'Editar exercício' : 'Cadastrar exercício'} handleClose={close} handleSubmit={submit} submitting={isSubmitting}>
+      <Grid container spacing={2} sx={{ pt: 0.5 }}>
+        {submitError && <Grid item xs={12}><Alert severity="error">{submitError}</Alert></Grid>}
+        <Grid item xs={12} md={7}><Controller name="name" control={control} render={({ field }) => <TextField {...field} autoFocus label="Nome" required fullWidth error={Boolean(errors.name)} helperText={errors.name?.message} />} /></Grid>
+        <Grid item xs={12} md={5}><Controller name="type" control={control} render={({ field }) => <TextField {...field} select label="Grupo muscular" required fullWidth error={Boolean(errors.type)} helperText={errors.type?.message}>{exerciseCategories.map((item) => <MenuItem key={item.name} value={item.name}>{item.type}</MenuItem>)}</TextField>} /></Grid>
+        <Grid item xs={12}><Controller name="instructions" control={control} render={({ field }) => <TextField {...field} label="Instruções" required multiline minRows={3} fullWidth error={Boolean(errors.instructions)} helperText={errors.instructions?.message || 'Use frases curtas e diga o que o aluno deve observar.'} />} /></Grid>
+        <Grid item xs={12}><Controller name="video" control={control} render={({ field }) => <TextField {...field} label="URL do vídeo (opcional)" type="url" fullWidth error={Boolean(errors.video)} helperText={errors.video?.message || 'Aceita YouTube, Google Drive, Vimeo ou link direto para MP4/WebM.'} />} /></Grid>
+        {numericFields.map((item) => <Grid key={item.name} item xs={12} md={4}><Controller name={item.name} control={control} render={({ field }) => <TextField {...field} label={item.label} type="number" required fullWidth error={Boolean(errors[item.name])} helperText={errors[item.name]?.message} onChange={(event) => field.onChange(Number(event.target.value))} inputProps={{ min: 0 }} />} /></Grid>)}
+        <Grid item xs={12}><Controller name="load_progress" control={control} render={({ field }) => <FormControlLabel control={<Checkbox checked={field.value} onChange={(_, checked) => field.onChange(checked)} />} label="Este exercício usa progressão de carga" />} /></Grid>
+      </Grid>
+    </Modal>
   );
-};
-
-export default ExerciseForm;
+}

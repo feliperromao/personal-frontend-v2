@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 2,
+  "title": "MyPersonal.App — Ritmo de treino",
+  "generatedAt": "2026-11-17T00:00:00-03:00",
+  "tokens": {
+    "colors": {
+      "cadence-violet": "#5B21D1",
+      "cadence-violet-deep": "#4215A5",
+      "energy-lime": "#D1DC27",
+      "cool-canvas": "#F8F8F8",
+      "surface-white": "#FFFFFF",
+      "coaching-ink": "#0B1226",
+      "muted-slate": "#5D6475",
+      "route-line": "#D8DCE7",
+      "success-green": "#477A19",
+      "information-blue": "#2675D8",
+      "warning-amber": "#B76500",
+      "error-red": "#B42318"
+    },
+    "typography": {
+      "family": "Archivo Narrow Variable, Arial Narrow, Arial, sans-serif",
+      "display": "780 clamp(2.25rem, 8vw, 5rem)/0.98 Archivo Narrow Variable",
+      "headline": "760 clamp(1.75rem, 5vw, 3rem)/1.05 Archivo Narrow Variable",
+      "title": "730 1.35rem/1.2 Archivo Narrow Variable",
+      "body": "400 1rem/1.55 Archivo Narrow Variable",
+      "label": "700 0.9rem/1.5 Archivo Narrow Variable"
+    },
+    "spacing": { "xs": "4px", "sm": "8px", "md": "16px", "lg": "24px", "xl": "32px" },
+    "radii": { "sm": "8px", "md": "12px", "lg": "16px" }
+  },
+  "extensions": {
+    "colorMeta": {
+      "activeRule": "Violeta identifica somente ação ou estado ativo.",
+      "semanticRule": "Cor semântica sempre acompanha texto, ícone ou estado explícito."
+    },
+    "typographyMeta": {
+      "source": "self-hosted",
+      "subset": "latin",
+      "weights": "100 900",
+      "numerals": "tabular-nums para carga, repetição, ordem e tempo"
+    },
+    "shadows": { "focusSurface": "0 12px 32px rgba(11, 18, 38, 0.10)" },
+    "motion": {
+      "checkpoint": "uma pulsação ao avançar a série",
+      "reducedMotion": "sem pulsação; mudança de estado permanece explícita"
+    },
+    "breakpoints": { "mobile": 0, "tablet": 768, "desktop": 1024 },
+    "minimumTouchTarget": 44,
+    "accessibilityTarget": "WCAG 2.2 AA",
+    "approvedComp": ".impeccable/mocks/active-workout-control-ledger.png"
+  },
+  "components": [
+    {
+      "name": "Primary button",
+      "className": "ds-button-primary",
+      "html": "<button class=\"ds-button-primary\" type=\"button\">Concluir série</button>",
+      "css": ".ds-button-primary{min-height:44px;padding:10px 18px;border:0;border-radius:8px;background:#5B21D1;color:#fff;font:700 .9rem/1.5 'Archivo Narrow Variable',sans-serif}.ds-button-primary:hover{background:#4215A5}.ds-button-primary:focus-visible{outline:3px solid #2675D8;outline-offset:3px}"
+    },
+    {
+      "name": "Outlined button",
+      "className": "ds-button-outlined",
+      "html": "<button class=\"ds-button-outlined\" type=\"button\">Cancelar treino</button>",
+      "css": ".ds-button-outlined{min-height:44px;padding:10px 18px;border:1px solid #5B21D1;border-radius:8px;background:transparent;color:#4215A5;font:700 .9rem/1.5 'Archivo Narrow Variable',sans-serif}.ds-button-outlined:focus-visible{outline:3px solid #2675D8;outline-offset:3px}"
+    },
+    {
+      "name": "Search input",
+      "className": "ds-search",
+      "html": "<label class=\"ds-search\">Buscar <input type=\"search\" placeholder=\"Nome do aluno\"></label>",
+      "css": ".ds-search{display:grid;gap:4px;color:#0B1226;font:700 .9rem/1.5 'Archivo Narrow Variable',sans-serif}.ds-search input{min-height:44px;border:1px solid #D8DCE7;border-radius:12px;background:#fff;padding:8px 12px;color:#0B1226;font:400 1rem/1.55 'Archivo Narrow Variable',sans-serif}.ds-search input:focus-visible{outline:3px solid #2675D8;outline-offset:2px}"
+    },
+    {
+      "name": "Active navigation item",
+      "className": "ds-nav-active",
+      "html": "<a class=\"ds-nav-active\" href=\"#\" aria-current=\"page\">Meus treinos</a>",
+      "css": ".ds-nav-active{display:flex;align-items:center;min-height:44px;padding:8px 12px;border-radius:8px;background:#5B21D1;color:#fff;font:700 .9rem/1.5 'Archivo Narrow Variable',sans-serif;text-decoration:none}.ds-nav-active:focus-visible{outline:3px solid #2675D8;outline-offset:3px}"
+    },
+    {
+      "name": "Mobile collection card",
+      "className": "ds-card",
+      "html": "<article class=\"ds-card\"><h3>Treino A</h3><p>6 exercícios</p></article>",
+      "css": ".ds-card{padding:16px;border:1px solid #D8DCE7;border-radius:16px;background:#fff;color:#0B1226}.ds-card h3{margin:0;font:730 1.35rem/1.2 'Archivo Narrow Variable',sans-serif}.ds-card p{margin:8px 0 0;color:#5D6475;font:400 1rem/1.55 'Archivo Narrow Variable',sans-serif}"
+    },
+    {
+      "name": "Training cadence rail",
+      "className": "ds-cadence",
+      "html": "<ol class=\"ds-cadence\" aria-label=\"Progresso das séries\"><li class=\"done\">1</li><li class=\"current\" aria-current=\"step\">2</li><li>3</li></ol>",
+      "css": ".ds-cadence{display:flex;gap:12px;list-style:none;padding:0}.ds-cadence li{display:grid;place-items:center;width:44px;height:44px;border:1px solid #D8DCE7;border-radius:50%;color:#5D6475;font:700 .9rem/1 'Archivo Narrow Variable',sans-serif}.ds-cadence .done{border-color:#477A19;background:#477A19;color:#fff}.ds-cadence .current{border-color:#5B21D1;box-shadow:0 0 0 4px #F8F8F8,0 0 0 6px #5B21D1;background:#5B21D1;color:#fff}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Ritmo de treino",
+    "overview": "MyPersonal.App trata o treino como uma sequência legível de checkpoints. A interface é clara e operacional, mas tem identidade própria: tipografia estreita e firme, trilhos finos, numerais tabulares, marcos de progresso e a marca de três batidas tornam ordem, estado e próxima ação imediatamente reconhecíveis.",
+    "characteristics": [
+      "Cadência visível por trilhos, etapas e estados concluído/atual/próximo.",
+      "Base clara e fria com ink profundo e violeta energético reservado às ações e ao estado ativo.",
+      "Uma única família sans estreita, auto-hospedada e variável.",
+      "Controles grandes, foco evidente e cópia de recuperação em português."
+    ],
+    "rules": [
+      "Violeta identifica ação ou estado ativo; itens neutros não competem com ele.",
+      "Sucesso, informação, atenção e erro mantêm cor e texto próprios; cor nunca é o único sinal.",
+      "Barras fixas e FABs reservam espaço; nunca cobrem o último controle ou o conteúdo.",
+      "Coleções e cartões não acumulam borda e sombra; diálogo é a exceção deliberada."
+    ],
+    "dos": [
+      "Manter a próxima ação visível e nomeada durante o treino.",
+      "Usar skeleton, vazio, erro, offline e retry próximos da região afetada.",
+      "Manter controles interativos com pelo menos 44 × 44 px e foco visível.",
+      "Usar a marca de três batidas e os ícones Material em uma linguagem consistente."
+    ],
+    "donts": [
+      "Não introduzir halteres genéricos, logo do React, fotografias de banco de imagens ou clichês fitness como identidade.",
+      "Não usar cor como única indicação de estado ou esconder erro apenas em snackbar.",
+      "Não transformar toda informação em cartão, criar rolagem horizontal no celular ou sobrepor barras fixas ao conteúdo.",
+      "Não adicionar dark mode, agenda, push ou edição de perfil sem uma rodada de produto própria."
+    ]
+  }
+}

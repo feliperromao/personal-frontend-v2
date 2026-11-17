@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">MyPersonal.App</title>
+  <desc id="desc">Três marcas ascendentes representam ritmo e progresso</desc>
+  <rect width="512" height="512" rx="112" fill="#F7F8FB"/>
+  <path d="M74 364 150 158h92l-76 206H74Z" fill="#5B21D1"/>
+  <path d="M198 364 282 100h92l-84 264h-92Z" fill="#7A3CE0"/>
+  <path d="M326 364 406 48h72l-80 316h-72Z" fill="#0B1226"/>
+</svg>

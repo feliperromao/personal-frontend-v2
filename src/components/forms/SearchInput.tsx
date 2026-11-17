@@ -1,10 +1,8 @@
 import * as React from 'react';
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
-import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
-import DeleteIcon from '@mui/icons-material/Delete';
 
 interface SearchInputProps {
   handleChange: (value: string) => void;
@@ -27,23 +25,19 @@ const SearchInput: React.FC<SearchInputProps> = ({ handleChange, handleSearch, a
   return (
     <Paper
       component="form"
-      sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 600 }}
+      sx={{ p: 0.75, display: 'flex', flexWrap: { xs: 'wrap', sm: 'nowrap' }, gap: 0.5, alignItems: 'center', width: '100%', maxWidth: 760, border: 1, borderColor: 'divider' }}
       onSubmit={onSubmit}
     >
       <InputBase
         sx={{ ml: 1, flex: 1 }}
-        placeholder="Pesquisar"
-        inputProps={{ 'aria-label': 'pesquisar' }}
+        placeholder="Pesquisar por nome"
+        inputProps={{ 'aria-label': 'Pesquisar por nome' }}
         onChange={onChange}
       />
-      <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={handleSearch}>
+      <IconButton type="submit" sx={{ p: '10px' }} aria-label="Executar pesquisa">
         <SearchIcon />
       </IconButton>
       {append}
-      <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-      <IconButton color="inherit" sx={{ p: '10px' }} aria-label="directions">
-        <DeleteIcon />
-      </IconButton>
     </Paper>
   );
 }

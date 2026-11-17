@@ -1,6 +1,7 @@
 
 export interface User {
   id?: string;
+  type?: UserRole;
   name: string;
   email: string;
   password: string;
@@ -13,6 +14,8 @@ export interface User {
   blocked: boolean;
 }
 
+export type UserRole = 'PERSONAL' | 'STUDENT';
+
 export interface Exercise {
   id: string;
   name: string;
@@ -22,16 +25,70 @@ export interface Exercise {
   rest: number;
   load?: number;
   series: number;
+  repetitions?: number;
   load_progress: boolean;
 }
 
-export interface Training {
-  id?: string,
+export interface ExerciseInput {
+  name: string;
+  type: string;
+  instructions: string;
+  video: string;
+  rest: number;
+  load: number;
+  series: number;
+  load_progress: boolean;
+}
+
+export interface TrainingInput {
   name: string,
   description: string,
   show_to_student: boolean,
   student_id: string,
   exercises: Exercise[]
+}
+
+export interface Training extends TrainingInput {
+  id?: string,
+  personal_id?: string,
+}
+
+export type FinishStatus = 'LEVE' | 'MODERADA' | 'INTENSA' | 'MUITO_INTENSA';
+
+export interface CompletedSeries {
+  exercise_id: string;
+  series: number;
+  load: number;
+  completed_at: string;
+}
+
+export interface TrainingProgress {
+  id: string;
+  training_id: string;
+  name?: string;
+  description?: string;
+  student_id?: string;
+  personal_id?: string;
+  training?: Training;
+  exercises?: Exercise[];
+  status?: string;
+  started_at?: string;
+  finished_at?: string;
+  current_exercise_id?: string;
+  completed_exercises?: string[];
+  completed_series?: CompletedSeries[];
+  finish_feedback?: string;
+  finish_status?: FinishStatus;
+}
+
+export interface RouteMetadata {
+  path: string;
+  label: string;
+  roles: UserRole[];
+}
+
+export interface NavigationItem extends RouteMetadata {
+  icon: string;
 }
 
 export type ExerciseCategory = {

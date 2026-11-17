@@ -1,0 +1,1200 @@
+{
+  "tool": "comp-spec",
+  "version": 1,
+  "createdAt": "2026-11-17T18:36:40.950Z",
+  "comp": ".impeccable/mocks/active-workout-control-ledger.png",
+  "warnings": [
+    "region brand-mark: \"codeDrawn\": true set in the regions file (the painted-material refusal is overridden: code draws this region)",
+    "region contour-field: \"codeDrawn\": true set in the regions file (the painted-material refusal is overridden: code draws this region)"
+  ],
+  "uncoveredInkCells": [],
+  "compSize": {
+    "width": 852,
+    "height": 1846
+  },
+  "aspect": 0.4615,
+  "orientation": "portrait",
+  "palette": [
+    {
+      "hex": "#f8f8f8",
+      "coverage": 0.8415
+    },
+    {
+      "hex": "#5717c8",
+      "coverage": 0.0595
+    },
+    {
+      "hex": "#090a17",
+      "coverage": 0.0495
+    },
+    {
+      "hex": "#b6b6cf",
+      "coverage": 0.0423
+    },
+    {
+      "hex": "#595c6b",
+      "coverage": 0.0072
+    }
+  ],
+  "bands": [
+    {
+      "y": 0.0433,
+      "strength": 0.4658
+    },
+    {
+      "y": 0.0794,
+      "strength": 0.5465
+    },
+    {
+      "y": 0.1119,
+      "strength": 0.8848
+    },
+    {
+      "y": 0.1516,
+      "strength": 0.4441
+    },
+    {
+      "y": 0.1877,
+      "strength": 0.6208
+    },
+    {
+      "y": 0.2094,
+      "strength": 0.5743
+    },
+    {
+      "y": 0.2455,
+      "strength": 0.952
+    },
+    {
+      "y": 0.343,
+      "strength": 1
+    },
+    {
+      "y": 0.3718,
+      "strength": 0.2565
+    },
+    {
+      "y": 0.4224,
+      "strength": 0.4808
+    },
+    {
+      "y": 0.4729,
+      "strength": 0.4745
+    },
+    {
+      "y": 0.5632,
+      "strength": 0.5986
+    },
+    {
+      "y": 0.6065,
+      "strength": 0.3095
+    },
+    {
+      "y": 0.6787,
+      "strength": 0.4829
+    },
+    {
+      "y": 0.7401,
+      "strength": 0.8109
+    },
+    {
+      "y": 0.769,
+      "strength": 0.2516
+    },
+    {
+      "y": 0.8195,
+      "strength": 0.5839
+    },
+    {
+      "y": 0.8448,
+      "strength": 1
+    },
+    {
+      "y": 0.8809,
+      "strength": 0.3673
+    },
+    {
+      "y": 0.9025,
+      "strength": 1
+    },
+    {
+      "y": 0.9675,
+      "strength": 0.2701
+    },
+    {
+      "y": 0.9892,
+      "strength": 0.7916
+    }
+  ],
+  "regions": [
+    {
+      "id": "brand-mark",
+      "kind": "chrome",
+      "note": "three-beat vector brand mark",
+      "grid": "A0:B0",
+      "codeDrawn": true,
+      "box": {
+        "x": 0,
+        "y": 0,
+        "w": 0.2,
+        "h": 0.1
+      },
+      "px": {
+        "x": 0,
+        "y": 0,
+        "w": 170,
+        "h": 185
+      },
+      "aspect": 0.9189,
+      "palette": [
+        {
+          "hex": "#f8f8f8",
+          "coverage": 0.8932
+        },
+        {
+          "hex": "#090b15",
+          "coverage": 0.0604
+        },
+        {
+          "hex": "#4e15c6",
+          "coverage": 0.0305
+        },
+        {
+          "hex": "#656578",
+          "coverage": 0.0081
+        },
+        {
+          "hex": "#090b2b",
+          "coverage": 0.0078
+        }
+      ],
+      "detail": {
+        "energy": 12.9024
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null
+    },
+    {
+      "id": "brand-name",
+      "kind": "text",
+      "note": "compact MyPersonal.App wordmark",
+      "grid": "B0:F0",
+      "coverBox": {
+        "x": 0.1,
+        "y": 0,
+        "w": 0.5,
+        "h": 0.1
+      },
+      "box": {
+        "x": 0.1631,
+        "y": 0.0228,
+        "w": 0.3662,
+        "h": 0.0293
+      },
+      "px": {
+        "x": 139,
+        "y": 42,
+        "w": 312,
+        "h": 54
+      },
+      "aspect": 5.7778,
+      "palette": [
+        {
+          "hex": "#f7f7f7",
+          "coverage": 0.7558
+        },
+        {
+          "hex": "#0a123b",
+          "coverage": 0.1639
+        },
+        {
+          "hex": "#787c9a",
+          "coverage": 0.0319
+        },
+        {
+          "hex": "#aeb4c7",
+          "coverage": 0.0275
+        },
+        {
+          "hex": "#080b4b",
+          "coverage": 0.0209
+        }
+      ],
+      "detail": {
+        "energy": 59.4645
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null
+    },
+    {
+      "id": "workout-title",
+      "kind": "text",
+      "note": "contextual workout title and muscle group",
+      "grid": "A0:F1",
+      "coverBox": {
+        "x": 0,
+        "y": 0,
+        "w": 0.6,
+        "h": 0.2
+      },
+      "box": {
+        "x": 0.0352,
+        "y": 0.1381,
+        "w": 0.331,
+        "h": 0.0618
+      },
+      "px": {
+        "x": 30,
+        "y": 255,
+        "w": 282,
+        "h": 114
+      },
+      "aspect": 2.4737,
+      "palette": [
+        {
+          "hex": "#f7f8f8",
+          "coverage": 0.5667
+        },
+        {
+          "hex": "#080916",
+          "coverage": 0.3761
+        },
+        {
+          "hex": "#b1b3b8",
+          "coverage": 0.0272
+        },
+        {
+          "hex": "#46464d",
+          "coverage": 0.0187
+        },
+        {
+          "hex": "#080828",
+          "coverage": 0.0113
+        }
+      ],
+      "detail": {
+        "energy": 36.0476
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null
+    },
+    {
+      "id": "section-progress",
+      "kind": "chrome",
+      "note": "thin violet progress rail",
+      "grid": "A1:J1",
+      "box": {
+        "x": 0,
+        "y": 0.1,
+        "w": 1,
+        "h": 0.1
+      },
+      "px": {
+        "x": 0,
+        "y": 185,
+        "w": 852,
+        "h": 185
+      },
+      "aspect": 4.6054,
+      "palette": [
+        {
+          "hex": "#f8f8f8",
+          "coverage": 0.7613
+        },
+        {
+          "hex": "#b6b7d5",
+          "coverage": 0.1472
+        },
+        {
+          "hex": "#080815",
+          "coverage": 0.0771
+        },
+        {
+          "hex": "#4e0ec8",
+          "coverage": 0.0105
+        },
+        {
+          "hex": "#cccfd6",
+          "coverage": 0.0038
+        }
+      ],
+      "detail": {
+        "energy": 29.4578
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null
+    },
+    {
+      "id": "exercise-name",
+      "kind": "text",
+      "note": "large current exercise heading",
+      "grid": "A1:F2",
+      "coverBox": {
+        "x": 0,
+        "y": 0.1,
+        "w": 0.6,
+        "h": 0.2
+      },
+      "box": {
+        "x": 0.0352,
+        "y": 0.136,
+        "w": 0.4472,
+        "h": 0.1479
+      },
+      "px": {
+        "x": 30,
+        "y": 251,
+        "w": 381,
+        "h": 273
+      },
+      "aspect": 1.3956,
+      "palette": [
+        {
+          "hex": "#f8f8f8",
+          "coverage": 0.6586
+        },
+        {
+          "hex": "#080916",
+          "coverage": 0.2786
+        },
+        {
+          "hex": "#5c606c",
+          "coverage": 0.0308
+        },
+        {
+          "hex": "#33343a",
+          "coverage": 0.016
+        },
+        {
+          "hex": "#c7c9ce",
+          "coverage": 0.0159
+        }
+      ],
+      "detail": {
+        "energy": 40.0626
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null
+    },
+    {
+      "id": "exercise-index",
+      "kind": "text",
+      "note": "structural checkpoint numeral 04",
+      "grid": "G1:J2",
+      "coverBox": {
+        "x": 0.6,
+        "y": 0.1,
+        "w": 0.4,
+        "h": 0.2
+      },
+      "box": {
+        "x": 0.635,
+        "y": 0.1311,
+        "w": 0.3415,
+        "h": 0.1625
+      },
+      "px": {
+        "x": 541,
+        "y": 242,
+        "w": 291,
+        "h": 300
+      },
+      "aspect": 0.97,
+      "palette": [
+        {
+          "hex": "#b4b4cf",
+          "coverage": 0.5898
+        },
+        {
+          "hex": "#f7f7f8",
+          "coverage": 0.4102
+        }
+      ],
+      "detail": {
+        "energy": 5.4739
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null
+    },
+    {
+      "id": "series-summary",
+      "kind": "text",
+      "note": "current set and total sets summary",
+      "grid": "A2:E2",
+      "coverBox": {
+        "x": 0,
+        "y": 0.2,
+        "w": 0.5,
+        "h": 0.1
+      },
+      "box": {
+        "x": 0.0352,
+        "y": 0.1999,
+        "w": 0.4437,
+        "h": 0.052
+      },
+      "px": {
+        "x": 30,
+        "y": 369,
+        "w": 378,
+        "h": 96
+      },
+      "aspect": 3.9375,
+      "palette": [
+        {
+          "hex": "#f7f7f7",
+          "coverage": 0.4764
+        },
+        {
+          "hex": "#090916",
+          "coverage": 0.4624
+        },
+        {
+          "hex": "#c1c4c9",
+          "coverage": 0.0272
+        },
+        {
+          "hex": "#33343e",
+          "coverage": 0.0213
+        },
+        {
+          "hex": "#65656f",
+          "coverage": 0.0127
+        }
+      ],
+      "detail": {
+        "energy": 56.3417
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null
+    },
+    {
+      "id": "exercise-cue",
+      "kind": "text",
+      "note": "movement instruction",
+      "grid": "A3:J3",
+      "coverBox": {
+        "x": 0,
+        "y": 0.3,
+        "w": 1,
+        "h": 0.1
+      },
+      "box": {
+        "x": 0.0845,
+        "y": 0.3196,
+        "w": 0.8662,
+        "h": 0.0325
+      },
+      "px": {
+        "x": 72,
+        "y": 590,
+        "w": 738,
+        "h": 60
+      },
+      "aspect": 12.3,
+      "palette": [
+        {
+          "hex": "#f8f8f8",
+          "coverage": 0.7358
+        },
+        {
+          "hex": "#090b16",
+          "coverage": 0.1941
+        },
+        {
+          "hex": "#cbcdd5",
+          "coverage": 0.0259
+        },
+        {
+          "hex": "#090929",
+          "coverage": 0.0242
+        },
+        {
+          "hex": "#303241",
+          "coverage": 0.02
+        }
+      ],
+      "detail": {
+        "energy": 113.6353
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null
+    },
+    {
+      "id": "load-label",
+      "kind": "text",
+      "note": "small load metric label",
+      "grid": "A4:D4",
+      "coverBox": {
+        "x": 0,
+        "y": 0.4,
+        "w": 0.4,
+        "h": 0.1
+      },
+      "box": {
+        "x": 0.0563,
+        "y": 0.416,
+        "w": 0.2887,
+        "h": 0.0683
+      },
+      "px": {
+        "x": 48,
+        "y": 768,
+        "w": 246,
+        "h": 126
+      },
+      "aspect": 1.9524,
+      "palette": [
+        {
+          "hex": "#f7f7f8",
+          "coverage": 0.582
+        },
+        {
+          "hex": "#090918",
+          "coverage": 0.3889
+        },
+        {
+          "hex": "#1e2326",
+          "coverage": 0.0147
+        },
+        {
+          "hex": "#c0c4ca",
+          "coverage": 0.0094
+        },
+        {
+          "hex": "#6b6b76",
+          "coverage": 0.005
+        }
+      ],
+      "detail": {
+        "energy": 27.2655
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null
+    },
+    {
+      "id": "load-value",
+      "kind": "text",
+      "note": "large load value with kilogram unit",
+      "grid": "A4:D4",
+      "coverBox": {
+        "x": 0,
+        "y": 0.4,
+        "w": 0.4,
+        "h": 0.1
+      },
+      "box": {
+        "x": 0.0563,
+        "y": 0.416,
+        "w": 0.2887,
+        "h": 0.0683
+      },
+      "px": {
+        "x": 48,
+        "y": 768,
+        "w": 246,
+        "h": 126
+      },
+      "aspect": 1.9524,
+      "palette": [
+        {
+          "hex": "#f7f7f8",
+          "coverage": 0.582
+        },
+        {
+          "hex": "#090918",
+          "coverage": 0.3889
+        },
+        {
+          "hex": "#1e2326",
+          "coverage": 0.0147
+        },
+        {
+          "hex": "#c0c4ca",
+          "coverage": 0.0094
+        },
+        {
+          "hex": "#6b6b76",
+          "coverage": 0.005
+        }
+      ],
+      "detail": {
+        "energy": 27.2655
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null
+    },
+    {
+      "id": "repetitions-label",
+      "kind": "text",
+      "note": "small repetition metric label",
+      "grid": "F4:J4",
+      "coverBox": {
+        "x": 0.5,
+        "y": 0.4,
+        "w": 0.5,
+        "h": 0.1
+      },
+      "box": {
+        "x": 0.5563,
+        "y": 0.416,
+        "w": 0.1338,
+        "h": 0.0618
+      },
+      "px": {
+        "x": 474,
+        "y": 768,
+        "w": 114,
+        "h": 114
+      },
+      "aspect": 1,
+      "palette": [
+        {
+          "hex": "#f8f8f8",
+          "coverage": 0.5184
+        },
+        {
+          "hex": "#0a0a19",
+          "coverage": 0.4378
+        },
+        {
+          "hex": "#b5b6bb",
+          "coverage": 0.0174
+        },
+        {
+          "hex": "#8d9298",
+          "coverage": 0.0146
+        },
+        {
+          "hex": "#2f343a",
+          "coverage": 0.0118
+        }
+      ],
+      "detail": {
+        "energy": 12.9182
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null
+    },
+    {
+      "id": "repetitions-value",
+      "kind": "text",
+      "note": "large repetition count value",
+      "grid": "F4:H4",
+      "coverBox": {
+        "x": 0.5,
+        "y": 0.4,
+        "w": 0.3,
+        "h": 0.1
+      },
+      "box": {
+        "x": 0.5563,
+        "y": 0.416,
+        "w": 0.1338,
+        "h": 0.0618
+      },
+      "px": {
+        "x": 474,
+        "y": 768,
+        "w": 114,
+        "h": 114
+      },
+      "aspect": 1,
+      "palette": [
+        {
+          "hex": "#f8f8f8",
+          "coverage": 0.5184
+        },
+        {
+          "hex": "#0a0a19",
+          "coverage": 0.4378
+        },
+        {
+          "hex": "#b5b6bb",
+          "coverage": 0.0174
+        },
+        {
+          "hex": "#8d9298",
+          "coverage": 0.0146
+        },
+        {
+          "hex": "#2f343a",
+          "coverage": 0.0118
+        }
+      ],
+      "detail": {
+        "energy": 12.9182
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null
+    },
+    {
+      "id": "set-progress",
+      "kind": "control",
+      "note": "four labeled stops; completed, active and upcoming states",
+      "grid": "A5:J5",
+      "coverBox": {
+        "x": 0,
+        "y": 0.5,
+        "w": 1,
+        "h": 0.1
+      },
+      "box": {
+        "x": 0.0704,
+        "y": 0.5293,
+        "w": 0.8662,
+        "h": 0.071
+      },
+      "px": {
+        "x": 60,
+        "y": 977,
+        "w": 738,
+        "h": 131
+      },
+      "aspect": 5.6336,
+      "palette": [
+        {
+          "hex": "#f8f8f8",
+          "coverage": 0.8441
+        },
+        {
+          "hex": "#5515c6",
+          "coverage": 0.0519
+        },
+        {
+          "hex": "#5a7c08",
+          "coverage": 0.0497
+        },
+        {
+          "hex": "#659409",
+          "coverage": 0.0367
+        },
+        {
+          "hex": "#c0c0c8",
+          "coverage": 0.0177
+        }
+      ],
+      "detail": {
+        "energy": 34.9018
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null
+    },
+    {
+      "id": "rest-controls",
+      "kind": "chrome",
+      "note": "composite rest rail containing the countdown and two 10-second adjustment controls",
+      "grid": "A6:J7",
+      "box": {
+        "x": 0,
+        "y": 0.6,
+        "w": 1,
+        "h": 0.2
+      },
+      "px": {
+        "x": 0,
+        "y": 1108,
+        "w": 852,
+        "h": 369
+      },
+      "aspect": 2.3089,
+      "palette": [
+        {
+          "hex": "#f8f8f8",
+          "coverage": 0.9107
+        },
+        {
+          "hex": "#080817",
+          "coverage": 0.0419
+        },
+        {
+          "hex": "#4f0fc4",
+          "coverage": 0.0197
+        },
+        {
+          "hex": "#b5b9c8",
+          "coverage": 0.0173
+        },
+        {
+          "hex": "#585a6a",
+          "coverage": 0.0104
+        }
+      ],
+      "detail": {
+        "energy": 26.2484
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null
+    },
+    {
+      "id": "next-label",
+      "kind": "text",
+      "note": "small upcoming exercise label",
+      "grid": "B7:D8",
+      "coverBox": {
+        "x": 0.1,
+        "y": 0.7,
+        "w": 0.3,
+        "h": 0.2
+      },
+      "box": {
+        "x": 0.0998,
+        "y": 0.8397,
+        "w": 0.3005,
+        "h": 0.0601
+      },
+      "px": {
+        "x": 85,
+        "y": 1550,
+        "w": 256,
+        "h": 111
+      },
+      "aspect": 2.3063,
+      "palette": [
+        {
+          "hex": "#5818c8",
+          "coverage": 0.8434
+        },
+        {
+          "hex": "#f8f8f8",
+          "coverage": 0.1455
+        },
+        {
+          "hex": "#8c62d6",
+          "coverage": 0.0048
+        },
+        {
+          "hex": "#a184dc",
+          "coverage": 0.0035
+        },
+        {
+          "hex": "#edddf8",
+          "coverage": 0.0029
+        }
+      ],
+      "detail": {
+        "energy": 11.3293
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null
+    },
+    {
+      "id": "next-exercise",
+      "kind": "text",
+      "note": "upcoming exercise name",
+      "grid": "B8:I8",
+      "coverBox": {
+        "x": 0.1,
+        "y": 0.8,
+        "w": 0.8,
+        "h": 0.1
+      },
+      "box": {
+        "x": 0.0998,
+        "y": 0.8424,
+        "w": 0.8005,
+        "h": 0.058
+      },
+      "px": {
+        "x": 85,
+        "y": 1555,
+        "w": 682,
+        "h": 107
+      },
+      "aspect": 6.3738,
+      "palette": [
+        {
+          "hex": "#5818c8",
+          "coverage": 0.8636
+        },
+        {
+          "hex": "#f8f7f8",
+          "coverage": 0.1205
+        },
+        {
+          "hex": "#7543cd",
+          "coverage": 0.0073
+        },
+        {
+          "hex": "#decef5",
+          "coverage": 0.0044
+        },
+        {
+          "hex": "#936cd6",
+          "coverage": 0.0042
+        }
+      ],
+      "detail": {
+        "energy": 36.6982
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null
+    },
+    {
+      "id": "primary-action",
+      "kind": "control",
+      "note": "Concluir série button",
+      "grid": "A8:J8",
+      "coverBox": {
+        "x": 0,
+        "y": 0.8,
+        "w": 1,
+        "h": 0.1
+      },
+      "box": {
+        "x": 0.0282,
+        "y": 0.8424,
+        "w": 0.9437,
+        "h": 0.058
+      },
+      "px": {
+        "x": 24,
+        "y": 1555,
+        "w": 804,
+        "h": 107
+      },
+      "aspect": 7.514,
+      "palette": [
+        {
+          "hex": "#5818c8",
+          "coverage": 0.8619
+        },
+        {
+          "hex": "#f8f8f8",
+          "coverage": 0.1186
+        },
+        {
+          "hex": "#ecdef7",
+          "coverage": 0.0096
+        },
+        {
+          "hex": "#c8b3eb",
+          "coverage": 0.0061
+        },
+        {
+          "hex": "#7848ce",
+          "coverage": 0.0038
+        }
+      ],
+      "detail": {
+        "energy": 38.807
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null
+    },
+    {
+      "id": "bottom-navigation",
+      "kind": "chrome",
+      "note": "safe-area-aware student navigation",
+      "grid": "A9:J9",
+      "box": {
+        "x": 0,
+        "y": 0.9,
+        "w": 1,
+        "h": 0.1
+      },
+      "px": {
+        "x": 0,
+        "y": 1661,
+        "w": 852,
+        "h": 185
+      },
+      "aspect": 4.6054,
+      "palette": [
+        {
+          "hex": "#f7f8f8",
+          "coverage": 0.9317
+        },
+        {
+          "hex": "#5515c7",
+          "coverage": 0.0562
+        },
+        {
+          "hex": "#606472",
+          "coverage": 0.0048
+        },
+        {
+          "hex": "#dcd9e9",
+          "coverage": 0.0046
+        },
+        {
+          "hex": "#7444cb",
+          "coverage": 0.0027
+        }
+      ],
+      "detail": {
+        "energy": 24.3812
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null
+    },
+    {
+      "id": "workouts-nav-label",
+      "kind": "text",
+      "note": "active workouts navigation label",
+      "grid": "B9:E9",
+      "coverBox": {
+        "x": 0.1,
+        "y": 0.9,
+        "w": 0.4,
+        "h": 0.1
+      },
+      "box": {
+        "x": 0.1702,
+        "y": 0.9615,
+        "w": 0.2113,
+        "h": 0.0195
+      },
+      "px": {
+        "x": 145,
+        "y": 1775,
+        "w": 180,
+        "h": 36
+      },
+      "aspect": 5,
+      "palette": [
+        {
+          "hex": "#f8f7f8",
+          "coverage": 0.6781
+        },
+        {
+          "hex": "#5311c3",
+          "coverage": 0.1738
+        },
+        {
+          "hex": "#7544ca",
+          "coverage": 0.0584
+        },
+        {
+          "hex": "#946dd7",
+          "coverage": 0.0584
+        },
+        {
+          "hex": "#b69ce4",
+          "coverage": 0.0313
+        }
+      ],
+      "detail": {
+        "energy": 43.8534
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null
+    },
+    {
+      "id": "profile-nav-label",
+      "kind": "text",
+      "note": "inactive profile navigation label",
+      "grid": "G9:I9",
+      "coverBox": {
+        "x": 0.6,
+        "y": 0.9,
+        "w": 0.3,
+        "h": 0.1
+      },
+      "box": {
+        "x": 0.6913,
+        "y": 0.9258,
+        "w": 0.0986,
+        "h": 0.0553
+      },
+      "px": {
+        "x": 589,
+        "y": 1709,
+        "w": 84,
+        "h": 102
+      },
+      "aspect": 0.8235,
+      "palette": [
+        {
+          "hex": "#f7f7f7",
+          "coverage": 0.8477
+        },
+        {
+          "hex": "#5d6270",
+          "coverage": 0.1061
+        },
+        {
+          "hex": "#9699a5",
+          "coverage": 0.0284
+        },
+        {
+          "hex": "#c9cad3",
+          "coverage": 0.0179
+        }
+      ],
+      "detail": {
+        "energy": 10.2398
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null
+    },
+    {
+      "id": "contour-field",
+      "kind": "chrome",
+      "note": "subtle route contours; decorative and aria-hidden",
+      "grid": "G0:J3",
+      "codeDrawn": true,
+      "box": {
+        "x": 0.6,
+        "y": 0,
+        "w": 0.4,
+        "h": 0.4
+      },
+      "px": {
+        "x": 511,
+        "y": 0,
+        "w": 341,
+        "h": 738
+      },
+      "aspect": 0.4621,
+      "palette": [
+        {
+          "hex": "#f7f8f8",
+          "coverage": 0.768
+        },
+        {
+          "hex": "#b4b4ce",
+          "coverage": 0.2142
+        },
+        {
+          "hex": "#080915",
+          "coverage": 0.0117
+        },
+        {
+          "hex": "#505060",
+          "coverage": 0.0045
+        },
+        {
+          "hex": "#080828",
+          "coverage": 0.0017
+        }
+      ],
+      "detail": {
+        "energy": 9.5498
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null
+    }
+  ]
+}

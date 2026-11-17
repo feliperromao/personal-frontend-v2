@@ -1,30 +1,18 @@
 import React from 'react';
 import { Fab } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { makeStyles } from '@mui/styles';
-
-const useStyles = makeStyles({
-  fabButton: {
-    position: 'fixed',
-    bottom: 64,
-    right: 16,
-  },
-});
 
 interface FloatingButtonProps {
   onClick: () => void;
 }
 
 const FloatingButton: React.FC<FloatingButtonProps> = ({ onClick }) => {
-  const defaultClasses = useStyles();
-
   return (
     <Fab 
       color="primary" 
-      aria-label="add" 
-      className={ defaultClasses.fabButton }
+      aria-label="Adicionar"
       onClick={onClick}
-      style={{position: 'fixed'}}
+      sx={{ position: 'fixed', right: 16, bottom: { xs: 'calc(var(--app-bottom-nav) + env(safe-area-inset-bottom) + 16px)', md: 24 }, zIndex: 10 }}
     >
       <AddIcon />
     </Fab>

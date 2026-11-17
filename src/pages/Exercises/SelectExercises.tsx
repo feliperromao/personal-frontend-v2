@@ -1,12 +1,12 @@
 import * as React from 'react';
 import {
-  AppBar, Checkbox, Dialog, IconButton, InputAdornment, List,
-  ListItem, ListItemButton, ListItemIcon, ListItemText, Slide, TextField, Toolbar, Typography, CircularProgress, Pagination, MenuItem, Select, FormControl, InputLabel
+  Box, Checkbox, Dialog, IconButton, InputAdornment, List,
+  ListItem, ListItemButton, ListItemIcon, ListItemText, Slide, TextField, Typography, CircularProgress, Pagination, MenuItem, Select, FormControl, Stack
 } from '@mui/material';
-import { TransitionProps } from 'notistack';
+import { TransitionProps } from '@mui/material/transitions';
 import SearchIcon from "@mui/icons-material/Search";
 import { GridCloseIcon } from "@mui/x-data-grid";
-import { Exercise, exerciseCategories } from '../../domain/types';
+import { Exercise, ExerciseInput, exerciseCategories } from '../../domain/types';
 import api from '../@shared/api';
 import AddButton from '../../components/AddButton';
 import ExerciseForm from './ExerciseForm';
@@ -81,7 +81,7 @@ const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, selected, han
     setShowExerciseModal(false)
   }
 
-  const handleSaveExercise = async (exercise: Exercise) => {
+  const handleSaveExercise = async (exercise: ExerciseInput) => {
     await api.post(URL,
       {
         name: exercise.name,
@@ -106,11 +106,14 @@ const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, selected, han
 
   return (
     <Dialog fullScreen open={isOpen} onClose={handleClose} TransitionComponent={Transition}>
-      <AppBar color="primary" sx={{ position: 'fixed'}}>
-        <Toolbar>
-          <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
+      <Box sx={{ position: 'sticky', top: 0, zIndex: 2, bgcolor: 'background.paper', borderBottom: 1, borderColor: 'divider', p: 2, pt: 'calc(16px + env(safe-area-inset-top))' }}>
+        <Stack direction="row" alignItems="center" spacing={1} mb={1.5}>
+          <IconButton edge="start" onClick={handleClose} aria-label="Fechar seletor de exercícios">
             <GridCloseIcon />
           </IconButton>
+          <Typography variant="h5">Adicionar exercícios</Typography>
+        </Stack>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
           <TextField
             variant="outlined"
             placeholder="Pesquisar..."
@@ -124,14 +127,15 @@ const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, selected, han
                 </InputAdornment>
               ),
             }}
-            sx={{ backgroundColor: 'white', borderRadius: 1, ml: 2 }}
+            fullWidth
+            inputProps={{ 'aria-label': 'Pesquisar exercícios' }}
           />
-          <FormControl size="small" sx={{ ml: 2, minWidth: 150, backgroundColor: 'white', borderRadius: 1 }}>
+          <FormControl size="small" sx={{ minWidth: { sm: 190 } }}>
             <Select
               variant='outlined'
               value={typeFilter}
               onChange={(event) => setTypeFilter(event.target.value)}
-              displayEmpty
+              displayEmpty inputProps={{ 'aria-label': 'Filtrar por grupo muscular' }}
             >
               <MenuItem value="">Todos</MenuItem>
               {exerciseCategories.map((type) => (
@@ -139,13 +143,13 @@ const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, selected, han
               ))}
             </Select>
           </FormControl>
-        </Toolbar>
-      </AppBar>
+        </Stack>
+      </Box>
       {loading ? (
         <CircularProgress sx={{ display: 'block', margin: 'auto', mt: 3 }} />
       ) : (
         <>
-          <List sx={{marginTop: "50px"}}>
+          <List>
             {exercises.map((exercise) => (
               <ListItem key={exercise.id}>
                 <ListItemButton onClick={handleToggle(exercise.id)} dense>

@@ -1,178 +1,298 @@
-import * as React from 'react';
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import type { } from '@mui/x-data-grid/themeAugmentation';
-import CssBaseline from '@mui/material/CssBaseline';
-import MuiDrawer from '@mui/material/Drawer';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
-import Container from '@mui/material/Container';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import { AppBar } from './nav/AppBar';
-import { PersonalMenu, SecondaryNavgation, StudentMenu } from './nav/Navgation';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  Alert,
+  Avatar,
+  Box,
+  Button,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  IconButton,
+  LinearProgress,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Stack,
+  Toolbar,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
+import {
+  AccountCircleOutlined,
+  ArrowBack,
+  AddToHomeScreenOutlined,
+  FitnessCenterOutlined,
+  HomeOutlined,
+  LogoutOutlined,
+  PeopleOutline,
+  PersonOutline,
+  SportsGymnasticsOutlined,
+} from '@mui/icons-material';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useGlobalState } from '../GlobalState';
+import { UserRole } from '../domain/types';
+import { usePwa } from '../platform/PwaContext';
+import { tokens } from '../theme';
+import BrandMark from './BrandMark';
 import MySnackbar from './MySnackbar';
-import { Backdrop, CircularProgress, useMediaQuery } from '@mui/material';
-import { useGlobalState } from "../GlobalState";
-import PersonalBottomNav from './nav/PersonalBottomNav';
-import StudentBottomNav from './nav/StudentBottomNav';
 
 interface PageTemplateProps {
   pageName: string;
   children: React.ReactNode;
-  type?: "PERSONAL" | "STUDENT"
+  type?: UserRole;
+  fullBleed?: boolean;
 }
 
-const drawerWidth: number = 240;
+const drawerWidth = 264;
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }) => ({
-    '& .MuiDrawer-paper': {
-      position: 'relative',
-      whiteSpace: 'nowrap',
-      width: drawerWidth,
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-      boxSizing: 'border-box',
-      ...(!open && {
-        overflowX: 'hidden',
-        transition: theme.transitions.create('width', {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.leavingScreen,
-        }),
-        width: theme.spacing(7),
-        [theme.breakpoints.up('sm')]: {
-          width: theme.spacing(9),
-        },
-      }),
-    },
-  }),
-);
+const personalItems = [
+  { label: 'Início', path: '/', icon: <HomeOutlined /> },
+  { label: 'Alunos', path: '/students', icon: <PeopleOutline /> },
+  { label: 'Exercícios', path: '/exercises', icon: <FitnessCenterOutlined /> },
+  { label: 'Treinos', path: '/trainings', icon: <SportsGymnasticsOutlined /> },
+];
 
+const studentItems = [
+  { label: 'Meus treinos', path: '/my-workouts', icon: <SportsGymnasticsOutlined /> },
+  { label: 'Perfil', path: '/profile', icon: <PersonOutline /> },
+];
 
-const theme = createTheme({
-  mixins: {
-    MuiDataGrid: {
-      containerBackground: "#ddd"
-    },
-  },
-});
+function pathIsActive(current: string, target: string) {
+  if (target === '/') return current === '/';
+  return current === target || current.startsWith(`${target}/`);
+}
 
-const Template: React.FC<PageTemplateProps> = ({ children, pageName, type }) => {
-  const userData = localStorage.getItem("user");
-  const user = userData ? JSON.parse(userData) : null
-  const { loading, drawerOpen, setDrawerOpen } = useGlobalState();
-  const isMobile = useMediaQuery('(max-width:600px)');
-  const toggleDrawer = () => {
-    localStorage.setItem("drawerOpen", !drawerOpen ? "1": "")
-    setDrawerOpen(!drawerOpen);
+export default function Template({ children, pageName, type, fullBleed = false }: PageTemplateProps) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { loading } = useGlobalState();
+  const { online, canInstall, isIOS, isStandalone, dismissed, promptInstall, dismissInstall } = usePwa();
+  const [accountAnchor, setAccountAnchor] = useState<HTMLElement | null>(null);
+  const [installOpen, setInstallOpen] = useState(false);
+  const user = useMemo(() => {
+    try { return JSON.parse(localStorage.getItem('user') || '{}') as { name?: string; email?: string; type?: UserRole }; }
+    catch { return {}; }
+  }, []);
+  const role = type || user.type || 'PERSONAL';
+  const navItems = role === 'STUDENT' ? studentItems : personalItems;
+  const activeWorkoutHeader = isMobile && location.pathname.includes('/exercises/');
+
+  useEffect(() => {
+    const pending = localStorage.getItem('install-prompt-pending') === '1';
+    if (pending && !dismissed && !isStandalone && (canInstall || isIOS)) setInstallOpen(true);
+  }, [canInstall, dismissed, isIOS, isStandalone]);
+
+  const logout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('auth-token');
+    navigate('/login', { replace: true });
   };
 
-  return (
-    <ThemeProvider theme={theme}>
-      <Box sx={{ display: 'flex' }}>
-        <CssBaseline />
-        <AppBar position="absolute" open={drawerOpen}>
-          <Toolbar
-            sx={{
-              pr: '24px',
-            }}
-          >
-            {!isMobile && (
-              <IconButton
-                edge="start"
-                color="inherit"
-                aria-label="open drawer"
-                onClick={toggleDrawer}
-                sx={{
-                  marginRight: '36px',
-                  ...(drawerOpen && { display: 'none' }),
-                }}
-              >
-                <MenuIcon />
-              </IconButton>
-            )}
-            <Typography
-              component="h1"
-              variant="h6"
-              color="inherit"
-              noWrap
-              sx={{ flexGrow: 1 }}
-            >
-              {pageName}
-            </Typography>
-            <IconButton color="inherit">
-              <Badge badgeContent={0} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-          </Toolbar>
-        </AppBar>
+  const handleInstall = async () => {
+    if (isIOS && !canInstall) return;
+    const outcome = await promptInstall();
+    if (outcome === 'accepted') {
+      localStorage.removeItem('install-prompt-pending');
+      setInstallOpen(false);
+    }
+  };
 
-        {!isMobile && (
-          <Drawer variant="permanent" open={drawerOpen}>
-            <Toolbar
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'flex-end',
-                px: [1],
-                backgroundColor: 'secondary'
-              }}
-            >
-              <Typography
-                component="h1"
-                variant="h6"
-                color="primary"
-                noWrap
-                style={{ fontWeight: '800' }}
-              >MyPersonal.App</Typography>
-              <IconButton onClick={toggleDrawer}>
-                <ChevronLeftIcon />
-              </IconButton>
-            </Toolbar>
-            <Divider />
-            <List component="nav">
-              {type === "STUDENT" ? <StudentMenu /> : <PersonalMenu />}
-            </List>
-            <Divider />
-            <List component="nav">
-              <SecondaryNavgation />
-            </List>
-          </Drawer>
-        )}
+  const openInstall = () => {
+    setAccountAnchor(null);
+    setInstallOpen(true);
+  };
+
+  const accountButton = (
+    <IconButton
+      aria-label="Abrir menu da conta"
+      aria-controls={accountAnchor ? 'account-menu' : undefined}
+      aria-expanded={Boolean(accountAnchor)}
+      onClick={(event) => setAccountAnchor(event.currentTarget)}
+      sx={{ color: 'text.primary' }}
+    >
+      <Avatar sx={{ width: 34, height: 34, bgcolor: 'primary.main', fontSize: 15, fontWeight: 800 }}>
+        {(user.name || 'MP').split(' ').slice(0, 2).map((part) => part[0]).join('').toUpperCase()}
+      </Avatar>
+    </IconButton>
+  );
+
+  return (
+    <Box sx={{ minHeight: '100dvh', bgcolor: 'background.default', display: 'flex' }}>
+      <Box
+        component="a"
+        href="#main-content"
+        sx={{
+          position: 'fixed', top: 8, left: 8, zIndex: 2000, bgcolor: 'primary.main', color: 'primary.contrastText',
+          px: 2, py: 1, borderRadius: 1, transform: 'translateY(-160%)', '&:focus': { transform: 'translateY(0)' },
+        }}
+      >
+        Pular para o conteúdo
+      </Box>
+
+      {!isMobile && (
         <Box
-          component="main"
+          component="aside"
+          aria-label="Navegação principal"
           sx={{
-            backgroundColor: (theme) => theme.palette.mode === 'light' ? theme.palette.grey[100] : theme.palette.grey[900],
-            flexGrow: 1,
-            height: '100vh',
-            overflow: 'auto',
+            width: drawerWidth, position: 'fixed', inset: 0, right: 'auto', bgcolor: tokens.color.ink, color: '#FFFFFF',
+            px: 2, pt: 3, pb: 2, display: 'flex', flexDirection: 'column', zIndex: theme.zIndex.drawer,
           }}
         >
-          {!isMobile && <Toolbar />}
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            {children}
-          </Container>
+          <Box sx={{ px: 1, mb: 5 }}><BrandMark inverse /></Box>
+          <List component="nav" sx={{ display: 'grid', gap: 0.5 }}>
+            {navItems.map((item) => (
+              <ListItemButton
+                key={item.path}
+                component={Link}
+                to={item.path}
+                selected={pathIsActive(location.pathname, item.path)}
+                sx={{
+                  minHeight: 48, borderRadius: 1.5, color: '#FFFFFF',
+                  '& .MuiListItemIcon-root': { color: 'inherit', minWidth: 40 },
+                  '&.Mui-selected': { bgcolor: tokens.color.primary, '&:hover': { bgcolor: tokens.color.primaryDark } },
+                  '&:hover': { bgcolor: 'rgba(255,255,255,.09)' },
+                }}
+              >
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.label} primaryTypographyProps={{ fontWeight: 700 }} />
+              </ListItemButton>
+            ))}
+          </List>
+          <Box sx={{ mt: 'auto' }}>
+            <Divider sx={{ borderColor: 'rgba(255,255,255,.15)', mb: 2 }} />
+            <Button
+              fullWidth
+              startIcon={<AccountCircleOutlined />}
+              onClick={(event) => setAccountAnchor(event.currentTarget)}
+              sx={{ color: '#FFFFFF', justifyContent: 'flex-start' }}
+            >
+              Conta
+            </Button>
+          </Box>
+        </Box>
+      )}
+
+      <Box sx={{ flex: 1, minWidth: 0, ml: { md: `${drawerWidth}px` }, pb: { xs: 'calc(var(--app-bottom-nav) + env(safe-area-inset-bottom))', md: 0 } }}>
+        <Box
+          component="header"
+          sx={{
+            position: 'sticky', top: 0, zIndex: theme.zIndex.appBar, bgcolor: 'rgba(247,248,251,.96)',
+            borderBottom: `1px solid ${tokens.color.line}`, backdropFilter: 'saturate(150%) blur(10px)',
+            pt: { xs: 'env(safe-area-inset-top)', md: 0 },
+          }}
+        >
+          <Toolbar sx={{ minHeight: { xs: activeWorkoutHeader ? 54 : 62, md: 76 }, px: { xs: 2, md: 4 } }}>
+            {isMobile && <BrandMark compact={!activeWorkoutHeader} />}
+            {!activeWorkoutHeader && <Typography component="h1" variant="h5" sx={{ ml: isMobile ? 1.5 : 0, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {pageName}
+            </Typography>}
+            {activeWorkoutHeader && <Box sx={{ flex: 1 }} />}
+            {accountButton}
+          </Toolbar>
+          {activeWorkoutHeader && (
+            <Box sx={{ px: 2, pb: 1.25 }}>
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <Typography component="h1" variant="h5" noWrap sx={{ flex: 1 }}>{pageName}</Typography>
+                <IconButton aria-label="Voltar" onClick={() => navigate(-1)} sx={{ width: 36, height: 36, minWidth: 36, minHeight: 36 }}><ArrowBack fontSize="small" /></IconButton>
+              </Stack>
+              <Box aria-hidden="true" sx={{ mt: 1, height: 3, bgcolor: 'divider', overflow: 'hidden' }}>
+                <Box sx={{ width: '42%', height: '100%', bgcolor: 'primary.main' }} />
+              </Box>
+            </Box>
+          )}
+          {loading && <LinearProgress aria-label="Carregando dados" />}
+        </Box>
+
+        {!online && (
+          <Alert severity="warning" variant="filled" sx={{ borderRadius: 0 }}>
+            Você está sem conexão. Consulte o que já está na tela; ações e novos dados voltam quando a internet retornar.
+          </Alert>
+        )}
+
+        <Box component="main" id="main-content" tabIndex={-1}>
+          {fullBleed ? children : (
+            <Container maxWidth="xl" sx={{ py: { xs: 2.5, md: 4 }, px: { xs: 2, sm: 3, md: 4 } }}>
+              {children}
+            </Container>
+          )}
         </Box>
       </Box>
-      <Backdrop
-        sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
-        open={loading}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+
+      {isMobile && (
+        <Box
+          component="nav"
+          aria-label="Navegação principal"
+          sx={{
+            position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: theme.zIndex.appBar,
+            bgcolor: 'background.paper', borderTop: `1px solid ${tokens.color.line}`,
+            pb: 'env(safe-area-inset-bottom)', minHeight: 'var(--app-bottom-nav)',
+            display: 'grid', gridTemplateColumns: `repeat(${navItems.length}, minmax(0, 1fr))`,
+          }}
+        >
+          {navItems.map((item) => {
+            const active = pathIsActive(location.pathname, item.path);
+            return (
+              <Button
+                key={item.path}
+                component={Link}
+                to={item.path}
+                aria-current={active ? 'page' : undefined}
+                color={active ? 'primary' : 'inherit'}
+                sx={{ minWidth: 0, minHeight: 76, borderRadius: 0, flexDirection: 'column', gap: 0.25, fontSize: 16, fontWeight: 800, lineHeight: 1.1, px: 0.5, color: active ? 'primary.main' : 'text.secondary' }}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </Button>
+            );
+          })}
+        </Box>
+      )}
+
+      <Menu id="account-menu" anchorEl={accountAnchor} open={Boolean(accountAnchor)} onClose={() => setAccountAnchor(null)}>
+        <MenuItem component={Link} to="/profile" onClick={() => setAccountAnchor(null)}>
+          <ListItemIcon><PersonOutline /></ListItemIcon>Perfil
+        </MenuItem>
+        {!isStandalone && (canInstall || isIOS) && (
+          <MenuItem onClick={openInstall}>
+            <ListItemIcon><AddToHomeScreenOutlined /></ListItemIcon>Instalar aplicativo
+          </MenuItem>
+        )}
+        <Divider />
+        <MenuItem onClick={logout}>
+          <ListItemIcon><LogoutOutlined /></ListItemIcon>Sair
+        </MenuItem>
+      </Menu>
+
+      <Dialog open={installOpen} onClose={() => setInstallOpen(false)} fullWidth maxWidth="xs" aria-labelledby="install-title">
+        <DialogTitle id="install-title">Instalar MyPersonal.App</DialogTitle>
+        <DialogContent>
+          <Stack spacing={2}>
+            <Typography>Abra seus treinos mais rápido e use o shell do aplicativo mesmo quando a conexão cair.</Typography>
+            {isIOS && !canInstall && (
+              <Alert severity="info">
+                No Safari, toque em <strong>Compartilhar</strong> e depois em <strong>Adicionar à Tela de Início</strong>.
+              </Alert>
+            )}
+            {!online && <Alert severity="warning">Conecte-se à internet para concluir a instalação.</Alert>}
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => { dismissInstall(); setInstallOpen(false); }}>Agora não</Button>
+          {canInstall && <Button variant="contained" disabled={!online} onClick={handleInstall}>Instalar</Button>}
+          {isIOS && !canInstall && <Button variant="contained" onClick={() => setInstallOpen(false)}>Entendi</Button>}
+        </DialogActions>
+      </Dialog>
+
       <MySnackbar />
-      {isMobile && ( user?.type === "PERSONAL" ? <PersonalBottomNav /> : <StudentBottomNav />)}
-    </ThemeProvider>
+    </Box>
   );
 }
-
-export default Template;

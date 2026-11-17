@@ -1,0 +1,13 @@
+{
+  "prompt": "Composição mobile 390x844 do treino ativo MyPersonal.App na direção Ritmo de treino, usando uma topologia de livro de prova/checkpoints: cabeçalho contextual, numeral estrutural 04, Supino inclinado e Série 3 de 4, instrução Controle a descida por 3 segundos, métricas Carga 24 kg e Repetições 10, quatro etapas de série, descanso 01:12 com ajustes, próximo exercício, ação Concluir série e navegação Meus treinos/Perfil. Base clara, texto ink, violeta energético, acentos semânticos, linhas de percurso discretas, UI em português e WCAG 2.2 AA. Sem fotografias, clichês fitness, moldura de aparelho, glassmorphism ou cards excessivos.",
+  "approved": true,
+  "direction": "Ritmo de treino",
+  "viewport": "390x844",
+  "role": "student",
+  "selectionRationale": "A hierarquia separa com maior clareza contexto, ação atual, métricas e progresso; acomoda áreas de toque de 44 px e se adapta melhor ao shell administrativo e ao desktop.",
+  "implementationCorrections": [
+    "Reduzir a escala tipográfica para evitar clipping em 320 px",
+    "Usar preenchimento violeta sólido no CTA, sem gradiente",
+    "Manter o numeral 04 como informação redundante, nunca como única indicação de progresso"
+  ]
+}

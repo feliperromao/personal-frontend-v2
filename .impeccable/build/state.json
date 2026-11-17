@@ -1,0 +1,393 @@
+{
+  "tool": "build-phase",
+  "version": 2,
+  "startedAt": "2026-11-17T14:29:25.246Z",
+  "comp": ".impeccable/mocks/active-workout-control-ledger.png",
+  "direction": "01758f8e",
+  "breakpoint": "852x1846",
+  "artifact": null,
+  "phase": "responsive",
+  "phases": {
+    "comps": {
+      "status": "closed",
+      "openedAt": "2026-11-17T14:29:25.246Z",
+      "closedAt": "2026-11-17T14:34:11.835Z",
+      "attempts": 2,
+      "notes": [],
+      "gate": {
+        "ok": true,
+        "reasons": [],
+        "summary": "3 comps, 1 approved",
+        "approved": ".impeccable/mocks/active-workout-control-ledger.png",
+        "at": "2026-11-17T14:34:11.835Z"
+      },
+      "forced": null
+    },
+    "spec": {
+      "status": "closed",
+      "openedAt": "2026-11-17T14:34:11.859Z",
+      "closedAt": "2026-11-17T14:36:48.688Z",
+      "attempts": 2,
+      "notes": [],
+      "gate": {
+        "ok": true,
+        "reasons": [],
+        "summary": "24 regions, 0 plates, 16 text regions measured",
+        "at": "2026-11-17T14:36:48.688Z"
+      },
+      "forced": null
+    },
+    "plates": {
+      "status": "closed",
+      "openedAt": "2026-11-17T14:36:48.688Z",
+      "closedAt": "2026-11-17T14:36:52.494Z",
+      "attempts": 1,
+      "notes": [],
+      "gate": {
+        "ok": true,
+        "reasons": [],
+        "summary": "no plates owed",
+        "at": "2026-11-17T14:36:52.494Z"
+      },
+      "forced": null
+    },
+    "hero": {
+      "status": "closed",
+      "openedAt": "2026-11-17T14:36:52.494Z",
+      "closedAt": "2026-11-17T18:36:44.521Z",
+      "attempts": 4,
+      "notes": [],
+      "gate": {
+        "ok": true,
+        "reasons": [],
+        "summary": "hero 79% (drift)",
+        "score": 0.7882,
+        "verdict": "drift",
+        "report": ".impeccable/review/diff/hero/report.json",
+        "sideBySide": "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/hero/side-by-side.png",
+        "worst": [
+          "load-label drift 48%",
+          "load-value drift 48%",
+          "repetitions-label drift 51%"
+        ],
+        "worstIds": [
+          "load-label",
+          "load-value",
+          "repetitions-label"
+        ],
+        "worstCrops": [
+          {
+            "id": "load-label",
+            "verdict": "drift",
+            "score": {
+              "overall": 0.4831,
+              "structure": 0.3226,
+              "color": 0.7868,
+              "colorIntersection": 0.6289,
+              "paletteMatch": 0.8719,
+              "detail": 0.4336,
+              "detailRaw": 0.4909,
+              "detailAdded": 0.1146,
+              "bands": 0.6
+            },
+            "file": ".impeccable/review/diff/hero/regions/load-label.png"
+          },
+          {
+            "id": "load-value",
+            "verdict": "drift",
+            "score": {
+              "overall": 0.4831,
+              "structure": 0.3226,
+              "color": 0.7868,
+              "colorIntersection": 0.6289,
+              "paletteMatch": 0.8719,
+              "detail": 0.4336,
+              "detailRaw": 0.4909,
+              "detailAdded": 0.1146,
+              "bands": 0.6
+            },
+            "file": ".impeccable/review/diff/hero/regions/load-value.png"
+          },
+          {
+            "id": "repetitions-label",
+            "verdict": "drift",
+            "score": {
+              "overall": 0.5129,
+              "structure": 0.5322,
+              "color": 0.76,
+              "colorIntersection": 0.5725,
+              "paletteMatch": 0.861,
+              "detail": 0.379,
+              "detailRaw": 0.4831,
+              "detailAdded": 0.2083,
+              "bands": 0
+            },
+            "file": ".impeccable/review/diff/hero/regions/repetitions-label.png"
+          }
+        ],
+        "advisories": [
+          "(advisory, unchanged for 3+ attempts) text profile-nav-label: 1 line in the build, 2 in the comp; the measure (max-width, font-size, letter-spacing) wraps it differently, so the block is a different shape",
+          "(advisory, unchanged for 3+ attempts) text exercise-index: ink is #b9b9ca in the build, #f7f7f8 in the comp; use the comp's colour",
+          "(advisory, unchanged for 3+ attempts) chrome bottom-navigation: its rule sits 4px into the box in the comp and 16px in the build (+12px), so the strip is taller than the comp's; match the height, not only the position"
+        ],
+        "regionVerdicts": {
+          "brand-mark": "drift",
+          "brand-name": "drift",
+          "workout-title": "drift",
+          "section-progress": "drift",
+          "exercise-name": "drift",
+          "exercise-index": "drift",
+          "series-summary": "drift",
+          "exercise-cue": "drift",
+          "load-label": "drift",
+          "load-value": "drift",
+          "repetitions-label": "drift",
+          "repetitions-value": "drift",
+          "set-progress": "drift",
+          "rest-controls": "drift",
+          "next-label": "match",
+          "next-exercise": "drift",
+          "primary-action": "drift",
+          "bottom-navigation": "drift",
+          "workouts-nav-label": "drift",
+          "profile-nav-label": "drift",
+          "contour-field": "drift"
+        },
+        "at": "2026-11-17T18:36:44.519Z"
+      },
+      "forced": null,
+      "readingsSeen": {
+        "text brand-name: cap height 14.5px in the build, 27.3px in the comp (-47%); set font-size so the cap height renders at 27.3px": 1,
+        "text exercise-name: cap height 17.7px in the build, 82.8px in the comp (-79%); set font-size so the cap height renders at 82.8px (font-match ranked Khand 700 at 111px)": 1,
+        "text exercise-name: 1 line in the build, 2 in the comp; the measure (max-width, font-size, letter-spacing) wraps it differently, so the block is a different shape": 5,
+        "text exercise-cue: the face renders 31% heavier than the comp's (ink density 0.81 vs 0.62); drop a weight step or use the ranked face": 1,
+        "text workout-title: ink is #646e7e in the build, #080916 in the comp; use the comp's colour": 1,
+        "text exercise-cue: ink is #5828d8 in the build, #090b16 in the comp; use the comp's colour": 1,
+        "text load-label: ink is #5828d8 in the build, #090918 in the comp; use the comp's colour": 1,
+        "text load-value: ink is #5828d8 in the build, #090918 in the comp; use the comp's colour": 1,
+        "text repetitions-label: ink is #5828d8 in the build, #0a0a19 in the comp; use the comp's colour": 1,
+        "text repetitions-value: ink is #5828d8 in the build, #0a0a19 in the comp; use the comp's colour": 1,
+        "text exercise-cue: its first line starts 23px lower than in the comp (31px vs 8px into the region box); the spacing above it is too large": 1,
+        "text brand-name: cap height 9.1px in the build, 27.3px in the comp (-67%); set font-size so the cap height renders at 27.3px": 1,
+        "text exercise-name: cap height 58.3px in the build, 82.8px in the comp (-30%); set font-size so the cap height renders at 82.8px (font-match ranked Khand 700 at 111px)": 1,
+        "text workout-title: ink is #591dd5 in the build, #080916 in the comp; use the comp's colour": 1,
+        "text brand-name: its first line starts 36px lower than in the comp (44px vs 8px into the region box); the spacing above it is too large": 1,
+        "chrome bottom-navigation: its rule sits 4px into the box in the comp and 53px in the build (+49px), so the strip is taller than the comp's; match the height, not only the position": 1,
+        "text exercise-cue: cap height 18px in the build, 34.6px in the comp (-48%); set font-size so the cap height renders at 34.6px": 1,
+        "text profile-nav-label: cap height 17.4px in the build, 25.8px in the comp (-33%); set font-size so the cap height renders at 25.8px": 4,
+        "text profile-nav-label: 3 lines in the build, 2 in the comp; the measure (max-width, font-size, letter-spacing) wraps it differently, so the block is a different shape": 6,
+        "text brand-name: the face renders 38% heavier than the comp's (ink density 0.86 vs 0.63); drop a weight step or use the ranked face": 4,
+        "text exercise-cue: ink is #5c6879 in the build, #090b16 in the comp; use the comp's colour": 1,
+        "text profile-nav-label: ink is #090f23 in the build, #5d6270 in the comp; use the comp's colour": 4,
+        "text exercise-name: its first line starts 78px lower than in the comp (89px vs 11px into the region box); the spacing above it is too large": 1,
+        "text profile-nav-label: it starts 14px further right than in the comp": 4,
+        "text load-label: ink is #606577 in the build, #090918 in the comp; use the comp's colour": 3,
+        "text load-value: ink is #606577 in the build, #090918 in the comp; use the comp's colour": 3,
+        "text repetitions-label: ink is #848d96 in the build, #0a0a19 in the comp; use the comp's colour": 3,
+        "text repetitions-value: ink is #848d96 in the build, #0a0a19 in the comp; use the comp's colour": 3,
+        "text next-exercise: cap height 29.8px in the build, 38.9px in the comp (-23%); set font-size so the cap height renders at 38.9px": 13,
+        "text profile-nav-label: cap height 15.8px in the build, 25.8px in the comp (-39%); set font-size so the cap height renders at 25.8px": 2,
+        "text profile-nav-label: ink is #0b0f25 in the build, #5d6270 in the comp; use the comp's colour": 2,
+        "text profile-nav-label: its first line starts 26px lower than in the comp (36px vs 10px into the region box); the spacing above it is too large": 2,
+        "chrome bottom-navigation: its rule sits 4px into the box in the comp and 17px in the build (+13px), so the strip is taller than the comp's; match the height, not only the position": 4,
+        "text workouts-nav-label: ink is #e5e5e6 in the build, #5311c3 in the comp; use the comp's colour": 1,
+        "text profile-nav-label: cap height 16.2px in the build, 25.8px in the comp (-37%); set font-size so the cap height renders at 25.8px": 1,
+        "text profile-nav-label: its first line starts 22px lower than in the comp (32px vs 10px into the region box); the spacing above it is too large": 1,
+        "text profile-nav-label: 1 line in the build, 2 in the comp; the measure (max-width, font-size, letter-spacing) wraps it differently, so the block is a different shape": 19,
+        "text profile-nav-label: the face renders 33% lighter than the comp's (ink density 0.56 vs 0.83); raise a weight step or use the ranked face": 2,
+        "text next-exercise: its first line starts 29px lower than in the comp (29px vs 0px into the region box); the spacing above it is too large": 9,
+        "text next-exercise: it starts 232px further right than in the comp": 9,
+        "text exercise-index: ink is #b9b9ca in the build, #f7f7f8 in the comp; use the comp's colour": 10,
+        "control primary-action: its rule sits 5px into the box in the comp and 80px in the build (+75px), so the strip is taller than the comp's; match the height, not only the position": 1,
+        "control primary-action: its rule sits 5px into the box in the comp and 41px in the build (+36px), so the strip is taller than the comp's; match the height, not only the position": 1,
+        "chrome bottom-navigation: its rule sits 4px into the box in the comp and 16px in the build (+12px), so the strip is taller than the comp's; match the height, not only the position": 9
+      },
+      "records": 25,
+      "history": [
+        {
+          "at": "2026-11-17T15:21:15.527Z",
+          "score": 0.7292,
+          "worstIds": [
+            "rest-timer",
+            "series-summary",
+            "load-label"
+          ],
+          "regionVerdicts": {
+            "brand-mark": "drift",
+            "brand-name": "drift",
+            "workout-title": "contradicted",
+            "section-progress": "drift",
+            "exercise-name": "drift",
+            "exercise-index": "contradicted",
+            "series-summary": "contradicted",
+            "exercise-cue": "drift",
+            "load-label": "missing",
+            "load-value": "missing",
+            "repetitions-label": "missing",
+            "repetitions-value": "missing",
+            "set-progress": "drift",
+            "rest-label": "missing",
+            "rest-timer": "contradicted",
+            "decrease-rest": "missing",
+            "increase-rest": "missing",
+            "next-label": "missing",
+            "next-exercise": "drift",
+            "primary-action": "drift",
+            "bottom-navigation": "drift",
+            "workouts-nav-label": "drift",
+            "profile-nav-label": "drift",
+            "contour-field": "drift"
+          },
+          "artifactHash": "4419534733b6"
+        },
+        {
+          "at": "2026-11-17T15:22:48.519Z",
+          "score": 0.7276,
+          "worstIds": [
+            "rest-timer",
+            "rest-label",
+            "load-label"
+          ],
+          "regionVerdicts": {
+            "brand-mark": "drift",
+            "brand-name": "drift",
+            "workout-title": "drift",
+            "section-progress": "drift",
+            "exercise-name": "drift",
+            "exercise-index": "contradicted",
+            "series-summary": "drift",
+            "exercise-cue": "drift",
+            "load-label": "contradicted",
+            "load-value": "contradicted",
+            "repetitions-label": "drift",
+            "repetitions-value": "drift",
+            "set-progress": "drift",
+            "rest-label": "missing",
+            "rest-timer": "contradicted",
+            "decrease-rest": "missing",
+            "increase-rest": "missing",
+            "next-label": "missing",
+            "next-exercise": "drift",
+            "primary-action": "drift",
+            "bottom-navigation": "drift",
+            "workouts-nav-label": "drift",
+            "profile-nav-label": "drift",
+            "contour-field": "drift"
+          },
+          "artifactHash": "4419534733b6"
+        },
+        {
+          "at": "2026-11-17T18:36:44.519Z",
+          "score": 0.7882,
+          "worstIds": [
+            "load-label",
+            "load-value",
+            "repetitions-label"
+          ],
+          "regionVerdicts": {
+            "brand-mark": "drift",
+            "brand-name": "drift",
+            "workout-title": "drift",
+            "section-progress": "drift",
+            "exercise-name": "drift",
+            "exercise-index": "drift",
+            "series-summary": "drift",
+            "exercise-cue": "drift",
+            "load-label": "drift",
+            "load-value": "drift",
+            "repetitions-label": "drift",
+            "repetitions-value": "drift",
+            "set-progress": "drift",
+            "rest-controls": "drift",
+            "next-label": "match",
+            "next-exercise": "drift",
+            "primary-action": "drift",
+            "bottom-navigation": "drift",
+            "workouts-nav-label": "drift",
+            "profile-nav-label": "drift",
+            "contour-field": "drift"
+          },
+          "artifactHash": "4419534733b6"
+        }
+      ]
+    },
+    "sections": {
+      "status": "closed",
+      "openedAt": "2026-11-17T18:36:44.521Z",
+      "closedAt": "2026-11-17T18:36:49.342Z",
+      "attempts": 1,
+      "notes": [],
+      "gate": {
+        "ok": true,
+        "reasons": [],
+        "summary": "no mechanical gate",
+        "at": "2026-11-17T18:36:49.342Z"
+      },
+      "forced": null
+    },
+    "motion": {
+      "status": "closed",
+      "openedAt": "2026-11-17T18:36:49.342Z",
+      "closedAt": "2026-11-17T18:37:13.104Z",
+      "attempts": 1,
+      "notes": [],
+      "gate": {
+        "ok": true,
+        "reasons": [],
+        "summary": "no mechanical gate",
+        "at": "2026-11-17T18:37:13.104Z"
+      },
+      "forced": null
+    },
+    "responsive": {
+      "status": "open",
+      "openedAt": "2026-11-17T18:37:13.104Z",
+      "closedAt": null,
+      "attempts": 1,
+      "notes": [],
+      "gate": {
+        "ok": false,
+        "reasons": [
+          "the desktop capture (1440x900; the top 852x1846 rows scaled to the comp's width are compared, a full-page capture is fine) scores 52% against the comp, under 65%: the first viewport does not survive a common desktop width. The hero passed at 852x1846; the layout must hold from ~1280 up, not only at the comp's exact width (grid columns in fr / minmax, not fixed px that overflow and wrap).",
+          "at desktop width, region brand-mark is missing",
+          "at desktop width, region workout-title is missing",
+          "at desktop width, region section-progress is missing",
+          "at desktop width, region exercise-name is missing",
+          "at desktop width, region series-summary is missing",
+          "at desktop width, region exercise-cue is missing",
+          "at desktop width, region load-label is missing",
+          "at desktop width, region load-value is missing",
+          "at desktop width, region repetitions-label is missing",
+          "at desktop width, region repetitions-value is missing",
+          "at desktop width, region set-progress is missing",
+          "at desktop width, region rest-controls is missing",
+          "at desktop width, region next-label is missing",
+          "at desktop width, region next-exercise is missing",
+          "at desktop width, region primary-action is missing",
+          "at desktop width, region bottom-navigation is missing",
+          "at desktop width, region workouts-nav-label is missing",
+          "at desktop width, region profile-nav-label is missing",
+          "at desktop width, region contour-field is missing",
+          "at desktop width, region brand-name (text) is contradicted (structure 29%)",
+          "at desktop width, region exercise-index (text) is contradicted (structure 66%)"
+        ],
+        "summary": "desktop 52% (missing)",
+        "score": 0.5235,
+        "sideBySide": "/home/felipe/projects/personal-app/personal-frontend-v2/.impeccable/review/diff/desktop/side-by-side.png",
+        "at": "2026-11-17T18:38:08.920Z"
+      },
+      "forced": null
+    },
+    "review": {
+      "status": "pending",
+      "openedAt": null,
+      "closedAt": null,
+      "attempts": 0,
+      "notes": [],
+      "gate": null,
+      "forced": null
+    }
+  },
+  "finish": null,
+  "plates": {}
+}

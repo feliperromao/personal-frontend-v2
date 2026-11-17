@@ -1,109 +1,65 @@
-import { useEffect, useState } from "react";
-import { Box, Typography, TextField, Button, Container, Paper } from "@mui/material";
-import { useForm, Controller } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import Template from "../../components/Template";
-import { User } from "../../domain/types";
+import { AddToHomeScreenOutlined, LogoutOutlined, MailOutline, PersonOutline, PhoneOutlined } from '@mui/icons-material';
+import { Alert, Box, Button, Divider, List, ListItem, ListItemIcon, ListItemText, Paper, Stack, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import Template from '../../components/Template';
+import { User } from '../../domain/types';
+import { usePwa } from '../../platform/PwaContext';
+import { tokens } from '../../theme';
 
-interface ProfileForm {
-  name: string;
-  email: string;
-  password?: string;
-  phone?: string;
-}
+export default function Profile() {
+  const navigate = useNavigate();
+  const { canInstall, isIOS, isStandalone, online, promptInstall } = usePwa();
+  let user: Partial<User> = {};
+  try { user = JSON.parse(localStorage.getItem('user') || '{}'); } catch { user = {}; }
 
-const schema = yup.object().shape({
-  name: yup.string().required("Nome é obrigatório"),
-  email: yup.string().email("E-mail inválido").required("E-mail é obrigatório"),
-  password: yup.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
-  phone: yup.string().matches(/^\d{10,11}$/, "Número de telefone inválido"),
-});
-
-const Profile: React.FC = () => {
-  const [user, setUser] = useState<User | undefined>(undefined);
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<ProfileForm>({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      phone: "",
-    },
-  });
-
-  const [success, setSuccess] = useState(false);
-
-  const onSubmit = (data: ProfileForm) => {
-    setSuccess(true);
-    setTimeout(() => setSuccess(false), 3000);
+  const logout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('auth-token');
+    navigate('/login', { replace: true });
   };
 
-  useEffect(() => {
-    const userRaw = localStorage.getItem("user");
-    if (userRaw) {
-      const userData: User = JSON.parse(userRaw);
-      setUser(userData);
-      reset({...userData, password: ""});
-    }
-  }, [reset]);
-
   return (
-    <Template pageName="Perfil">
-      <Container maxWidth="sm">
-        <Paper elevation={3} sx={{ padding: 3, textAlign: "center" }}>
-          <Typography variant="h5" gutterBottom>
-            Dados Pessoais
-          </Typography>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <Controller
-                disabled
-                name="name"
-                control={control}
-                render={({ field }) => (
-                  <TextField {...field} label="Nome" fullWidth error={!!errors.name} helperText={errors.name?.message} />
-                )}
-              />
-              <Controller
-                disabled
-                name="email"
-                control={control}
-                render={({ field }) => (
-                  <TextField {...field} label="E-mail" fullWidth error={!!errors.email} helperText={errors.email?.message} />
-                )}
-              />
-              <Controller
-                disabled
-                name="password"
-                control={control}
-                render={({ field }) => (
-                  <TextField {...field} label="Senha" type="password" fullWidth error={!!errors.password} helperText={errors.password?.message} />
-                )}
-              />
-              <Controller
-                disabled
-                name="phone"
-                control={control}
-                render={({ field }) => (
-                  <TextField {...field} label="Telefone" fullWidth error={!!errors.phone} helperText={errors.phone?.message} />
-                )}
-              />
-              <Button disabled type="submit" variant="contained" color="primary">
-                Atualizar
-              </Button>
-            </Box>
-          </form>
-          {success && <Typography color="success.main">Dados atualizados com sucesso!</Typography>}
+    <Template pageName="Perfil" type={user.type}>
+      <Stack spacing={3} sx={{ maxWidth: 720 }}>
+        <Box>
+          <Typography variant="h2" component="h2">Sua conta</Typography>
+          <Typography color="text.secondary" sx={{ mt: 1 }}>Dados usados para identificar seu acesso ao MyPersonal.App.</Typography>
+        </Box>
+        <Paper sx={{ border: `1px solid ${tokens.color.line}` }}>
+          <List disablePadding>
+            <ListItem sx={{ py: 2.5 }}>
+              <ListItemIcon><PersonOutline /></ListItemIcon>
+              <ListItemText primary="Nome" secondary={user.name || 'Não informado'} />
+            </ListItem>
+            <Divider component="li" />
+            <ListItem sx={{ py: 2.5 }}>
+              <ListItemIcon><MailOutline /></ListItemIcon>
+              <ListItemText primary="E-mail" secondary={user.email || 'Não informado'} />
+            </ListItem>
+            {user.phone && <><Divider component="li" /><ListItem sx={{ py: 2.5 }}><ListItemIcon><PhoneOutlined /></ListItemIcon><ListItemText primary="Celular" secondary={user.phone} /></ListItem></>}
+          </List>
         </Paper>
-      </Container>
+
+        {!isStandalone && (canInstall || isIOS) && (
+          <Paper sx={{ p: 3, border: `1px solid ${tokens.color.line}` }}>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems={{ sm: 'center' }} justifyContent="space-between">
+              <Box>
+                <Typography variant="h5">Instale o aplicativo</Typography>
+                <Typography color="text.secondary" sx={{ mt: 0.5 }}>Abra seus treinos pela tela inicial e tenha o shell pronto em quedas de conexão.</Typography>
+              </Box>
+              {canInstall ? (
+                <Button startIcon={<AddToHomeScreenOutlined />} variant="contained" disabled={!online} onClick={() => promptInstall()}>Instalar</Button>
+              ) : (
+                <Alert severity="info" sx={{ maxWidth: 320 }}>No Safari: Compartilhar → Adicionar à Tela de Início.</Alert>
+              )}
+            </Stack>
+          </Paper>
+        )}
+
+        <Box>
+          <Button color="error" variant="outlined" startIcon={<LogoutOutlined />} onClick={logout}>Sair da conta</Button>
+        </Box>
+      </Stack>
     </Template>
   );
-};
-
-export default Profile;
+}

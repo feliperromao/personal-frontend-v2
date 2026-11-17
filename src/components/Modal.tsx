@@ -8,14 +8,15 @@ interface ModalProps {
   children: React.ReactNode;
   handleClose: () => void;
   handleSubmit: () => void;
+  submitting?: boolean;
 }
 
-const Modal: React.FC<ModalProps> = ({ title, open, children, handleClose, handleSubmit }) => {
+const Modal: React.FC<ModalProps> = ({ title, open, children, handleClose, handleSubmit, submitting = false }) => {
   const isMobile = useMediaQuery('(max-width:600px)');
   return (
     <Dialog
       open={open}
-      onClose={handleClose}
+      onClose={(_, reason) => { if (!submitting && reason !== 'backdropClick') handleClose(); }}
       fullScreen={isMobile}
       PaperProps={{
         component: 'form',
@@ -25,11 +26,11 @@ const Modal: React.FC<ModalProps> = ({ title, open, children, handleClose, handl
         },
       }}
     >
-      <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white' }}>{title}</DialogTitle>
+      <DialogTitle sx={{ position: 'sticky', top: 0, bgcolor: 'background.paper', zIndex: 1, borderBottom: 1, borderColor: 'divider' }}>{title}</DialogTitle>
       <DialogContent sx={{ paddingTop: '20px!important' }}>{children}</DialogContent>
-      <DialogActions>
-        <Button startIcon={<Close />} onClick={handleClose}>Cancelar</Button>
-        <Button startIcon={<Save />} variant="contained" type="submit">Salvar</Button>
+      <DialogActions sx={{ position: 'sticky', bottom: 0, bgcolor: 'background.paper', borderTop: 1, borderColor: 'divider', p: 2 }}>
+        <Button startIcon={<Close />} onClick={handleClose} disabled={submitting}>Cancelar</Button>
+        <Button startIcon={<Save />} variant="contained" type="submit" disabled={submitting}>{submitting ? 'Salvando…' : 'Salvar'}</Button>
       </DialogActions>
     </Dialog>
   )

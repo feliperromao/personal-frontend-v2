@@ -1,263 +1,128 @@
-import * as React from 'react';
-import { Box, Grid, MenuItem, Paper, Typography, IconButton, Tooltip } from "@mui/material";
-import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import TableRowsIcon from '@mui/icons-material/TableRows';
-import GridViewIcon from '@mui/icons-material/GridView';
-import { DataGrid, GridColDef, GridPaginationModel, GridRowId, GridRowSelectionModel } from '@mui/x-data-grid';
+import { useCallback, useEffect, useState } from 'react';
+import { DeleteOutline, EditOutlined, FormatListNumbered, NavigateBefore, NavigateNext, Replay } from '@mui/icons-material';
+import { Alert, Box, Button, IconButton, MenuItem, Paper, Skeleton, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { DataGrid, GridColDef, GridPaginationModel, GridRowId } from '@mui/x-data-grid';
 import DeleteDialog from '../../components/DeleteDialog';
 import FloatingButton from '../../components/FloatingButton';
-import Template from '../../components/Template';
-import { User } from '../../domain/types';
-import UserForm from './StudentsForm';
-import Breadcrumb from '../../components/nav/Breadcrumb';
-import { handleOpenNotification, SNACKBAR_TYPES } from '../../components/MySnackbar';
-import { useGlobalState } from "../../GlobalState";
-import get_erros_message from '../../erros/get_erros_message';
 import SearchInput from '../../components/forms/SearchInput';
 import ItemsMenu from '../../components/table/ItemsMenu';
-import { paginationModel } from '../@shared/pagination'
+import Template from '../../components/Template';
+import { User } from '../../domain/types';
+import get_erros_message from '../../erros/get_erros_message';
+import { tokens } from '../../theme';
 import api from '../@shared/api';
+import { paginationModel } from '../@shared/pagination';
 import ShowTrainings from './ShowTrainings';
-const URL = '/students'
+import UserForm from './StudentsForm';
+import { handleOpenNotification, SNACKBAR_TYPES } from '../../components/MySnackbar';
 
-const Students: React.FC = () => {
-  const [formDialogIsOpen, setOpenFormDialog] = React.useState(false);
-  const [deleteDialogIsOpen, setOpenDeleteDialog] = React.useState(false);
-  const [deleteUserId, setDeleteUserId] = React.useState<string | null>(null);
-  const [editingUser, setEditingUser] = React.useState<User | undefined>(undefined);
-  const [users, setUsers] = React.useState<User[]>([]);
-  const { setLoading } = useGlobalState();
-  const [selected, setSelected] = React.useState<GridRowSelectionModel>([])
-  const [searchQuery, setSearchQuery] = React.useState<string>('');
-  const [rowCount, setRowCount] = React.useState<number>(0);
-  const [currentPage, setCurrentPage] = React.useState<number>(0);
-  const [showModalTrainings, setShowModalTrainings] = React.useState(false)
-  const [studentShowTraining, setStudentShowTraining] = React.useState<User | undefined>(undefined);
-  const [viewMode, setViewMode] = React.useState<'table' | 'cards'>('table');
+const URL = '/students';
 
-  React.useEffect(() => {
-    const view = localStorage.getItem('viewMode')
-    if (view) {
-      setViewMode(view as 'table' | 'cards')
-    }
-    fetchUsers();
-  }, [currentPage]);
+export default function Students() {
+  const theme = useTheme();
+  const mobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [users, setUsers] = useState<User[]>([]);
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(0);
+  const [rowCount, setRowCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState<User>();
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [trainingStudent, setTrainingStudent] = useState<User>();
 
-  const fetchUsers = async () => {
-    const page = currentPage + 1
+  const fetchUsers = useCallback(async () => {
+    setLoading(true); setError('');
     try {
-      setLoading(true);
-      const response = await api.get(`${URL}?page=${page}&search=${searchQuery}`);
-      setUsers(response.data.data);
-      setRowCount(response.data.total_documents)
-    } catch (error) {
-      handleOpenNotification("Falha ao listar alunos!", SNACKBAR_TYPES.error);
-    } finally {
-      setLoading(false);
+      const response = await api.get(URL, { params: { page: page + 1, search } });
+      setUsers(response.data.data || []);
+      setRowCount(response.data.total_documents || 0);
+    } catch { setError('Não foi possível carregar os alunos. Verifique a conexão e tente novamente.'); }
+    finally { setLoading(false); }
+  }, [page, search]);
+
+  useEffect(() => { fetchUsers(); }, [fetchUsers]);
+
+  const edit = (id?: GridRowId) => {
+    setEditing(users.find((user) => user.id === id?.toString()));
+    setFormOpen(true);
+  };
+
+  const submit = async (user: User) => {
+    const payload = { ...user, weight: Number(user.weight), height: Number(user.height), monthly_value_brl: Number(user.monthly_value_brl), blocked: user.blocked || false };
+    try {
+      if (editing?.id) await api.put(`${URL}/${editing.id}`, payload);
+      else await api.post(URL, payload);
+      handleOpenNotification(editing ? 'Aluno atualizado com sucesso.' : 'Aluno cadastrado com sucesso.', SNACKBAR_TYPES.success);
+      setFormOpen(false); setEditing(undefined); await fetchUsers();
+    } catch (requestError: any) {
+      handleOpenNotification(`Não foi possível salvar o aluno. ${get_erros_message(requestError?.response?.data?.message || [])}`, SNACKBAR_TYPES.error);
+      throw requestError;
     }
   };
 
-  const handleEditClick = (id?: GridRowId) => {
-    const editUser = users.find(user => user.id == id?.toString())
-    if (editUser) {
-      const { id, name, email, password, birthdate, blocked, height, monthly_value_brl, phone, weight } = editUser
-      setEditingUser({ id, name, email, password, birthdate, blocked, height, monthly_value_brl, phone, weight } as User)
-      setOpenFormDialog(true)
+  const confirmDelete = async (confirm: boolean) => {
+    if (confirm && deleteId) {
+      try { await api.delete(`${URL}/${deleteId}`); await fetchUsers(); }
+      catch { handleOpenNotification('Não foi possível excluir o aluno.', SNACKBAR_TYPES.error); }
     }
-  }
-
-  const onPaginationModelChange = (data: GridPaginationModel) => {
-    const { page } = data;
-    setCurrentPage(page);
-    fetchUsers();
-  }
-
-  const closeModal = (): void => {
-    setOpenFormDialog(false)
-    setEditingUser(undefined);
-  };
-
-  const handleSubmit = async (user: User) => {
-    const userData = {
-      name: user.name,
-      email: user.email,
-      password: user.password,
-      confirm_password: user.confirm_password,
-      phone: user.phone,
-      birthdate: user.birthdate,
-      weight: Number(user.weight),
-      height: Number(user.height),
-      monthly_value_brl: Number(user.monthly_value_brl),
-      blocked: user.blocked || false,
-    }
-    if (editingUser && editingUser.id) {
-      delete user.id
-      await api.put(`${URL}/${editingUser.id}`, userData).then(() => {
-        handleOpenNotification("Aluno editado com sucesso!", SNACKBAR_TYPES.success);
-        fetchUsers();
-        closeModal();
-      }).catch(error => {
-        const error_messages = get_erros_message(error?.response?.data?.message || [])
-        handleOpenNotification("Falha ao editar aluno!" + error_messages, SNACKBAR_TYPES.error);
-      })
-    } else {
-      await api.post(URL, userData).then(() => {
-        handleOpenNotification("Aluno cadastrado com sucesso!", SNACKBAR_TYPES.success);
-        fetchUsers();
-        closeModal();
-      }).catch(error => {
-        const error_messages = get_erros_message(error?.response?.data?.message || [])
-        handleOpenNotification("Falha ao cadastrar novo aluno: " + error_messages, SNACKBAR_TYPES.error);
-      })
-    }
-  };
-
-  const handleDeleteUserClick = (id?: GridRowId) => {
-    if (id) {
-      setDeleteUserId(id?.toString())
-    }
-    setOpenDeleteDialog(true)
-  }
-
-  const handleShowTrainings = (id?: GridRowId) => {
-    const student = users.find(student => student.id == id)
-    if (student) {
-      setStudentShowTraining(student)
-      setShowModalTrainings(true)
-    }
-  }
-
-  const handleCloseTrainings = () => {
-    setShowModalTrainings(false)
-  }
-
-  const handleCloseDeleteDialog = async (confirm: boolean) => {
-    if (confirm && deleteUserId) {
-      api.delete(`${URL}/${deleteUserId}`)
-    }
-    setOpenDeleteDialog(false);
-    fetchUsers()
-  };
-
-  const StudentsCardView = () => {
-    return (
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 2, p: 2, height: 600, overflow: 'auto' }}>
-        {users.map((user) => (
-          <Paper key={user.id} sx={{ padding: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="h6" noWrap>{user.name}</Typography>
-              <Typography variant="body2" color="text.secondary" noWrap>{user.email}</Typography>
-              <Typography variant="body2">Mensalidade: R$ {user.monthly_value_brl ?? 0}</Typography>
-            </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 'auto', gap: 1 }}>
-              <IconButton size="small" onClick={() => handleShowTrainings(user?.id)}>
-                <FormatListNumberedIcon fontSize="small" />
-              </IconButton>
-              <IconButton size="small" onClick={() => handleEditClick(user?.id)}>
-                <EditIcon fontSize="small" />
-              </IconButton>
-              <IconButton size="small" onClick={() => handleDeleteUserClick(user?.id)}>
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            </Box>
-          </Paper>
-        ))}
-      </Box>
-    );
+    setDeleteId(null);
   };
 
   const columns: GridColDef[] = [
-    { field: 'name', headerName: 'Nome', width: 280 },
-    { field: 'email', headerName: 'E-mail', width: 250 },
-    { field: 'monthly_value_brl', headerName: 'Mensalidade', width: 150 },
-    {
-      field: 'actions',
-      type: 'actions',
-      headerName: 'Opções',
-      width: 100,
-      getActions: ({ id }) => {
-        return [
-          <ItemsMenu
-            children={
-              <MenuItem onClick={() => handleShowTrainings(id)} disableRipple>
-                <FormatListNumberedIcon />
-                Ver treinos
-              </MenuItem>}
-            rowId={id}
-            handleDelete={handleDeleteUserClick}
-            handleEdit={() => handleEditClick(id)}
-          />
-        ];
-      },
-    },
+    { field: 'name', headerName: 'Nome', flex: 1, minWidth: 220 },
+    { field: 'email', headerName: 'E-mail', flex: 1, minWidth: 220 },
+    { field: 'monthly_value_brl', headerName: 'Mensalidade', width: 150, valueFormatter: (value) => `R$ ${Number(value || 0).toFixed(2).replace('.', ',')}` },
+    { field: 'actions', type: 'actions', headerName: 'Ações', width: 90, getActions: ({ id }) => [
+      <ItemsMenu key={id} rowId={id} handleDelete={() => setDeleteId(id.toString())} handleEdit={() => edit(id)}>
+        <MenuItem onClick={() => setTrainingStudent(users.find((user) => user.id === id.toString()))}><FormatListNumbered sx={{ mr: 1 }} />Ver treinos</MenuItem>
+      </ItemsMenu>,
+    ] },
   ];
 
   return (
-    <Template pageName='Alunos' >
-      <React.Fragment>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <Breadcrumb uri='students' title='Alunos' />
+    <Template pageName="Alunos">
+      <Stack spacing={3}>
+        <Box>
+          <Typography component="h2" variant="h2">Alunos</Typography>
+          <Typography color="text.secondary" sx={{ mt: 1 }}>Gerencie acessos e fichas sem perder o contexto de cada aluno.</Typography>
+        </Box>
+        <SearchInput handleChange={setSearch} handleSearch={() => { setPage(0); fetchUsers(); }} />
+        {error && <Alert severity="error" action={<Button color="inherit" startIcon={<Replay />} onClick={fetchUsers}>Tentar novamente</Button>}>{error}</Alert>}
 
-            <Box display="flex" alignItems="center" gap={1} sx={{ margin: '16px 0' }}>
-              <SearchInput handleChange={setSearchQuery} handleSearch={fetchUsers} />
-              <Box display="flex" alignItems="center">
-                <Tooltip title="Visualização em tabela">
-                  <IconButton 
-                    color={viewMode === 'table' ? 'primary' : 'default'} 
-                    onClick={() => {
-                      setViewMode('table')
-                      localStorage.setItem('viewMode', 'table')
-                    }}
-                  >
-                    <TableRowsIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Visualização em cards">
-                  <IconButton 
-                    color={viewMode === 'cards' ? 'primary' : 'default'} 
-                    onClick={() => {
-                      setViewMode('cards')
-                      localStorage.setItem('viewMode', 'cards')
-                    }}
-                  >
-                    <GridViewIcon />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            </Box>
-            <Paper sx={{ height: 600, width: '100%' }}>
-              {viewMode === 'table' ? (
-                <DataGrid
-                  rows={users}
-                  columns={columns}
-                  initialState={{ pagination: { paginationModel } }}
-                  onRowSelectionModelChange={setSelected}
-                  checkboxSelection
-                  disableColumnSelector
-                  sx={{ border: 0 }}
-                  onPaginationModelChange={onPaginationModelChange}
-                  paginationMode="server"
-                  rowCount={rowCount}
-                />
-              ) : (
-                <StudentsCardView />
-              )}
-            </Paper>
-          </Grid>
-        </Grid>
-        <ShowTrainings handleClose={handleCloseTrainings} open={showModalTrainings} student={studentShowTraining} />
-        <UserForm user={editingUser} isOpen={formDialogIsOpen} onSubmit={handleSubmit} handleClose={() => setOpenFormDialog(false)} />
-        <DeleteDialog title="Excluir Usuario" handleCloseDeleteDialog={handleCloseDeleteDialog} isOpen={deleteDialogIsOpen} />
-        <FloatingButton onClick={() => {
-          setEditingUser(undefined);
-          setOpenFormDialog(true)
-        }} />
-      </React.Fragment>
+        {mobile ? (
+          <Stack spacing={1.5}>
+            {loading ? [1, 2, 3].map((item) => <Skeleton key={item} variant="rounded" height={154} />) : users.map((user) => (
+              <Paper key={user.id} sx={{ p: 2.25, border: `1px solid ${tokens.color.line}` }}>
+                <Typography component="h3" variant="h5">{user.name}</Typography>
+                <Typography color="text.secondary">{user.email}</Typography>
+                <Typography variant="body2" sx={{ mt: 1 }}>Mensalidade: R$ {Number(user.monthly_value_brl || 0).toFixed(2).replace('.', ',')}</Typography>
+                <Stack direction="row" justifyContent="flex-end" spacing={0.5} sx={{ mt: 1.5 }}>
+                  <IconButton aria-label={`Ver treinos de ${user.name}`} onClick={() => setTrainingStudent(user)}><FormatListNumbered /></IconButton>
+                  <IconButton aria-label={`Editar ${user.name}`} onClick={() => edit(user.id)}><EditOutlined /></IconButton>
+                  <IconButton aria-label={`Excluir ${user.name}`} color="error" onClick={() => setDeleteId(user.id || null)}><DeleteOutline /></IconButton>
+                </Stack>
+              </Paper>
+            ))}
+            {!loading && users.length === 0 && !error && <Paper sx={{ p: 3, border: `1px solid ${tokens.color.line}` }}><Typography variant="h5">Nenhum aluno encontrado</Typography><Typography color="text.secondary">Ajuste a busca ou cadastre o primeiro aluno.</Typography></Paper>}
+            <Stack direction="row" alignItems="center" justifyContent="space-between">
+              <Button startIcon={<NavigateBefore />} disabled={page === 0 || loading} onClick={() => setPage((value) => Math.max(0, value - 1))}>Anterior</Button>
+              <Typography variant="body2">Página {page + 1}</Typography>
+              <Button endIcon={<NavigateNext />} disabled={(page + 1) * 10 >= rowCount || loading} onClick={() => setPage((value) => value + 1)}>Próxima</Button>
+            </Stack>
+          </Stack>
+        ) : (
+          <Paper sx={{ height: 620, border: `1px solid ${tokens.color.line}` }}>
+            <DataGrid rows={users} columns={columns} loading={loading} initialState={{ pagination: { paginationModel } }} paginationMode="server" rowCount={rowCount} onPaginationModelChange={(model: GridPaginationModel) => setPage(model.page)} disableRowSelectionOnClick />
+          </Paper>
+        )}
+      </Stack>
+
+      <ShowTrainings handleClose={() => setTrainingStudent(undefined)} open={Boolean(trainingStudent)} student={trainingStudent} />
+      <UserForm user={editing} isOpen={formOpen} onSubmit={submit} handleClose={() => { setFormOpen(false); setEditing(undefined); }} />
+      <DeleteDialog title="Excluir aluno" handleCloseDeleteDialog={confirmDelete} isOpen={Boolean(deleteId)} />
+      <FloatingButton onClick={() => { setEditing(undefined); setFormOpen(true); }} />
     </Template>
   );
 }
-
-export default Students;
