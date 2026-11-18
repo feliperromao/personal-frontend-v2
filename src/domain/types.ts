@@ -16,6 +16,13 @@ export interface User {
 
 export type UserRole = 'PERSONAL' | 'STUDENT';
 
+export interface BrandingConfig {
+  appName: string;
+  primaryColor: string;
+  footerColor: string;
+  logoUrl: string;
+}
+
 export interface Exercise {
   id: string;
   name: string;

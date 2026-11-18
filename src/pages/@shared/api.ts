@@ -22,6 +22,7 @@ api.interceptors.response.use(
     if (error?.response?.status === 401) {
       localStorage.removeItem('user');
       localStorage.removeItem('auth-token');
+      localStorage.removeItem('branding');
       if (window.location.pathname !== '/login') {
         const returnTo = `${window.location.pathname}${window.location.search}`;
         window.location.replace(`/login?returnTo=${encodeURIComponent(returnTo)}`);

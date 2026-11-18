@@ -5,27 +5,31 @@ import Template from '../../components/Template';
 import { User } from '../../domain/types';
 import { usePwa } from '../../platform/PwaContext';
 import { tokens } from '../../theme';
+import BrandingSettings from './BrandingSettings';
+import { useBranding } from '../../branding/BrandingContext';
 
 export default function Profile() {
   const navigate = useNavigate();
   const { canInstall, isIOS, isStandalone, online, promptInstall } = usePwa();
+  const { branding, resetBranding } = useBranding();
   let user: Partial<User> = {};
   try { user = JSON.parse(localStorage.getItem('user') || '{}'); } catch { user = {}; }
 
   const logout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('auth-token');
+    resetBranding();
     navigate('/login', { replace: true });
   };
 
   return (
     <Template pageName="Perfil" type={user.type}>
-      <Stack spacing={3} sx={{ maxWidth: 720 }}>
-        <Box>
+      <Stack spacing={3} sx={{ maxWidth: 1100 }}>
+        <Box sx={{ maxWidth: 720 }}>
           <Typography variant="h2" component="h2">Sua conta</Typography>
-          <Typography color="text.secondary" sx={{ mt: 1 }}>Dados usados para identificar seu acesso ao MyPersonal.App.</Typography>
+          <Typography color="text.secondary" sx={{ mt: 1 }}>Dados usados para identificar seu acesso ao {branding.appName}.</Typography>
         </Box>
-        <Paper sx={{ border: `1px solid ${tokens.color.line}` }}>
+        <Paper sx={{ maxWidth: 720, border: `1px solid ${tokens.color.line}` }}>
           <List disablePadding>
             <ListItem sx={{ py: 2.5 }}>
               <ListItemIcon><PersonOutline /></ListItemIcon>
@@ -40,8 +44,10 @@ export default function Profile() {
           </List>
         </Paper>
 
+        {user.type === 'PERSONAL' && <BrandingSettings />}
+
         {!isStandalone && (canInstall || isIOS) && (
-          <Paper sx={{ p: 3, border: `1px solid ${tokens.color.line}` }}>
+          <Paper sx={{ maxWidth: 720, p: 3, border: `1px solid ${tokens.color.line}` }}>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems={{ sm: 'center' }} justifyContent="space-between">
               <Box>
                 <Typography variant="h5">Instale o aplicativo</Typography>

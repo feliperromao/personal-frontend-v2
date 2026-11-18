@@ -1,5 +1,6 @@
-import { alpha, createTheme } from '@mui/material/styles';
+import { alpha, createTheme, darken } from '@mui/material/styles';
 import type {} from '@mui/x-data-grid/themeAugmentation';
+import { BrandingConfig } from './domain/types';
 
 export const tokens = {
   color: {
@@ -20,10 +21,14 @@ export const tokens = {
   shadow: '0 12px 32px rgba(11, 18, 38, 0.10)',
 } as const;
 
-export const appTheme = createTheme({
+export const createAppTheme = (branding?: Partial<BrandingConfig>) => {
+  const primaryColor = branding?.primaryColor || tokens.color.primary;
+
+  return createTheme({
   palette: {
     mode: 'light',
-    primary: { main: tokens.color.primary, dark: tokens.color.primaryDark, contrastText: '#FFFFFF' },
+    contrastThreshold: 4.5,
+    primary: { main: primaryColor, dark: darken(primaryColor, 0.18) },
     secondary: { main: tokens.color.energy, contrastText: tokens.color.ink },
     success: { main: tokens.color.success },
     info: { main: tokens.color.info },
@@ -50,9 +55,9 @@ export const appTheme = createTheme({
   components: {
     MuiCssBaseline: {
       styleOverrides: {
-        '::selection': { background: alpha(tokens.color.primary, 0.22), color: tokens.color.ink },
+        '::selection': { background: alpha(primaryColor, 0.22), color: tokens.color.ink },
         ':focus-visible': { outline: `3px solid ${alpha(tokens.color.info, 0.7)}`, outlineOffset: 3 },
-        body: { scrollbarColor: `${tokens.color.primary} ${tokens.color.canvas}` },
+        body: { scrollbarColor: `${primaryColor} ${tokens.color.canvas}` },
         '*': { boxSizing: 'border-box' },
       },
     },
@@ -62,7 +67,7 @@ export const appTheme = createTheme({
       styleOverrides: {
         root: { minHeight: 44, borderRadius: tokens.radius.sm, paddingInline: 18 },
         containedPrimary: {
-          '&:hover': { backgroundColor: tokens.color.primaryDark },
+          '&:hover': { backgroundColor: darken(primaryColor, 0.18) },
         },
       },
     },
@@ -84,4 +89,7 @@ export const appTheme = createTheme({
       },
     },
   },
-});
+  });
+};
+
+export const appTheme = createAppTheme();

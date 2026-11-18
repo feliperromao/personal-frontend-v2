@@ -120,6 +120,8 @@ A paleta combina papel frio, ink de alto contraste e um violeta de ação. Lima,
 
 **The Semantic Independence Rule.** Sucesso, informação, atenção e erro mantêm cor e texto próprios; cor nunca é o único sinal.
 
+**The White-label Boundary Rule.** A cor configurada pelo personal substitui o violeta apenas em ações primárias e estados ativos; a cor de rodapé substitui o ink somente na navegação estrutural. Contraste de texto é calculado automaticamente e as cores semânticas permanecem independentes.
+
 ## Typography
 
 **Display Font:** Archivo Narrow Variable (com Arial Narrow e Arial como fallback)
@@ -163,7 +165,7 @@ Controles pequenos usam cantos de 8 px, superfícies comuns 12 px e cartões/di�
 ### Buttons
 
 - **Shape:** canto firme de 8 px, altura mínima de 44 px e padding horizontal de 18 px.
-- **Primary:** violeta de cadência com texto branco; hover usa violeta profundo.
+- **Primary:** violeta de cadência por padrão ou a cor white-label do personal, sempre com texto de contraste calculado; hover usa uma variação mais escura.
 - **Focus:** anel azul de 3 px, afastado 3 px do componente.
 - **Disabled:** permanece legível e comunica indisponibilidade junto de texto de contexto quando a causa é conexão.
 

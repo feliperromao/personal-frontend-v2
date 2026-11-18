@@ -8,6 +8,7 @@ import BrandMark from '../../components/BrandMark';
 import { usePwa } from '../../platform/PwaContext';
 import { tokens } from '../../theme';
 import api from '../@shared/api';
+import { useBranding } from '../../branding/BrandingContext';
 
 interface LoginFields { email: string; password: string }
 
@@ -21,6 +22,7 @@ export default function Login() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { online } = usePwa();
+  const { applyBranding } = useBranding();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const errorRef = useRef<HTMLDivElement>(null);
@@ -41,6 +43,7 @@ export default function Login() {
       const { data } = await api.post('/auth/login', values);
       localStorage.setItem('user', JSON.stringify(data.user));
       localStorage.setItem('auth-token', data.access_token);
+      applyBranding(data.branding);
       localStorage.setItem('install-prompt-pending', '1');
       const fromState = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname;
       const requested = searchParams.get('returnTo') || fromState;

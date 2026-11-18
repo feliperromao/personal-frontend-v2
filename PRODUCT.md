@@ -36,7 +36,9 @@ The product connects the trainer's planning workflow directly to the student's g
 
 ## Brand Commitments
 
-- Preserve the product name “MyPersonal.App”.
+- “MyPersonal.App” is the default identity when a personal has not configured a white-label brand.
+- An authenticated personal may customize the app name, action color, navigation/footer color and logo shown to their linked students.
+- White-label choices must preserve readable contrast and may not replace semantic success, information, warning or error colors.
 - The current React logo and generic dumbbell are not brand authority and must be replaced.
 - The product should feel like precise, encouraging coaching rather than a generic administrative dashboard.
 

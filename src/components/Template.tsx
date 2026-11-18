@@ -42,6 +42,8 @@ import { usePwa } from '../platform/PwaContext';
 import { tokens } from '../theme';
 import BrandMark from './BrandMark';
 import MySnackbar from './MySnackbar';
+import { useBranding } from '../branding/BrandingContext';
+import { alpha } from '@mui/material/styles';
 
 interface PageTemplateProps {
   pageName: string;
@@ -75,6 +77,7 @@ export default function Template({ children, pageName, type, fullBleed = false }
   const location = useLocation();
   const navigate = useNavigate();
   const { loading } = useGlobalState();
+  const { branding, resetBranding } = useBranding();
   const { online, canInstall, isIOS, isStandalone, dismissed, promptInstall, dismissInstall } = usePwa();
   const [accountAnchor, setAccountAnchor] = useState<HTMLElement | null>(null);
   const [installOpen, setInstallOpen] = useState(false);
@@ -85,6 +88,7 @@ export default function Template({ children, pageName, type, fullBleed = false }
   const role = type || user.type || 'PERSONAL';
   const navItems = role === 'STUDENT' ? studentItems : personalItems;
   const activeWorkoutHeader = isMobile && location.pathname.includes('/exercises/');
+  const footerTextColor = theme.palette.getContrastText(branding.footerColor);
 
   useEffect(() => {
     const pending = localStorage.getItem('install-prompt-pending') === '1';
@@ -94,6 +98,7 @@ export default function Template({ children, pageName, type, fullBleed = false }
   const logout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('auth-token');
+    resetBranding();
     navigate('/login', { replace: true });
   };
 
@@ -143,11 +148,11 @@ export default function Template({ children, pageName, type, fullBleed = false }
           component="aside"
           aria-label="Navegação principal"
           sx={{
-            width: drawerWidth, position: 'fixed', inset: 0, right: 'auto', bgcolor: tokens.color.ink, color: '#FFFFFF',
+            width: drawerWidth, position: 'fixed', inset: 0, right: 'auto', bgcolor: branding.footerColor, color: footerTextColor,
             px: 2, pt: 3, pb: 2, display: 'flex', flexDirection: 'column', zIndex: theme.zIndex.drawer,
           }}
         >
-          <Box sx={{ px: 1, mb: 5 }}><BrandMark inverse /></Box>
+          <Box sx={{ px: 1, mb: 5 }}><BrandMark inverse foregroundColor={footerTextColor} /></Box>
           <List component="nav" sx={{ display: 'grid', gap: 0.5 }}>
             {navItems.map((item) => (
               <ListItemButton
@@ -156,10 +161,10 @@ export default function Template({ children, pageName, type, fullBleed = false }
                 to={item.path}
                 selected={pathIsActive(location.pathname, item.path)}
                 sx={{
-                  minHeight: 48, borderRadius: 1.5, color: '#FFFFFF',
+                  minHeight: 48, borderRadius: 1.5, color: footerTextColor,
                   '& .MuiListItemIcon-root': { color: 'inherit', minWidth: 40 },
-                  '&.Mui-selected': { bgcolor: tokens.color.primary, '&:hover': { bgcolor: tokens.color.primaryDark } },
-                  '&:hover': { bgcolor: 'rgba(255,255,255,.09)' },
+                  '&.Mui-selected': { bgcolor: 'primary.main', color: 'primary.contrastText', '&:hover': { bgcolor: 'primary.dark' } },
+                  '&:hover': { bgcolor: alpha(footerTextColor, 0.09) },
                 }}
               >
                 <ListItemIcon>{item.icon}</ListItemIcon>
@@ -168,12 +173,12 @@ export default function Template({ children, pageName, type, fullBleed = false }
             ))}
           </List>
           <Box sx={{ mt: 'auto' }}>
-            <Divider sx={{ borderColor: 'rgba(255,255,255,.15)', mb: 2 }} />
+            <Divider sx={{ borderColor: alpha(footerTextColor, 0.18), mb: 2 }} />
             <Button
               fullWidth
               startIcon={<AccountCircleOutlined />}
               onClick={(event) => setAccountAnchor(event.currentTarget)}
-              sx={{ color: '#FFFFFF', justifyContent: 'flex-start' }}
+              sx={{ color: footerTextColor, justifyContent: 'flex-start' }}
             >
               Conta
             </Button>
@@ -233,7 +238,7 @@ export default function Template({ children, pageName, type, fullBleed = false }
           aria-label="Navegação principal"
           sx={{
             position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: theme.zIndex.appBar,
-            bgcolor: 'background.paper', borderTop: `1px solid ${tokens.color.line}`,
+            bgcolor: branding.footerColor, color: footerTextColor, borderTop: `1px solid ${alpha(footerTextColor, 0.2)}`,
             pb: 'env(safe-area-inset-bottom)', minHeight: 'var(--app-bottom-nav)',
             display: 'grid', gridTemplateColumns: `repeat(${navItems.length}, minmax(0, 1fr))`,
           }}
@@ -247,7 +252,13 @@ export default function Template({ children, pageName, type, fullBleed = false }
                 to={item.path}
                 aria-current={active ? 'page' : undefined}
                 color={active ? 'primary' : 'inherit'}
-                sx={{ minWidth: 0, minHeight: 76, borderRadius: 0, flexDirection: 'column', gap: 0.25, fontSize: 16, fontWeight: 800, lineHeight: 1.1, px: 0.5, color: active ? 'primary.main' : 'text.secondary' }}
+                sx={{
+                  minWidth: 0, minHeight: 76, borderRadius: 0, flexDirection: 'column', gap: 0.25,
+                  fontSize: 16, fontWeight: 800, lineHeight: 1.1, px: 0.5, color: footerTextColor,
+                  bgcolor: active ? alpha(footerTextColor, 0.13) : 'transparent',
+                  boxShadow: active ? `inset 0 3px 0 ${theme.palette.primary.main}` : 'none',
+                  '&:hover': { bgcolor: alpha(footerTextColor, active ? 0.17 : 0.08) },
+                }}
               >
                 {item.icon}
                 <span>{item.label}</span>
@@ -273,7 +284,7 @@ export default function Template({ children, pageName, type, fullBleed = false }
       </Menu>
 
       <Dialog open={installOpen} onClose={() => setInstallOpen(false)} fullWidth maxWidth="xs" aria-labelledby="install-title">
-        <DialogTitle id="install-title">Instalar MyPersonal.App</DialogTitle>
+        <DialogTitle id="install-title">Instalar {branding.appName}</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
             <Typography>Abra seus treinos mais rápido e use o shell do aplicativo mesmo quando a conexão cair.</Typography>
