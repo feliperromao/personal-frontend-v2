@@ -44,7 +44,7 @@ export interface TrainingInput {
   name: string,
   description: string,
   show_to_student: boolean,
-  student_id: string,
+  student_id?: string,
   exercises: Exercise[]
 }
 
@@ -69,6 +69,8 @@ export interface TrainingProgress {
   description?: string;
   student_id?: string;
   personal_id?: string;
+  executor_id?: string;
+  executor_type?: UserRole;
   training?: Training;
   exercises?: Exercise[];
   status?: string;

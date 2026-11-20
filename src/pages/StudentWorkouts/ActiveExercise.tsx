@@ -3,13 +3,14 @@ import { Add, Check, Close, FormatListNumbered, Remove, SkipNext } from '@mui/ic
 import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormLabel, IconButton, InputAdornment, Paper, Radio, RadioGroup, Stack, TextField, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import Template from '../../components/Template';
-import { FinishStatus, Training, TrainingProgress } from '../../domain/types';
+import { FinishStatus, Training, TrainingProgress, UserRole } from '../../domain/types';
 import { usePwa } from '../../platform/PwaContext';
 import { tokens } from '../../theme';
 import api from '../@shared/api';
 import VideoCard from './VideoCard';
 import WorkoutExerciseNavigator from './WorkoutExerciseNavigator';
 import { findNextPendingExercise, getExerciseProgress, getWorkoutProgress } from './workoutProgress';
+import { getWorkoutRoutes } from './workoutRoutes';
 
 const statuses: Array<{ value: FinishStatus; label: string }> = [
   { value: 'LEVE', label: 'Leve' },
@@ -24,7 +25,11 @@ function formatTime(total: number) {
   return `${minutes}:${seconds}`;
 }
 
-export default function ActiveExercise() {
+interface ActiveExerciseProps {
+  mode?: UserRole;
+}
+
+export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps) {
   const { trainingId = '', exerciseId = '' } = useParams();
   const navigate = useNavigate();
   const { online } = usePwa();
@@ -41,6 +46,8 @@ export default function ActiveExercise() {
   const [finishing, setFinishing] = useState(false);
   const [savingSeries, setSavingSeries] = useState(false);
   const [exercisesOpen, setExercisesOpen] = useState(false);
+  const personal = mode === 'PERSONAL';
+  const routes = getWorkoutRoutes(mode, trainingId);
 
   useEffect(() => {
     const beforeUnload = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = ''; };
@@ -54,15 +61,8 @@ export default function ActiveExercise() {
     (async () => {
       setLoading(true); setError('');
       try {
-        let current: TrainingProgress | null = null;
-        const stored = sessionStorage.getItem('active-training-progress');
-        if (stored) {
-          try { current = JSON.parse(stored); } catch { current = null; }
-        }
-        if (!current || current.training_id !== trainingId) {
-          const response = await api.get<TrainingProgress>('/training-progress/current');
-          current = response.data;
-        }
+        const response = await api.get<TrainingProgress>('/training-progress/current');
+        const current = response.data;
         const detail = await api.get<Training>(`/training-progress/${trainingId}`);
         if (active) {
           if (!current || current.training_id !== trainingId) throw new Error('no-current');
@@ -144,13 +144,13 @@ export default function ActiveExercise() {
   };
 
   const continueWorkout = () => {
-    if (nextPendingExercise) navigate(`/my-workouts/${trainingId}/exercises/${nextPendingExercise.id}`);
+    if (nextPendingExercise) navigate(routes.exercise(nextPendingExercise.id));
     else setFinishOpen(true);
   };
 
   const skipExercise = () => {
     setRestSeconds(0);
-    if (nextPendingExercise) navigate(`/my-workouts/${trainingId}/exercises/${nextPendingExercise.id}`);
+    if (nextPendingExercise) navigate(routes.exercise(nextPendingExercise.id));
     else setFinishOpen(true);
   };
 
@@ -166,7 +166,7 @@ export default function ActiveExercise() {
       await api.post('/training-progress/finish', { id: progress.id, status, feedback: feedback.trim() || undefined });
       sessionStorage.removeItem('active-training-progress');
       Object.keys(sessionStorage).filter((key) => key.startsWith(`series:${progress.id}:`) || key.startsWith(`rest:${progress.id}:`) || key.startsWith(`load:${progress.id}:`)).forEach((key) => sessionStorage.removeItem(key));
-      navigate('/my-workouts', { replace: true, state: { completed: true } });
+      navigate(routes.list, { replace: true, state: { completed: true } });
     } catch { setError('A finalização não foi confirmada pelo servidor. Seus dados continuam na tela; reconecte-se e tente novamente.'); setFinishOpen(false); }
     finally { setFinishing(false); }
   };
@@ -174,7 +174,7 @@ export default function ActiveExercise() {
   const setStops = useMemo(() => Array.from({ length: exercise?.series || 0 }), [exercise?.series]);
 
   return (
-    <Template type="STUDENT" pageName={training?.name || 'Treino ativo'}>
+    <Template type={mode} pageName={training?.name || 'Treino ativo'}>
       <Stack spacing={0} sx={{ maxWidth: 900, mx: 'auto', position: 'relative' }}>
         {!online && <Alert severity="warning">Sem conexão. Registrar séries e concluir o treino permanecem bloqueados até a reconexão.</Alert>}
         {error && <Alert severity="error">{error}</Alert>}
@@ -311,7 +311,7 @@ export default function ActiveExercise() {
         onClose={() => setExercisesOpen(false)}
         onSelect={(selected) => {
           setExercisesOpen(false);
-          navigate(`/my-workouts/${trainingId}/exercises/${selected.id}`);
+          navigate(routes.exercise(selected.id));
         }}
         onFinish={openFinish}
       />
@@ -333,7 +333,7 @@ export default function ActiveExercise() {
                 {statuses.map((item) => <FormControlLabel key={item.value} value={item.value} control={<Radio />} label={item.label} />)}
               </RadioGroup>
             </FormControl>
-            <TextField label="Feedback para seu personal (opcional)" multiline minRows={3} value={feedback} onChange={(event) => setFeedback(event.target.value)} inputProps={{ maxLength: 500 }} />
+            <TextField label={personal ? 'Anotações da execução (opcional)' : 'Feedback para seu personal (opcional)'} multiline minRows={3} value={feedback} onChange={(event) => setFeedback(event.target.value)} inputProps={{ maxLength: 500 }} />
             {!online && <Alert severity="warning">Reconecte-se para enviar a conclusão.</Alert>}
           </Stack>
         </DialogContent>

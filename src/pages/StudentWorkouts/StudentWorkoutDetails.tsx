@@ -3,13 +3,18 @@ import { ArrowBack, ArrowForward, Close, PlayArrow, Replay } from '@mui/icons-ma
 import { Alert, Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Paper, Stack, Typography } from '@mui/material';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import Template from '../../components/Template';
-import { Training, TrainingProgress } from '../../domain/types';
+import { Training, TrainingProgress, UserRole } from '../../domain/types';
 import { usePwa } from '../../platform/PwaContext';
 import { tokens } from '../../theme';
 import api from '../@shared/api';
 import { findFirstPendingExercise, getExerciseProgress } from './workoutProgress';
+import { getWorkoutRoutes } from './workoutRoutes';
 
-export default function StudentWorkoutDetails() {
+interface StudentWorkoutDetailsProps {
+  mode?: UserRole;
+}
+
+export default function StudentWorkoutDetails({ mode = 'STUDENT' }: StudentWorkoutDetailsProps) {
   const { trainingId = '' } = useParams();
   const navigate = useNavigate();
   const { online } = usePwa();
@@ -19,6 +24,8 @@ export default function StudentWorkoutDetails() {
   const [working, setWorking] = useState(false);
   const [error, setError] = useState('');
   const [cancelOpen, setCancelOpen] = useState(false);
+  const personal = mode === 'PERSONAL';
+  const routes = getWorkoutRoutes(mode, trainingId);
 
   const load = useCallback(async () => {
     if (!online) { setLoading(false); setError('Reconecte-se para consultar os detalhes deste treino.'); return; }
@@ -40,7 +47,7 @@ export default function StudentWorkoutDetails() {
   const firstExercisePath = (data: TrainingProgress | Training, activeProgress: TrainingProgress | null = null) => {
     const exercises = data.exercises || [];
     const exercise = activeProgress ? findFirstPendingExercise(exercises, activeProgress) || exercises[0] : exercises[0];
-    return exercise ? `/my-workouts/${trainingId}/exercises/${exercise.id}` : `/my-workouts/${trainingId}`;
+    return exercise ? routes.exercise(exercise.id) : routes.detail;
   };
 
   const start = async () => {
@@ -60,7 +67,7 @@ export default function StudentWorkoutDetails() {
           return;
         }
       } catch { /* keep the original start error */ }
-      setError(requestError?.response ? 'Já existe um treino em andamento ou não foi possível iniciar. Retome o treino atual antes de começar outro.' : 'A conexão caiu antes de iniciar. Tente novamente quando estiver online.');
+      setError(requestError?.response ? 'Já existe um treino em andamento ou não foi possível iniciar. Retome a execução atual antes de começar outra.' : 'A conexão caiu antes de iniciar. Tente novamente quando estiver online.');
     } finally { setWorking(false); }
   };
 
@@ -74,7 +81,7 @@ export default function StudentWorkoutDetails() {
     if (!progress || !online) return;
     setWorking(true);
     try {
-      await api.post('/training-progress/calcel', { id: progress.id });
+      await api.post('/training-progress/cancel', { id: progress.id });
       sessionStorage.removeItem('active-training-progress');
       setProgress(null);
       setCancelOpen(false);
@@ -83,15 +90,15 @@ export default function StudentWorkoutDetails() {
   };
 
   return (
-    <Template type="STUDENT" pageName={training?.name || 'Detalhes do treino'}>
+    <Template type={mode} pageName={training?.name || 'Detalhes do treino'}>
       <Stack spacing={3} sx={{ maxWidth: 900 }}>
-        <Button component={Link} to="/my-workouts" startIcon={<ArrowBack />} sx={{ alignSelf: 'flex-start' }}>Voltar aos treinos</Button>
+        <Button component={Link} to={routes.list} startIcon={<ArrowBack />} sx={{ alignSelf: 'flex-start' }}>{personal ? 'Voltar à gestão de treinos' : 'Voltar aos treinos'}</Button>
         {error && <Alert severity="error" action={online ? <Button color="inherit" startIcon={<Replay />} onClick={load}>Tentar novamente</Button> : undefined}>{error}</Alert>}
         {loading ? <Stack spacing={2} alignItems="center" py={8}><CircularProgress /><Typography>Carregando treino…</Typography></Stack> : training && (
           <>
             <Box>
               <Typography component="h2" variant="h2">{training.name}</Typography>
-              <Typography color="text.secondary" sx={{ mt: 1, maxWidth: '65ch' }}>{training.description || 'Siga os exercícios na ordem indicada pelo seu personal.'}</Typography>
+              <Typography color="text.secondary" sx={{ mt: 1, maxWidth: '65ch' }}>{training.description || (personal ? 'Execute os exercícios na sequência planejada e registre cada série.' : 'Siga os exercícios na ordem indicada pelo seu personal.')}</Typography>
             </Box>
             {!online && <Alert severity="warning">Sem conexão: iniciar, retomar e cancelar permanecem bloqueados.</Alert>}
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>

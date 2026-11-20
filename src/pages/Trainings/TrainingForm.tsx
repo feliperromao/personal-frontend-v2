@@ -14,15 +14,18 @@ interface TrainingFormProps {
   handleClose: () => void;
 }
 
-const empty: TrainingInput = { name: '', description: '', show_to_student: false, student_id: '', exercises: [] };
+const empty: TrainingInput = { name: '', description: '', show_to_student: false, exercises: [] };
 
-export const toTrainingInput = (training?: Training | TrainingInput | null): TrainingInput => ({
-  name: training?.name ?? '',
-  description: training?.description ?? '',
-  show_to_student: training?.show_to_student ?? false,
-  student_id: training?.student_id ?? '',
-  exercises: training?.exercises ? [...training.exercises] : [],
-});
+export const toTrainingInput = (training?: Training | TrainingInput | null): TrainingInput => {
+  const studentId = training?.student_id?.trim();
+  return {
+    name: training?.name ?? '',
+    description: training?.description ?? '',
+    show_to_student: Boolean(studentId && training?.show_to_student),
+    ...(studentId ? { student_id: studentId } : {}),
+    exercises: training?.exercises ? [...training.exercises] : [],
+  };
+};
 
 export default function TrainingForm({ training, isOpen, students, onSubmit, handleClose }: TrainingFormProps) {
   const theme = useTheme();
@@ -57,7 +60,6 @@ export default function TrainingForm({ training, isOpen, students, onSubmit, han
   const submit = async (event: React.FormEvent) => {
     event.preventDefault(); setError('');
     if (form.name.trim().length < 3) { setError('Informe um nome com pelo menos 3 caracteres.'); return; }
-    if (!form.student_id) { setError('Selecione o aluno deste treino.'); return; }
     if (!exercises.length) { setError('Adicione ao menos um exercício.'); return; }
     setSubmitting(true);
     try { await onSubmit(toTrainingInput({ ...form, exercises })); }
@@ -73,13 +75,24 @@ export default function TrainingForm({ training, isOpen, students, onSubmit, han
           {error && <Alert severity="error" tabIndex={-1}>{error}</Alert>}
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(0,1fr))' }, gap: 2 }}>
             <TextField autoFocus required label="Nome do treino" value={form.name} onChange={(event) => update({ name: event.target.value })} inputProps={{ minLength: 3 }} />
-            <Autocomplete options={students} value={student} onChange={(_, value) => { setStudent(value); update({ student_id: value?.value || '' }); }} renderInput={(params) => <TextField {...params} required label="Aluno" />} />
+            <Autocomplete
+              options={students}
+              value={student}
+              onChange={(_, value) => {
+                setStudent(value);
+                update({ student_id: value?.value, show_to_student: value ? form.show_to_student : false });
+              }}
+              renderInput={(params) => <TextField {...params} label="Aluno (opcional)" helperText="Sem aluno, o treino fica disponível apenas para você executar." />}
+            />
             <TextField required label="Orientação geral" value={form.description} onChange={(event) => update({ description: event.target.value })} multiline minRows={3} sx={{ gridColumn: { md: '1 / -1' } }} />
-            <FormControlLabel control={<Switch checked={form.show_to_student} onChange={(_, checked) => update({ show_to_student: checked })} />} label="Publicar para o aluno" />
+            <FormControlLabel
+              control={<Switch checked={Boolean(student && form.show_to_student)} disabled={!student} onChange={(_, checked) => update({ show_to_student: checked })} />}
+              label={student ? 'Publicar para o aluno' : 'Associe um aluno para publicar'}
+            />
           </Box>
 
           <Stack direction="row" justifyContent="space-between" alignItems="center" gap={2}>
-            <Box><Typography component="h3" variant="h4">Sequência de exercícios</Typography><Typography color="text.secondary">A ordem abaixo é a ordem vista pelo aluno.</Typography></Box>
+            <Box><Typography component="h3" variant="h4">Sequência de exercícios</Typography><Typography color="text.secondary">Essa será a ordem usada durante a execução do treino.</Typography></Box>
             <Button variant="outlined" startIcon={<Add />} onClick={() => setSelectorOpen(true)}>Adicionar</Button>
           </Stack>
 

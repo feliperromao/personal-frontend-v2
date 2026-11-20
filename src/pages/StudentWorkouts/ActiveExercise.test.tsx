@@ -35,6 +35,14 @@ const training = {
   exercises: [exercise],
 };
 
+function mockTrainingRequests(detail = training) {
+  vi.mocked(api.get).mockImplementation((url) => Promise.resolve({
+    data: url.endsWith('/current')
+      ? JSON.parse(sessionStorage.getItem('active-training-progress') || 'null')
+      : detail,
+  }) as never);
+}
+
 describe('execução do exercício', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -45,7 +53,7 @@ describe('execução do exercício', () => {
       exercises: [exercise],
       completed_series: [],
     }));
-    vi.mocked(api.get).mockResolvedValue({ data: training } as never);
+    mockTrainingRequests();
   });
 
   it('registra no progresso a carga informada para a série', async () => {
@@ -86,7 +94,7 @@ describe('execução do exercício', () => {
       exercises: flexibleTraining.exercises,
       completed_series: [],
     }));
-    vi.mocked(api.get).mockResolvedValue({ data: flexibleTraining } as never);
+    mockTrainingRequests(flexibleTraining);
 
     render(
       <MemoryRouter initialEntries={['/my-workouts/t1/exercises/e1']}>
@@ -110,7 +118,7 @@ describe('execução do exercício', () => {
       exercises: flexibleTraining.exercises,
       completed_series: [],
     }));
-    vi.mocked(api.get).mockResolvedValue({ data: flexibleTraining } as never);
+    mockTrainingRequests(flexibleTraining);
     vi.mocked(api.post).mockResolvedValue({ data: {} } as never);
 
     render(

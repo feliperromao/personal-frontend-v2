@@ -8,12 +8,12 @@ web
 
 ## Users
 
-- Personal trainers manage students, exercises and assigned training plans, often from a desktop but also from a phone between sessions.
+- Personal trainers manage students and exercises, create assigned or personal training plans, and can execute their own plans, often from a desktop but also from a phone between sessions.
 - Students consult and execute assigned workouts on a phone, frequently in a gym and without the trainer physically present.
 
 ## Product Purpose
 
-MyPersonal.App lets personal trainers prepare and distribute strength and functional training plans so students can train independently while remaining connected to the trainer's guidance. Success means both roles can complete their core task quickly on a phone, with the student able to understand what to do next throughout a workout.
+MyPersonal.App lets personal trainers prepare, practice and distribute strength and functional training plans so students can train independently while remaining connected to the trainer's guidance. Success means both roles can complete their core task quickly on a phone and always understand what to do next throughout a workout.
 
 ## Positioning
 
@@ -31,6 +31,7 @@ The product connects the trainer's planning workflow directly to the student's g
 - Existing React, MUI, React Router and NestJS/MongoDB API contracts are preserved.
 - Existing `user` and `auth-token` local-storage formats remain compatible.
 - Training progress uses the existing start, current, cancel and finish endpoints.
+- A training may remain private to the personal without being associated with a student; only associated training plans can be published to students.
 - The UI remains in Brazilian Portuguese.
 - Profile editing, calendar, push notifications, app-store packaging and full offline data synchronization are outside the current scope.
 

@@ -39,4 +39,16 @@ describe('payload do formulário de treino', () => {
     expect(payload).not.toHaveProperty('personal_id');
     expect(payload.exercises[0]).toHaveProperty('id', 'exercise-1');
   });
+
+  it('permite um treino sem aluno e impede publicação inconsistente', () => {
+    const payload = toTrainingInput({
+      name: 'Treino do personal',
+      description: 'Ficha para uso próprio.',
+      show_to_student: true,
+      exercises: [],
+    });
+
+    expect(payload.student_id).toBeUndefined();
+    expect(payload.show_to_student).toBe(false);
+  });
 });

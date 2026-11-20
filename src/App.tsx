@@ -33,10 +33,12 @@ export default function App() {
         <Route path="/students" element={<ProtectedRoute allowedType="PERSONAL" element={<Students />} />} />
         <Route path="/exercises" element={<ProtectedRoute allowedType="PERSONAL" element={<Exercises />} />} />
         <Route path="/trainings" element={<ProtectedRoute allowedType="PERSONAL" element={<Trainings />} />} />
+        <Route path="/trainings/:trainingId/run" element={<ProtectedRoute allowedType="PERSONAL" element={<StudentWorkoutDetails mode="PERSONAL" />} />} />
+        <Route path="/trainings/:trainingId/run/exercises/:exerciseId" element={<ProtectedRoute allowedType="PERSONAL" element={<ActiveExercise mode="PERSONAL" />} />} />
         <Route path="/calendar" element={<Navigate to="/" replace />} />
         <Route path="/my-workouts" element={<ProtectedRoute allowedType="STUDENT" element={<StudentWorkouts />} />} />
-        <Route path="/my-workouts/:trainingId" element={<ProtectedRoute allowedType="STUDENT" element={<StudentWorkoutDetails />} />} />
-        <Route path="/my-workouts/:trainingId/exercises/:exerciseId" element={<ProtectedRoute allowedType="STUDENT" element={<ActiveExercise />} />} />
+        <Route path="/my-workouts/:trainingId" element={<ProtectedRoute allowedType="STUDENT" element={<StudentWorkoutDetails mode="STUDENT" />} />} />
+        <Route path="/my-workouts/:trainingId/exercises/:exerciseId" element={<ProtectedRoute allowedType="STUDENT" element={<ActiveExercise mode="STUDENT" />} />} />
         <Route path="/profile" element={<ProtectedRoute allowedType="ALL" element={<Profile />} />} />
         <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

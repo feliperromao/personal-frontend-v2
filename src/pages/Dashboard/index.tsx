@@ -7,7 +7,7 @@ import { tokens } from '../../theme';
 const steps = [
   { number: '01', title: 'Organize seus alunos', description: 'Cadastre acessos e acompanhe as fichas vinculadas.', path: '/students', action: 'Ver alunos', icon: <PeopleOutline /> },
   { number: '02', title: 'Monte sua biblioteca', description: 'Crie exercícios claros, com carga, descanso, instruções e vídeo.', path: '/exercises', action: 'Ver exercícios', icon: <FitnessCenterOutlined /> },
-  { number: '03', title: 'Trace o treino', description: 'Ordene a sequência e publique a ficha para cada aluno.', path: '/trainings', action: 'Ver treinos', icon: <SportsGymnasticsOutlined /> },
+  { number: '03', title: 'Trace e pratique', description: 'Monte treinos para seus alunos ou execute uma ficha pessoal.', path: '/trainings', action: 'Ver treinos', icon: <SportsGymnasticsOutlined /> },
 ];
 
 export default function Dashboard() {
@@ -24,7 +24,7 @@ export default function Dashboard() {
           </Box>
           <Paper sx={{ p: 2.5, bgcolor: tokens.color.ink, color: '#FFFFFF' }}>
             <Typography fontWeight={800}>Fluxo do personal</Typography>
-            <Typography sx={{ mt: 0.5, color: 'rgba(255,255,255,.72)' }}>Aluno → exercício → treino publicado.</Typography>
+            <Typography sx={{ mt: 0.5, color: 'rgba(255,255,255,.72)' }}>Exercícios → treino pessoal ou publicado.</Typography>
           </Paper>
         </Box>
 
