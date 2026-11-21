@@ -5,6 +5,7 @@ import Template from '../../components/Template';
 import { User } from '../../domain/types';
 import { usePwa } from '../../platform/PwaContext';
 import { tokens } from '../../theme';
+import ChangePasswordForm from './ChangePasswordForm';
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -39,6 +40,8 @@ export default function Profile() {
             {user.phone && <><Divider component="li" /><ListItem sx={{ py: 2.5 }}><ListItemIcon><PhoneOutlined /></ListItemIcon><ListItemText primary="Celular" secondary={user.phone} /></ListItem></>}
           </List>
         </Paper>
+
+        <ChangePasswordForm />
 
         {!isStandalone && (canInstall || isIOS) && (
           <Paper sx={{ p: 3, border: `1px solid ${tokens.color.line}` }}>
