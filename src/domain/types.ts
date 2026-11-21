@@ -83,6 +83,41 @@ export interface TrainingProgress {
   finish_status?: FinishStatus;
 }
 
+export interface EvolutionExercise {
+  id: string;
+  name: string;
+  executions: number;
+  personal_best: number;
+}
+
+export interface EvolutionPoint {
+  progress_id: string;
+  training_id: string;
+  training_name: string;
+  executed_at: string;
+  max_load: number;
+  average_load: number;
+  completed_series: number;
+  planned_series: number;
+  loads: number[];
+}
+
+export interface EvolutionReport {
+  student: { id: string; name: string };
+  exercises: EvolutionExercise[];
+  selected_exercise_id: string | null;
+  summary: {
+    initial_load: number | null;
+    current_load: number | null;
+    absolute_change: number | null;
+    percentage_change: number | null;
+    personal_best: number | null;
+    total_executions: number;
+    total_series: number;
+  };
+  points: EvolutionPoint[];
+}
+
 export interface RouteMetadata {
   path: string;
   label: string;

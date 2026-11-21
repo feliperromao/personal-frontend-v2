@@ -66,10 +66,13 @@ export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps
         const detail = await api.get<Training>(`/training-progress/${trainingId}`);
         if (active) {
           if (!current || current.training_id !== trainingId) throw new Error('no-current');
+          const executionExercises = current.exercises?.length
+            ? current.exercises
+            : detail.data.exercises || [];
           setProgress(current);
-          setTraining(detail.data);
+          setTraining({ ...detail.data, exercises: executionExercises });
           sessionStorage.setItem('active-training-progress', JSON.stringify(current));
-          const exercise = detail.data.exercises?.find(item => item.id === exerciseId);
+          const exercise = executionExercises.find(item => item.id === exerciseId);
           const history = (current.completed_series || [])
             .filter(item => item.exercise_id === exerciseId)
             .sort((a, b) => a.series - b.series);
@@ -103,14 +106,17 @@ export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps
     if (progress && exerciseId) sessionStorage.setItem(`rest:${progress.id}:${exerciseId}`, String(restSeconds));
   }, [exerciseId, progress, restSeconds]);
 
-  useEffect(() => {
-    if (progress && exerciseId) sessionStorage.setItem(`load:${progress.id}:${exerciseId}`, seriesLoad);
-  }, [exerciseId, progress, seriesLoad]);
+  const updateSeriesLoad = (value: string) => {
+    setSeriesLoad(value);
+    if (progress && exerciseId) {
+      sessionStorage.setItem(`load:${progress.id}:${exerciseId}`, value);
+    }
+  };
 
   const adjustLoad = (amount: number) => {
     const parsed = Number(seriesLoad.replace(',', '.'));
     const next = Math.max(0, (Number.isFinite(parsed) ? parsed : 0) + amount);
-    setSeriesLoad(String(Math.round(next * 10) / 10));
+    updateSeriesLoad(String(Math.round(next * 10) / 10));
   };
 
   const completeSeries = async () => {
@@ -167,7 +173,7 @@ export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps
       sessionStorage.removeItem('active-training-progress');
       Object.keys(sessionStorage).filter((key) => key.startsWith(`series:${progress.id}:`) || key.startsWith(`rest:${progress.id}:`) || key.startsWith(`load:${progress.id}:`)).forEach((key) => sessionStorage.removeItem(key));
       navigate(routes.list, { replace: true, state: { completed: true } });
-    } catch { setError('A finalização não foi confirmada pelo servidor. Seus dados continuam na tela; reconecte-se e tente novamente.'); setFinishOpen(false); }
+    } catch { setError('A finalização não foi confirmada pelo servidor. As séries e cargas já registradas continuam salvas; reconecte-se e tente novamente.'); setFinishOpen(false); }
     finally { setFinishing(false); }
   };
 
@@ -207,7 +213,7 @@ export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps
                 <Typography color="text.primary" fontWeight={650} sx={{ transform: 'translateY(-32px)' }}>Carga desta série</Typography>
                 <TextField
                   value={seriesLoad}
-                  onChange={(event) => setSeriesLoad(event.target.value)}
+                  onChange={(event) => updateSeriesLoad(event.target.value)}
                   type="number"
                   variant="standard"
                   disabled={savingSeries || allSeriesDone}
@@ -327,6 +333,9 @@ export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps
             ) : (
               <Alert severity="success">Todos os exercícios e séries foram concluídos.</Alert>
             )}
+            <Typography color="text.secondary">
+              As cargas informadas em cada série serão mantidas no histórico desta execução para acompanhar sua evolução.
+            </Typography>
             <FormControl>
               <FormLabel id="intensity-label">Intensidade percebida</FormLabel>
               <RadioGroup aria-labelledby="intensity-label" value={status} onChange={(event) => setStatus(event.target.value as FinishStatus)}>

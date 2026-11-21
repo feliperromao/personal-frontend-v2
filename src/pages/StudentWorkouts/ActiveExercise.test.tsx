@@ -86,6 +86,58 @@ describe('execução do exercício', () => {
     expect(await screen.findByText('Série 2 de 3')).toBeInTheDocument();
   });
 
+  it('carrega a carga planejada de cada exercício sem reaproveitar o valor editado no anterior', async () => {
+    const flexibleTraining = { ...training, exercises: [exercise, secondExercise] };
+    sessionStorage.setItem('active-training-progress', JSON.stringify({
+      id: 'p1',
+      training_id: 't1',
+      exercises: flexibleTraining.exercises,
+      completed_series: [],
+    }));
+    mockTrainingRequests(flexibleTraining);
+
+    render(
+      <MemoryRouter initialEntries={['/my-workouts/t1/exercises/e1']}>
+        <Routes>
+          <Route path="/my-workouts/:trainingId/exercises/:exerciseId" element={<ActiveExercise />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    const firstLoad = await screen.findByRole('spinbutton', { name: 'Carga da série em quilogramas' });
+    expect(firstLoad).toHaveValue(20);
+    fireEvent.change(firstLoad, { target: { value: '25' } });
+
+    fireEvent.click(screen.getByRole('button', { name: /Exercícios · 0\/2/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fazer Crucifixo com halteres' }));
+
+    expect(await screen.findByRole('heading', { name: 'Crucifixo com halteres' })).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole('spinbutton', { name: 'Carga da série em quilogramas' })).toHaveValue(12));
+    expect(sessionStorage.getItem('load:p1:e1')).toBe('25');
+    expect(sessionStorage.getItem('load:p1:e2')).toBeNull();
+  });
+
+  it('usa a carga congelada no início da execução mesmo se a ficha tiver sido editada depois', async () => {
+    const executionExercise = { ...exercise, load: 18 };
+    sessionStorage.setItem('active-training-progress', JSON.stringify({
+      id: 'p1',
+      training_id: 't1',
+      exercises: [executionExercise],
+      completed_series: [],
+    }));
+    mockTrainingRequests(training);
+
+    render(
+      <MemoryRouter initialEntries={['/my-workouts/t1/exercises/e1']}>
+        <Routes>
+          <Route path="/my-workouts/:trainingId/exercises/:exerciseId" element={<ActiveExercise />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByRole('spinbutton', { name: 'Carga da série em quilogramas' })).toHaveValue(18);
+  });
+
   it('permite pular um exercício e continuar no próximo pendente', async () => {
     const flexibleTraining = { ...training, exercises: [exercise, secondExercise] };
     sessionStorage.setItem('active-training-progress', JSON.stringify({

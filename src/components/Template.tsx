@@ -33,6 +33,7 @@ import {
   LogoutOutlined,
   PeopleOutline,
   PersonOutline,
+  QueryStatsOutlined,
   SportsGymnasticsOutlined,
 } from '@mui/icons-material';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -53,15 +54,17 @@ interface PageTemplateProps {
 const drawerWidth = 264;
 
 const personalItems = [
-  { label: 'Início', path: '/', icon: <HomeOutlined /> },
-  { label: 'Alunos', path: '/students', icon: <PeopleOutline /> },
-  { label: 'Exercícios', path: '/exercises', icon: <FitnessCenterOutlined /> },
-  { label: 'Treinos', path: '/trainings', icon: <SportsGymnasticsOutlined /> },
+  { label: 'Início', mobileLabel: 'Início', path: '/', icon: <HomeOutlined /> },
+  { label: 'Alunos', mobileLabel: 'Alunos', path: '/students', icon: <PeopleOutline /> },
+  { label: 'Exercícios', mobileLabel: 'Exercícios', path: '/exercises', icon: <FitnessCenterOutlined /> },
+  { label: 'Treinos', mobileLabel: 'Treinos', path: '/trainings', icon: <SportsGymnasticsOutlined /> },
+  { label: 'Relatórios', mobileLabel: 'Evolução', path: '/reports/evolution', icon: <QueryStatsOutlined /> },
 ];
 
 const studentItems = [
-  { label: 'Meus treinos', path: '/my-workouts', icon: <SportsGymnasticsOutlined /> },
-  { label: 'Perfil', path: '/profile', icon: <PersonOutline /> },
+  { label: 'Meus treinos', mobileLabel: 'Treinos', path: '/my-workouts', icon: <SportsGymnasticsOutlined /> },
+  { label: 'Relatórios', mobileLabel: 'Evolução', path: '/my-evolution', icon: <QueryStatsOutlined /> },
+  { label: 'Perfil', mobileLabel: 'Perfil', path: '/profile', icon: <PersonOutline /> },
 ];
 
 function pathIsActive(current: string, target: string) {
@@ -247,10 +250,10 @@ export default function Template({ children, pageName, type, fullBleed = false }
                 to={item.path}
                 aria-current={active ? 'page' : undefined}
                 color={active ? 'primary' : 'inherit'}
-                sx={{ minWidth: 0, minHeight: 76, borderRadius: 0, flexDirection: 'column', gap: 0.25, fontSize: 16, fontWeight: 800, lineHeight: 1.1, px: 0.5, color: active ? 'primary.main' : 'text.secondary' }}
+                sx={{ minWidth: 0, minHeight: 76, borderRadius: 0, flexDirection: 'column', gap: 0.25, fontSize: navItems.length >= 5 ? 13 : 16, fontWeight: 800, lineHeight: 1.1, px: 0.5, color: active ? 'primary.main' : 'text.secondary' }}
               >
                 {item.icon}
-                <span>{item.label}</span>
+                <span>{item.mobileLabel}</span>
               </Button>
             );
           })}
