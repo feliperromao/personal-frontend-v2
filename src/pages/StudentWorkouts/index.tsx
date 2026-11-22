@@ -6,29 +6,53 @@ import Template from '../../components/Template';
 import { Training, TrainingProgress } from '../../domain/types';
 import { tokens } from '../../theme';
 import api from '../@shared/api';
+import WeeklyActivity, { getWeekRange } from './WeeklyActivity';
 
 export default function StudentWorkouts() {
   const [trainings, setTrainings] = useState<Training[]>([]);
   const [current, setCurrent] = useState<TrainingProgress | null>(null);
+  const [weeklyActivity, setWeeklyActivity] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activityLoading, setActivityLoading] = useState(true);
   const [error, setError] = useState('');
+  const [activityError, setActivityError] = useState('');
 
   const fetchData = useCallback(async () => {
     setLoading(true);
+    setActivityLoading(true);
     setError('');
-    try {
-      const [trainingResponse, currentResponse] = await Promise.all([
-        api.get('/training-progress'),
-        api.get('/training-progress/current').catch(() => ({ data: null })),
-      ]);
+    setActivityError('');
+
+    const { start, end } = getWeekRange();
+    const [trainingResult, currentResult, activityResult] = await Promise.allSettled([
+      api.get('/training-progress'),
+      api.get('/training-progress/current'),
+      api.get('/training-progress/weekly-activity', {
+        params: { start: start.toISOString(), end: end.toISOString() },
+      }),
+    ]);
+
+    if (trainingResult.status === 'fulfilled') {
+      const trainingResponse = trainingResult.value;
       const list = Array.isArray(trainingResponse.data) ? trainingResponse.data : trainingResponse.data?.data || [];
       setTrainings(list);
-      setCurrent(currentResponse.data || null);
-    } catch (requestError: any) {
+    } else {
+      const requestError: any = trainingResult.reason;
       setError(requestError?.response ? 'Não foi possível carregar seus treinos. Tente novamente.' : 'Sem conexão com o servidor. Reconecte-se para carregar seus treinos.');
-    } finally {
-      setLoading(false);
     }
+
+    setCurrent(currentResult.status === 'fulfilled' ? currentResult.value.data || null : null);
+
+    if (activityResult.status === 'fulfilled') {
+      const completedAt = activityResult.value.data?.completed_at;
+      setWeeklyActivity(Array.isArray(completedAt) ? completedAt : []);
+    } else {
+      setWeeklyActivity([]);
+      setActivityError('Não foi possível carregar sua atividade desta semana.');
+    }
+
+    setLoading(false);
+    setActivityLoading(false);
   }, []);
 
   useEffect(() => { fetchData(); }, [fetchData]);
@@ -40,6 +64,14 @@ export default function StudentWorkouts() {
           <Typography component="h2" variant="h2">Treinos no seu ritmo</Typography>
           <Typography color="text.secondary" sx={{ mt: 1, maxWidth: '65ch' }}>Escolha uma ficha para ver a sequência. O treino só começa depois da sua confirmação.</Typography>
         </Box>
+
+        {activityError ? (
+          <Alert severity="warning" action={<Button color="inherit" startIcon={<Replay />} onClick={fetchData}>Tentar novamente</Button>}>
+            {activityError}
+          </Alert>
+        ) : (
+          <WeeklyActivity completedAt={weeklyActivity} loading={activityLoading} />
+        )}
 
         {error && (
           <Alert severity="error" action={<Button color="inherit" startIcon={<Replay />} onClick={fetchData}>Tentar novamente</Button>}>
