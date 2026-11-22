@@ -1,11 +1,12 @@
-import { useMemo } from 'react';
-import { OpenInNew, PlayCircleOutline } from '@mui/icons-material';
-import { Alert, Box, Button, Stack, Typography } from '@mui/material';
+import { useMemo, useState } from 'react';
+import { ExpandLess, ExpandMore, OpenInNew, PlayCircleOutline } from '@mui/icons-material';
+import { Alert, Box, Button, Collapse, Stack, Typography } from '@mui/material';
 import { tokens } from '../../theme';
 
 interface VideoCardProps {
   url: string;
   title?: string;
+  collapsible?: boolean;
 }
 
 export type VideoSource =
@@ -84,9 +85,11 @@ export function resolveVideoSource(rawUrl: string): VideoSource {
   }
 }
 
-export default function VideoCard({ url, title = 'exercício' }: VideoCardProps) {
+export default function VideoCard({ url, title = 'exercício', collapsible = false }: VideoCardProps) {
   const source = useMemo(() => resolveVideoSource(url), [url]);
+  const [expanded, setExpanded] = useState(!collapsible);
   const accessibleTitle = `Demonstração em vídeo: ${title}`;
+  const contentId = `exercise-video-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'preview'}`;
 
   if (source.kind === 'unavailable') {
     return <Alert severity="warning">O endereço do vídeo é inválido. Avise seu personal para atualizar o exercício.</Alert>;
@@ -110,50 +113,95 @@ export default function VideoCard({ url, title = 'exercício' }: VideoCardProps)
 
   return (
     <Box component="section" aria-label={accessibleTitle} sx={{ mt: 2 }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" gap={2} sx={{ mb: 1 }}>
-        <Box minWidth={0}>
-          <Typography component="h3" variant="h5">Demonstração em vídeo</Typography>
-          <Typography variant="body2" color="text.secondary">Reprodução via {source.provider}</Typography>
-        </Box>
+      {collapsible ? (
         <Button
-          component="a"
-          href={source.originalUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          size="small"
-          startIcon={<OpenInNew />}
-          aria-label={`Abrir vídeo de ${title} em nova aba`}
-          sx={{ flexShrink: 0 }}
+          fullWidth
+          onClick={() => setExpanded((value) => !value)}
+          aria-expanded={expanded}
+          aria-controls={contentId}
+          startIcon={<PlayCircleOutline />}
+          endIcon={expanded ? <ExpandLess /> : <ExpandMore />}
+          sx={{
+            minHeight: 56,
+            px: 0,
+            justifyContent: 'flex-start',
+            borderBlock: `1px solid ${tokens.color.line}`,
+            borderRadius: 0,
+            '& .MuiButton-endIcon': { ml: 'auto' },
+          }}
         >
-          Abrir
-        </Button>
-      </Stack>
-      <Box sx={{ aspectRatio: '16 / 9', bgcolor: tokens.color.ink, borderRadius: 2, overflow: 'hidden' }}>
-        {source.kind === 'file' ? (
-          <Box
-            component="video"
-            src={source.embedUrl}
-            title={accessibleTitle}
-            controls
-            playsInline
-            preload="metadata"
-            sx={{ width: '100%', height: '100%', display: 'block', objectFit: 'contain' }}
-          >
-            Seu navegador não consegue reproduzir este vídeo.
+          <Box component="span" sx={{ display: 'block', minWidth: 0, textAlign: 'left' }}>
+            <Typography component="span" variant="h5" sx={{ display: 'block' }}>Demonstração em vídeo</Typography>
+            <Typography component="span" variant="body2" color="text.secondary" sx={{ display: 'block' }}>
+              {expanded ? 'Ocultar demonstração' : `Reprodução via ${source.provider}`}
+            </Typography>
           </Box>
-        ) : (
-          <Box
-            component="iframe"
-            src={source.embedUrl}
-            title={accessibleTitle}
-            loading="lazy"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-            sx={{ width: '100%', height: '100%', display: 'block', border: 0 }}
-          />
-        )}
-      </Box>
+        </Button>
+      ) : (
+        <Stack direction="row" alignItems="center" justifyContent="space-between" gap={2} sx={{ mb: 1 }}>
+          <Box minWidth={0}>
+            <Typography component="h3" variant="h5">Demonstração em vídeo</Typography>
+            <Typography variant="body2" color="text.secondary">Reprodução via {source.provider}</Typography>
+          </Box>
+          <Button
+            component="a"
+            href={source.originalUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            size="small"
+            startIcon={<OpenInNew />}
+            aria-label={`Abrir vídeo de ${title} em nova aba`}
+            sx={{ flexShrink: 0 }}
+          >
+            Abrir
+          </Button>
+        </Stack>
+      )}
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <Box id={contentId} sx={{ pt: collapsible ? 1 : 0 }}>
+          {collapsible && (
+            <Stack direction="row" justifyContent="flex-end" sx={{ mb: 1 }}>
+              <Button
+                component="a"
+                href={source.originalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                size="small"
+                startIcon={<OpenInNew />}
+                aria-label={`Abrir vídeo de ${title} em nova aba`}
+              >
+                Abrir em nova aba
+              </Button>
+            </Stack>
+          )}
+          <Box sx={{ aspectRatio: '16 / 9', bgcolor: tokens.color.ink, borderRadius: 2, overflow: 'hidden' }}>
+            {source.kind === 'file' ? (
+              <Box
+                component="video"
+                src={source.embedUrl}
+                title={accessibleTitle}
+                controls
+                playsInline
+                preload="metadata"
+                sx={{ width: '100%', height: '100%', display: 'block', objectFit: 'contain' }}
+              >
+                Seu navegador não consegue reproduzir este vídeo.
+              </Box>
+            ) : (
+              <Box
+                component="iframe"
+                src={source.embedUrl}
+                title={accessibleTitle}
+                loading="lazy"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                sx={{ width: '100%', height: '100%', display: 'block', border: 0 }}
+              />
+            )}
+          </Box>
+        </Box>
+      </Collapse>
     </Box>
   );
 }

@@ -162,6 +162,65 @@ describe('execução do exercício', () => {
     expect(api.post).not.toHaveBeenCalled();
   });
 
+  it('mantém a demonstração em vídeo fechada até o aluno solicitar', async () => {
+    const exerciseWithVideo = { ...exercise, video: 'https://youtu.be/hlV6f0kHmeo' };
+    const trainingWithVideo = { ...training, exercises: [exerciseWithVideo] };
+    sessionStorage.setItem('active-training-progress', JSON.stringify({
+      id: 'p1',
+      training_id: 't1',
+      exercises: trainingWithVideo.exercises,
+      completed_series: [],
+    }));
+    mockTrainingRequests(trainingWithVideo);
+
+    render(
+      <MemoryRouter initialEntries={['/my-workouts/t1/exercises/e1']}>
+        <Routes>
+          <Route path="/my-workouts/:trainingId/exercises/:exerciseId" element={<ActiveExercise />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    const videoToggle = await screen.findByRole('button', { name: /Demonstração em vídeo/ });
+    expect(videoToggle).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByTitle('Demonstração em vídeo: Supino inclinado')).not.toBeInTheDocument();
+
+    fireEvent.click(videoToggle);
+
+    expect(await screen.findByTitle('Demonstração em vídeo: Supino inclinado')).toBeInTheDocument();
+    expect(videoToggle).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('mantém a ação de próximo exercício disponível ao concluir todas as séries', async () => {
+    const flexibleTraining = { ...training, exercises: [exercise, secondExercise] };
+    const completedSeries = [1, 2, 3].map((series) => ({
+      exercise_id: 'e1',
+      series,
+      load: 20,
+      completed_at: '2026-11-17T19:00:00.000Z',
+    }));
+    sessionStorage.setItem('active-training-progress', JSON.stringify({
+      id: 'p1',
+      training_id: 't1',
+      exercises: flexibleTraining.exercises,
+      completed_series: completedSeries,
+    }));
+    mockTrainingRequests(flexibleTraining);
+
+    render(
+      <MemoryRouter initialEntries={['/my-workouts/t1/exercises/e1']}>
+        <Routes>
+          <Route path="/my-workouts/:trainingId/exercises/:exerciseId" element={<ActiveExercise />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    const nextAction = await screen.findByRole('button', { name: 'Próximo exercício pendente' });
+    fireEvent.click(nextAction);
+
+    expect(await screen.findByRole('heading', { name: 'Crucifixo com halteres' })).toBeInTheDocument();
+  });
+
   it('permite escolher exercícios fora de ordem e finalizar com pendências', async () => {
     const flexibleTraining = { ...training, exercises: [exercise, secondExercise] };
     sessionStorage.setItem('active-training-progress', JSON.stringify({

@@ -181,7 +181,7 @@ export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps
 
   return (
     <Template type={mode} pageName={training?.name || 'Treino ativo'}>
-      <Stack spacing={0} sx={{ maxWidth: 900, mx: 'auto', position: 'relative' }}>
+      <Stack spacing={0} sx={{ maxWidth: 900, mx: 'auto', position: 'relative', pb: { xs: 10, md: 0 } }}>
         {!online && <Alert severity="warning">Sem conexão. Registrar séries e concluir o treino permanecem bloqueados até a reconexão.</Alert>}
         {error && <Alert severity="error">{error}</Alert>}
         {loading ? <Typography role="status">Carregando exercício…</Typography> : exercise ? (
@@ -191,13 +191,13 @@ export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps
                 Exercícios · {workoutSummary.completedExercises}/{workoutSummary.totalExercises}
               </Button>
             </Stack>
-            <Box sx={{ position: 'relative', minHeight: { xs: 154, sm: 190 }, borderBottom: `1px solid ${tokens.color.line}`, pb: 2, mt: '-6px!important' }}>
+            <Box sx={{ position: 'relative', minHeight: { xs: 142, sm: 190 }, borderBottom: `1px solid ${tokens.color.line}`, pb: 2, mt: '-6px!important' }}>
               <Box component="svg" viewBox="0 0 320 210" aria-hidden="true" sx={{ position: 'absolute', right: -16, top: -68, width: { xs: '68%', sm: '52%' }, height: 220, color: tokens.color.line, opacity: 0.7, pointerEvents: 'none' }}>
                 <path d="M318 12C232 44 218 84 154 102S45 134 8 205" fill="none" stroke="currentColor" strokeWidth="1.2" />
                 <path d="M320 46C251 69 236 105 173 121S69 151 38 209" fill="none" stroke="currentColor" strokeWidth="1.2" />
                 <path d="M320 80C270 96 254 124 197 140S100 166 76 210" fill="none" stroke="currentColor" strokeWidth="1.2" />
               </Box>
-              <Typography component="h2" variant="h1" sx={{ maxWidth: { xs: '62%', sm: '70%' }, position: 'relative', zIndex: 1, fontSize: { xs: 'clamp(3rem, 13vw, 4rem)', sm: '4.75rem' }, transform: 'translateY(-10px)' }}>{exercise.name}</Typography>
+              <Typography component="h2" variant="h1" sx={{ maxWidth: { xs: '64%', sm: '70%' }, position: 'relative', zIndex: 1, fontSize: { xs: 'clamp(2.75rem, 11.5vw, 3.5rem)', sm: '4.75rem' }, transform: 'translateY(-8px)' }}>{exercise.name}</Typography>
               <Typography sx={{ mt: 1, color: 'text.secondary', fontSize: '1.15rem', fontWeight: 650 }}>Série {Math.min(completedSeries + 1, exercise.series)} de {exercise.series}</Typography>
               <Typography aria-hidden="true" sx={{ position: 'absolute', right: 0, top: -34, color: '#8989A3', fontSize: { xs: '8rem', sm: '11rem' }, lineHeight: 1, fontWeight: 850, letterSpacing: '-0.04em', fontVariantNumeric: 'tabular-nums', pointerEvents: 'none' }}>
                 {String(exerciseIndex + 1).padStart(2, '0')}
@@ -285,26 +285,38 @@ export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps
               </Paper>
             )}
 
-            {exercise.video && (
-              <VideoCard url={exercise.video} title={exercise.name} />
-            )}
-
             {nextPendingExercise && allSeriesDone && (
               <Stack direction="row" alignItems="center" spacing={2} sx={{ mt: 2 }}>
                 <Typography aria-hidden="true" color="info.main" sx={{ pl: 1, pr: 2, borderRight: `1px solid ${tokens.color.muted}`, fontSize: '2.5rem', lineHeight: 1 }}>→</Typography>
                 <Box sx={{ minWidth: 0 }}><Typography color="text.secondary">Próximo pendente</Typography><Typography variant="h4" noWrap sx={{ fontSize: '1.45rem' }}>{nextPendingExercise.name}</Typography></Box>
               </Stack>
             )}
-            <Stack spacing={1} sx={{ mt: { xs: restSeconds > 0 ? -1 : 2, md: 2 }, scrollMarginBottom: { xs: 'calc(var(--app-bottom-nav) + 16px)', md: 0 } }}>
-              <Button variant="contained" size="large" disabled={savingSeries || (!allSeriesDone && !online)} onClick={allSeriesDone ? continueWorkout : completeSeries} sx={{ minHeight: 56, fontSize: '1.15rem' }}>
+            <Box sx={{
+              position: { xs: 'fixed', md: 'static' },
+              left: { xs: 0, md: 'auto' },
+              right: { xs: 0, md: 'auto' },
+              bottom: { xs: 'var(--app-bottom-nav)', md: 'auto' },
+              zIndex: { xs: 1100, md: 'auto' },
+              mt: { md: 2 },
+              px: { xs: 2, md: 0 },
+              py: { xs: 1, md: 0 },
+              bgcolor: { xs: 'rgba(248, 248, 248, 0.96)', md: 'transparent' },
+              borderTop: { xs: `1px solid ${tokens.color.line}`, md: 0 },
+            }}>
+              <Button fullWidth variant="contained" size="large" disabled={savingSeries || (!allSeriesDone && !online)} onClick={allSeriesDone ? continueWorkout : completeSeries} sx={{ minHeight: 56, maxWidth: 900, mx: 'auto', display: 'flex', fontSize: '1.15rem' }}>
                 {savingSeries ? 'Registrando série…' : allSeriesDone ? (nextPendingExercise ? 'Próximo exercício pendente' : 'Finalizar treino') : 'Concluir série'}
               </Button>
+            </Box>
+            <Stack spacing={1} sx={{ mt: 1 }}>
               {!allSeriesDone && (
                 <Button variant="text" startIcon={<SkipNext />} disabled={savingSeries} onClick={skipExercise} sx={{ minHeight: 48 }}>
                   Pular por agora
                 </Button>
               )}
             </Stack>
+            {exercise.video && (
+              <VideoCard url={exercise.video} title={exercise.name} collapsible />
+            )}
           </>
         ) : !error && <Alert severity="error">Exercício não encontrado neste treino.</Alert>}
       </Stack>
