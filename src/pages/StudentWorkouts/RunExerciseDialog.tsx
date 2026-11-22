@@ -20,6 +20,7 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { Exercise } from '../../domain/types';
+import { tokens } from '../../theme';
 import CountdownTimer from './CountdownTimer';
 import VideoCard from './VideoCard';
 
@@ -33,10 +34,12 @@ interface RunExerciseDialogProps {
 const RunExerciseDialog: React.FC<RunExerciseDialogProps> = ({ open, exercise, handleClose, handleFinish }) => {
   const isMobile = useMediaQuery('(max-width:600px)');
   const [series, setSeries] = React.useState(0);
+  const [load, setLoad] = React.useState('');
 
   React.useEffect(() => {
     if (open) {
       setSeries(0);
+      setLoad('');
     }
   }, [open]);
 
@@ -61,13 +64,6 @@ const RunExerciseDialog: React.FC<RunExerciseDialogProps> = ({ open, exercise, h
         <DialogContentText sx={{ mb: 2 }}>{exercise?.instructions}</DialogContentText>
 
         <Grid container spacing={2} alignItems="center">
-          {/* Progresso de Carga */}
-          <Grid item xs={12}>
-            <Typography variant="body1">
-              <strong>Progreção de carga:</strong> {exercise?.load_progress ? 'SIM' : 'Não'}
-            </Typography>
-          </Grid>
-
           {/* Controle de Séries */}
           <Grid item xs={12} sm={6} display="flex" alignItems="center">
             <Typography variant="body1" sx={{ mr: 2 }}><strong>Séries:</strong></Typography>
@@ -97,8 +93,8 @@ const RunExerciseDialog: React.FC<RunExerciseDialogProps> = ({ open, exercise, h
               label="Carga (KG)"
               type="number"
               variant="outlined"
-              disabled
-              value={exercise?.load}
+              value={load}
+              onChange={(event) => setLoad(event.target.value)}
               inputProps={{ min: 0 }}
             />
           </Grid>
@@ -107,7 +103,7 @@ const RunExerciseDialog: React.FC<RunExerciseDialogProps> = ({ open, exercise, h
         {/* Timer e Vídeo */}
         <Grid container spacing={2} mt={3}>
           <Grid item xs={12} sm={6}>
-            <Paper sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 2, border: '1px solid #ddd' }}>
+            <Paper sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 2, border: `1px solid ${tokens.color.line}` }}>
               <CountdownTimer rest={exercise?.rest ?? 60} />
             </Paper>
           </Grid>

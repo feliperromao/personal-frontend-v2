@@ -89,9 +89,7 @@ const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, selected, han
         instructions: exercise.instructions,
         video: exercise.video,
         rest: exercise.rest,
-        load: exercise.load,
         series: exercise.series,
-        load_progress: exercise.load_progress,
       }).then(async (result) => {
         await fetchExercises();
         handleCloseModalExercises();
@@ -163,7 +161,7 @@ const SelectExercises: React.FC<SelectExercisesProps> = ({ isOpen, selected, han
                   </ListItemIcon>
                   <ListItemText
                     primary={<Typography sx={{ fontWeight: 800 }}>{exercise.name}</Typography>}
-                    secondary={<Typography sx={{ fontSize: '0.8em' }}>Séries: {exercise.series} - {exercise.instructions}</Typography>}
+                    secondary={<Typography sx={{ fontSize: '0.8em' }}>{exercise.series} séries{exercise.instructions ? ` · ${exercise.instructions}` : ''}</Typography>}
                   />
                 </ListItemButton>
               </ListItem>

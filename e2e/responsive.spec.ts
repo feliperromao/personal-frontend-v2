@@ -26,15 +26,15 @@ test('shell do personal permanece responsivo nos breakpoints de aceitação', as
 
 test('reproduz a hierarquia aprovada no treino ativo', async ({ page }) => {
   const exercises = [
-    { id: 'e1', name: 'Supino inclinado', type: 'CHEST', instructions: 'Controle a descida por 3 segundos', rest: 72, load: 24, series: 4, load_progress: true, video: 'https://youtu.be/hlV6f0kHmeo' },
-    { id: 'e2', name: 'Crucifixo com halteres', type: 'CHEST', instructions: 'Mantenha os cotovelos estáveis', rest: 60, load: 12, series: 3, load_progress: false },
+    { id: 'e1', name: 'Supino inclinado', type: 'CHEST', instructions: 'Controle a descida por 3 segundos', rest: 72, series: 4, video: 'https://youtu.be/hlV6f0kHmeo' },
+    { id: 'e2', name: 'Crucifixo com halteres', type: 'CHEST', instructions: 'Mantenha os cotovelos estáveis', rest: 60, series: 3 },
   ];
   await page.addInitScript(({ exercises }) => {
     localStorage.setItem('auth-token', 'e2e-token');
     localStorage.setItem('user', JSON.stringify({ name: 'Lucas Aluno', email: 'lucas@example.com', type: 'STUDENT' }));
-    sessionStorage.setItem('active-training-progress', JSON.stringify({ id: 'p1', training_id: 't1', exercises }));
+    sessionStorage.setItem('active-training-progress', JSON.stringify({ id: 'p1', training_id: 't1', exercises, last_loads: { e1: 24, e2: 12 } }));
   }, { exercises });
-  await page.route('**/training-progress/current', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'p1', training_id: 't1', exercises, completed_series: [] }) }));
+  await page.route('**/training-progress/current', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'p1', training_id: 't1', exercises, completed_series: [], last_loads: { e1: 24, e2: 12 } }) }));
   await page.route('**/training-progress/t1', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 't1', name: 'Treino A · Peito e tríceps', description: 'Foco em controle', show_to_student: true, student_id: 's1', exercises }) }));
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/my-workouts/t1/exercises/e1');

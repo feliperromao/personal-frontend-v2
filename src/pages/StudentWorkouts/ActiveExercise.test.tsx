@@ -14,16 +14,13 @@ const exercise = {
   type: 'CHEST',
   instructions: 'Controle a descida',
   rest: 60,
-  load: 20,
   series: 3,
-  load_progress: true,
 };
 
 const secondExercise = {
   ...exercise,
   id: 'e2',
   name: 'Crucifixo com halteres',
-  load: 12,
 };
 
 const training = {
@@ -86,13 +83,14 @@ describe('execução do exercício', () => {
     expect(await screen.findByText('Série 2 de 3')).toBeInTheDocument();
   });
 
-  it('carrega a carga planejada de cada exercício sem reaproveitar o valor editado no anterior', async () => {
+  it('carrega a última carga de cada exercício sem reaproveitar o valor editado no anterior', async () => {
     const flexibleTraining = { ...training, exercises: [exercise, secondExercise] };
     sessionStorage.setItem('active-training-progress', JSON.stringify({
       id: 'p1',
       training_id: 't1',
       exercises: flexibleTraining.exercises,
       completed_series: [],
+      last_loads: { e1: 20, e2: 12 },
     }));
     mockTrainingRequests(flexibleTraining);
 
@@ -117,13 +115,13 @@ describe('execução do exercício', () => {
     expect(sessionStorage.getItem('load:p1:e2')).toBeNull();
   });
 
-  it('usa a carga congelada no início da execução mesmo se a ficha tiver sido editada depois', async () => {
-    const executionExercise = { ...exercise, load: 18 };
+  it('usa a última carga congelada no início da execução', async () => {
     sessionStorage.setItem('active-training-progress', JSON.stringify({
       id: 'p1',
       training_id: 't1',
-      exercises: [executionExercise],
+      exercises: [exercise],
       completed_series: [],
+      last_loads: { e1: 18 },
     }));
     mockTrainingRequests(training);
 

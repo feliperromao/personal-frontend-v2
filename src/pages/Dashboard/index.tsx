@@ -6,7 +6,7 @@ import { tokens } from '../../theme';
 
 const steps = [
   { number: '01', title: 'Organize seus alunos', description: 'Cadastre acessos e acompanhe as fichas vinculadas.', path: '/students', action: 'Ver alunos', icon: <PeopleOutline /> },
-  { number: '02', title: 'Monte sua biblioteca', description: 'Crie exercícios claros, com carga, descanso, instruções e vídeo.', path: '/exercises', action: 'Ver exercícios', icon: <FitnessCenterOutlined /> },
+  { number: '02', title: 'Monte sua biblioteca', description: 'Crie exercícios claros, com descanso, séries, instruções e vídeo.', path: '/exercises', action: 'Ver exercícios', icon: <FitnessCenterOutlined /> },
   { number: '03', title: 'Trace e pratique', description: 'Monte treinos para seus alunos ou execute uma ficha pessoal.', path: '/trainings', action: 'Ver treinos', icon: <SportsGymnasticsOutlined /> },
 ];
 

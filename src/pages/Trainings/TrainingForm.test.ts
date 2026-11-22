@@ -12,9 +12,7 @@ describe('payload do formulário de treino', () => {
       instructions: 'Controle a descida.',
       video: '',
       rest: 60,
-      load: 24,
       series: 4,
-      load_progress: true,
     } as Exercise & { personal_id: string };
     const training: Training = {
       id: 'training-1',

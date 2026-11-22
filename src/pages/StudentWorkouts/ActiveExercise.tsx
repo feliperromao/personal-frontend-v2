@@ -80,7 +80,7 @@ export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps
           const serverSeries = history.reduce((highest, item) => Math.max(highest, item.series), 0);
           setCompletedSeries(Math.max(serverSeries, localSeries));
           const pendingLoad = sessionStorage.getItem(`load:${current.id}:${exerciseId}`);
-          setSeriesLoad(pendingLoad ?? String(history.at(-1)?.load ?? exercise?.load ?? 0));
+          setSeriesLoad(pendingLoad ?? String(history.at(-1)?.load ?? current.last_loads?.[exerciseId] ?? 0));
           setRestSeconds(Number(sessionStorage.getItem(`rest:${current.id}:${exerciseId}`) || 0));
         }
       } catch { if (active) setError('Não encontramos uma execução ativa deste treino. Volte e inicie ou retome o treino.'); }
@@ -205,7 +205,7 @@ export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps
             </Box>
 
             <Box sx={{ py: 2, pl: 3, borderBlock: `1px solid ${tokens.color.line}`, position: 'relative', '&::before': { content: '""', position: 'absolute', left: 0, top: -6, width: 6, height: 36, borderRadius: 3, bgcolor: 'secondary.main' } }}>
-              <Typography sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' }, fontWeight: 700, transform: 'translateY(-30px)' }}>{exercise.instructions || 'Execute o movimento com controle.'}</Typography>
+              <Typography sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' }, fontWeight: 700, transform: 'translateY(-30px)' }}>{exercise.instructions || 'Sem instruções adicionais para este exercício.'}</Typography>
             </Box>
 
             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0,1fr))', borderBottom: `1px solid ${tokens.color.line}` }}>
@@ -234,7 +234,11 @@ export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps
                   <IconButton aria-label="Diminuir carga em 1 kg" onClick={() => adjustLoad(-1)} disabled={savingSeries || allSeriesDone || Number(seriesLoad) <= 0} sx={{ width: 44, height: 44, border: `1px solid ${tokens.color.line}`, borderRadius: 1.5 }}><Remove /></IconButton>
                   <IconButton aria-label="Aumentar carga em 1 kg" onClick={() => adjustLoad(1)} disabled={savingSeries || allSeriesDone} sx={{ width: 44, height: 44, border: `1px solid ${tokens.color.line}`, borderRadius: 1.5 }}><Add /></IconButton>
                 </Stack>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.75 }}>Registrada ao concluir</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.75 }}>
+                  {progress?.last_loads?.[exercise.id] !== undefined && completedSeries === 0
+                    ? 'Última carga registrada, ajuste se necessário'
+                    : 'Registrada ao concluir'}
+                </Typography>
               </Box>
               <Box sx={{ py: 2, pl: 2 }}>
                 <Typography color="text.primary" fontWeight={650} sx={{ transform: 'translateY(-32px)' }}>{exercise.repetitions ? 'Repetições' : 'Descanso'}</Typography>

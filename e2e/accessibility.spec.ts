@@ -28,13 +28,13 @@ test('login e início do personal não têm violações axe sérias ou críticas
 
 test('treino ativo não tem violações axe sérias ou críticas', async ({ page }) => {
   const exercises = [
-    { id: 'e1', name: 'Supino inclinado', type: 'CHEST', instructions: 'Controle a descida por 3 segundos', rest: 72, load: 24, repetitions: 10, series: 4, load_progress: true },
-    { id: 'e2', name: 'Crucifixo com halteres', type: 'CHEST', instructions: 'Mantenha os cotovelos estáveis', rest: 60, load: 12, series: 3, load_progress: false },
+    { id: 'e1', name: 'Supino inclinado', type: 'CHEST', instructions: 'Controle a descida por 3 segundos', rest: 72, repetitions: 10, series: 4 },
+    { id: 'e2', name: 'Crucifixo com halteres', type: 'CHEST', instructions: 'Mantenha os cotovelos estáveis', rest: 60, series: 3 },
   ];
   await page.addInitScript(({ exercises }) => {
     localStorage.setItem('auth-token', 'axe-token');
     localStorage.setItem('user', JSON.stringify({ name: 'Lucas Aluno', email: 'lucas@example.com', type: 'STUDENT' }));
-    sessionStorage.setItem('active-training-progress', JSON.stringify({ id: 'p1', training_id: 't1', exercises }));
+    sessionStorage.setItem('active-training-progress', JSON.stringify({ id: 'p1', training_id: 't1', exercises, last_loads: { e1: 24, e2: 12 } }));
   }, { exercises });
   await page.route('**/training-progress/t1', (route) => route.fulfill({
     status: 200,
@@ -44,7 +44,7 @@ test('treino ativo não tem violações axe sérias ou críticas', async ({ page
   await page.route('**/training-progress/current', (route) => route.fulfill({
     status: 200,
     contentType: 'application/json',
-    body: JSON.stringify({ id: 'p1', training_id: 't1', exercises, completed_series: [] }),
+    body: JSON.stringify({ id: 'p1', training_id: 't1', exercises, completed_series: [], last_loads: { e1: 24, e2: 12 } }),
   }));
   await page.goto('/my-workouts/t1/exercises/e1');
   await expect(page.getByRole('heading', { name: 'Supino inclinado' })).toBeVisible();

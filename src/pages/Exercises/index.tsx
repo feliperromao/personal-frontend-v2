@@ -43,7 +43,7 @@ export default function Exercises() {
 
   const edit = (id: GridRowId) => { setEditing(items.find((item) => item.id === id.toString())); setFormOpen(true); };
   const submit = async (exercise: ExerciseInput) => {
-    const payload: ExerciseInput = { ...exercise, rest: Number(exercise.rest), load: Number(exercise.load), series: Number(exercise.series) };
+    const payload: ExerciseInput = { ...exercise, rest: Number(exercise.rest), series: Number(exercise.series) };
     try {
       if (editing?.id) await api.put(`${URL}/${editing.id}`, payload); else await api.post(URL, payload);
       handleOpenNotification(editing ? 'Exercício atualizado com sucesso.' : 'Exercício criado com sucesso.', SNACKBAR_TYPES.success);
@@ -84,8 +84,8 @@ export default function Exercises() {
             {loading ? [1, 2, 3].map((item) => <Skeleton key={item} variant="rounded" height={170} />) : items.map((exercise) => (
               <Paper key={exercise.id} sx={{ p: 2.25, border: `1px solid ${tokens.color.line}` }}>
                 <Stack direction="row" justifyContent="space-between" gap={2}><Typography component="h3" variant="h5">{exercise.name}</Typography><Chip size="small" label={category(exercise.type)} /></Stack>
-                <Typography color="text.secondary" sx={{ mt: 1 }}>{exercise.instructions}</Typography>
-                <Typography variant="body2" sx={{ mt: 1 }}>{exercise.series} séries · {exercise.rest}s de descanso · {exercise.load || 0} kg</Typography>
+                {exercise.instructions && <Typography color="text.secondary" sx={{ mt: 1 }}>{exercise.instructions}</Typography>}
+                <Typography variant="body2" sx={{ mt: 1 }}>{exercise.series} séries · {exercise.rest}s de descanso</Typography>
                 <Stack direction="row" justifyContent="flex-end" spacing={0.5} sx={{ mt: 1 }}><IconButton aria-label={`Editar ${exercise.name}`} onClick={() => edit(exercise.id)}><EditOutlined /></IconButton><IconButton aria-label={`Excluir ${exercise.name}`} color="error" onClick={() => setDeleteId(exercise.id)}><DeleteOutline /></IconButton></Stack>
               </Paper>
             ))}

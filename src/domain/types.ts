@@ -20,13 +20,11 @@ export interface Exercise {
   id: string;
   name: string;
   type: string;
-  instructions: string;
+  instructions?: string;
   video?: string;
   rest: number;
-  load?: number;
   series: number;
   repetitions?: number;
-  load_progress: boolean;
 }
 
 export interface ExerciseInput {
@@ -35,14 +33,12 @@ export interface ExerciseInput {
   instructions: string;
   video: string;
   rest: number;
-  load: number;
   series: number;
-  load_progress: boolean;
 }
 
 export interface TrainingInput {
   name: string,
-  description: string,
+  description?: string,
   show_to_student: boolean,
   student_id?: string,
   exercises: Exercise[]
@@ -79,6 +75,7 @@ export interface TrainingProgress {
   current_exercise_id?: string;
   completed_exercises?: string[];
   completed_series?: CompletedSeries[];
+  last_loads?: Record<string, number>;
   finish_feedback?: string;
   finish_status?: FinishStatus;
 }

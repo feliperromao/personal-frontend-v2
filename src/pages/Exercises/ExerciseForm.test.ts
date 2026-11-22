@@ -11,10 +11,8 @@ describe('payload do formulário de exercício', () => {
       instructions: 'Controle a descida.',
       video: 'https://example.com/supino',
       rest: 30,
-      load: 24,
       series: 4,
       repetitions: 10,
-      load_progress: true,
     };
 
     expect(toExerciseInput(exercise)).toEqual({
@@ -23,9 +21,17 @@ describe('payload do formulário de exercício', () => {
       instructions: 'Controle a descida.',
       video: 'https://example.com/supino',
       rest: 30,
-      load: 24,
       series: 4,
-      load_progress: true,
     });
+  });
+
+  it('normaliza instruções ausentes como texto opcional vazio', () => {
+    expect(toExerciseInput({
+      id: 'exercise-456',
+      name: 'Prancha',
+      type: 'ABS',
+      rest: 30,
+      series: 3,
+    })).toMatchObject({ instructions: '' });
   });
 });

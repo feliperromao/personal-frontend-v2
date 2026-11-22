@@ -11,8 +11,8 @@ vi.mock('../@shared/api', () => ({ default: { get: vi.fn(), post: vi.fn() } }));
 const training = {
   id: 't1', name: 'Treino A', description: 'Peito e tríceps', show_to_student: true, student_id: 's1',
   exercises: [
-    { id: 'e1', name: 'Supino', type: 'CHEST', instructions: 'Controle a descida', rest: 60, load: 20, series: 3, load_progress: true },
-    { id: 'e2', name: 'Crucifixo', type: 'CHEST', instructions: 'Mantenha o controle', rest: 45, load: 10, series: 2, load_progress: true },
+    { id: 'e1', name: 'Supino', type: 'CHEST', instructions: 'Controle a descida', rest: 60, series: 3 },
+    { id: 'e2', name: 'Crucifixo', type: 'CHEST', instructions: 'Mantenha o controle', rest: 45, series: 2 },
   ],
 };
 

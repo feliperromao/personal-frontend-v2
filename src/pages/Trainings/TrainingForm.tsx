@@ -84,7 +84,7 @@ export default function TrainingForm({ training, isOpen, students, onSubmit, han
               }}
               renderInput={(params) => <TextField {...params} label="Aluno (opcional)" helperText="Sem aluno, o treino fica disponível apenas para você executar." />}
             />
-            <TextField required label="Orientação geral" value={form.description} onChange={(event) => update({ description: event.target.value })} multiline minRows={3} sx={{ gridColumn: { md: '1 / -1' } }} />
+            <TextField label="Orientação geral (opcional)" value={form.description ?? ''} onChange={(event) => update({ description: event.target.value })} multiline minRows={3} sx={{ gridColumn: { md: '1 / -1' } }} />
             <FormControlLabel
               control={<Switch checked={Boolean(student && form.show_to_student)} disabled={!student} onChange={(_, checked) => update({ show_to_student: checked })} />}
               label={student ? 'Publicar para o aluno' : 'Associe um aluno para publicar'}
@@ -100,7 +100,7 @@ export default function TrainingForm({ training, isOpen, students, onSubmit, han
             {exercises.map((exercise, index) => (
               <Paper key={exercise.id} sx={{ p: 2, border: `1px solid ${tokens.color.line}`, display: 'grid', gridTemplateColumns: '44px 1fr auto', gap: 1.5, alignItems: 'center' }}>
                 <Box sx={{ width: 40, height: 40, borderRadius: '50%', bgcolor: 'primary.main', color: '#fff', display: 'grid', placeItems: 'center', fontWeight: 800 }}>{index + 1}</Box>
-                <Box minWidth={0}><Typography fontWeight={750}>{exercise.name}</Typography><Typography variant="body2" color="text.secondary" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{exercise.instructions}</Typography></Box>
+                <Box minWidth={0}><Typography fontWeight={750}>{exercise.name}</Typography><Typography variant="body2" color="text.secondary" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{exercise.instructions || `${exercise.series} séries · ${exercise.rest}s de descanso`}</Typography></Box>
                 <Stack direction="row" flexWrap="wrap" justifyContent="flex-end">
                   <IconButton aria-label={`Mover ${exercise.name} para cima`} disabled={index === 0} onClick={() => move(index, -1)}><ArrowUpward /></IconButton>
                   <IconButton aria-label={`Mover ${exercise.name} para baixo`} disabled={index === exercises.length - 1} onClick={() => move(index, 1)}><ArrowDownward /></IconButton>
