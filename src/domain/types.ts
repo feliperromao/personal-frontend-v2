@@ -103,7 +103,7 @@ export interface EvolutionPoint {
 }
 
 export interface EvolutionReport {
-  student: { id: string; name: string };
+  subject: { id: string; name: string; type: UserRole };
   exercises: EvolutionExercise[];
   selected_exercise_id: string | null;
   summary: {

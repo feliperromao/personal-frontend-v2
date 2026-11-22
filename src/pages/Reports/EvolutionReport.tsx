@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { QueryStatsOutlined, Replay, SwipeOutlined, TrendingDown, TrendingFlat, TrendingUp } from '@mui/icons-material';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Replay, SwipeOutlined, TrendingDown, TrendingFlat, TrendingUp } from '@mui/icons-material';
 import { Alert, Box, Button, Chip, Divider, Paper, Skeleton, Stack, TextField, Typography } from '@mui/material';
 import Template from '../../components/Template';
 import { EvolutionReport as EvolutionReportData, User, UserRole } from '../../domain/types';
@@ -13,6 +13,7 @@ interface EvolutionReportProps {
 
 const loadNumber = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
 const fullDate = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+const SELF_SUBJECT = 'self';
 
 function formatLoad(value: number | null) {
   return value === null ? '—' : `${loadNumber.format(value)} kg`;
@@ -21,30 +22,40 @@ function formatLoad(value: number | null) {
 export default function EvolutionReport({ mode = 'STUDENT' }: EvolutionReportProps) {
   const personal = mode === 'PERSONAL';
   const [students, setStudents] = useState<User[]>([]);
-  const [studentId, setStudentId] = useState('');
+  const [subjectId, setSubjectId] = useState(personal ? SELF_SUBJECT : '');
   const [report, setReport] = useState<EvolutionReportData | null>(null);
   const [loadingStudents, setLoadingStudents] = useState(personal);
-  const [loadingReport, setLoadingReport] = useState(!personal);
+  const [loadingReport, setLoadingReport] = useState(true);
   const [error, setError] = useState('');
+  const reportRequest = useRef<AbortController | null>(null);
 
   const loadReport = useCallback(async (selectedStudentId?: string, exerciseId?: string) => {
-    if (personal && !selectedStudentId) return;
+    reportRequest.current?.abort();
+    const controller = new AbortController();
+    reportRequest.current = controller;
     setLoadingReport(true);
     setError('');
     try {
+      const studentId = personal && selectedStudentId && selectedStudentId !== SELF_SUBJECT
+        ? selectedStudentId
+        : undefined;
       const { data } = await api.get<EvolutionReportData>('/reports/evolution', {
+        signal: controller.signal,
         params: {
-          ...(personal ? { student_id: selectedStudentId } : {}),
+          ...(studentId ? { student_id: studentId } : {}),
           ...(exerciseId ? { exercise_id: exerciseId } : {}),
         },
       });
-      setReport(data);
+      if (reportRequest.current === controller) setReport(data);
     } catch {
+      if (controller.signal.aborted) return;
       setError('Não foi possível carregar a evolução. Verifique a conexão e tente novamente.');
     } finally {
-      setLoadingReport(false);
+      if (reportRequest.current === controller) setLoadingReport(false);
     }
   }, [personal]);
+
+  useEffect(() => () => reportRequest.current?.abort(), []);
 
   const loadStudents = useCallback(async () => {
     setLoadingStudents(true);
@@ -66,6 +77,7 @@ export default function EvolutionReport({ mode = 'STUDENT' }: EvolutionReportPro
     }
 
     loadStudents();
+    loadReport(SELF_SUBJECT);
   }, [loadReport, loadStudents, personal]);
 
   const exercise = useMemo(
@@ -79,29 +91,29 @@ export default function EvolutionReport({ mode = 'STUDENT' }: EvolutionReportPro
       ? { label: `+${loadNumber.format(change)} kg desde o início`, color: 'success' as const, icon: <TrendingUp /> }
       : { label: `${loadNumber.format(change)} kg desde o início`, color: 'warning' as const, icon: <TrendingDown /> };
 
-  const selectStudent = (nextStudentId: string) => {
-    setStudentId(nextStudentId);
+  const selectSubject = (nextSubjectId: string) => {
+    setSubjectId(nextSubjectId);
     setReport(null);
-    if (nextStudentId) loadReport(nextStudentId);
+    loadReport(nextSubjectId);
   };
 
   const selectExercise = (exerciseId: string) => {
-    loadReport(personal ? studentId : undefined, exerciseId);
+    loadReport(personal ? subjectId : undefined, exerciseId);
   };
 
   const retry = () => {
-    if (personal && !studentId) loadStudents();
-    else loadReport(personal ? studentId : undefined, report?.selected_exercise_id || undefined);
+    if (personal) loadStudents();
+    loadReport(personal ? subjectId : undefined, report?.selected_exercise_id || undefined);
   };
 
   return (
     <Template type={mode} pageName="Relatórios">
       <Stack spacing={3.5} sx={{ maxWidth: 1120, mx: 'auto' }}>
         <Box>
-          <Typography component="h2" variant="h2">{personal ? 'Evolução dos alunos' : 'Minha evolução'}</Typography>
+          <Typography component="h2" variant="h2">{personal ? 'Evolução' : 'Minha evolução'}</Typography>
           <Typography color="text.secondary" sx={{ mt: 1, maxWidth: '68ch' }}>
             {personal
-              ? 'Acompanhe como as cargas evoluem a cada treino concluído e use o histórico para orientar os próximos ajustes.'
+              ? 'Acompanhe suas próprias cargas ou selecione um aluno para orientar os próximos ajustes de treino.'
               : 'Veja sua progressão de carga em cada exercício concluído e reconheça a consistência construída treino após treino.'}
           </Typography>
         </Box>
@@ -112,22 +124,22 @@ export default function EvolutionReport({ mode = 'STUDENT' }: EvolutionReportPro
               <TextField
                 select
                 SelectProps={{ native: true }}
-                InputLabelProps={{ sx: { color: 'text.secondary' } }}
+                InputLabelProps={{ sx: { color: `${tokens.color.muted} !important` } }}
                 FormHelperTextProps={{ sx: { color: 'text.secondary' } }}
-                label="Aluno"
-                value={studentId}
+                label="Visualizar evolução de"
+                value={subjectId}
                 disabled={loadingStudents}
-                onChange={(event) => selectStudent(event.target.value)}
-                helperText={loadingStudents ? 'Carregando alunos…' : 'Selecione quem você quer acompanhar'}
+                onChange={(event) => selectSubject(event.target.value)}
+                helperText={loadingStudents ? 'Carregando alunos…' : 'Alterne entre seus treinos e os dos seus alunos'}
               >
-                <option value="">Selecione um aluno</option>
+                <option value={SELF_SUBJECT}>Minha evolução</option>
                 {students.map((student) => <option key={student.id} value={student.id}>{student.name}</option>)}
               </TextField>
             )}
             <TextField
               select
               SelectProps={{ native: true }}
-              InputLabelProps={{ sx: { color: 'text.secondary' } }}
+              InputLabelProps={{ sx: { color: `${tokens.color.muted} !important` } }}
               FormHelperTextProps={{ sx: { color: 'text.secondary' } }}
               label="Exercício"
               value={report?.selected_exercise_id || ''}
@@ -154,17 +166,11 @@ export default function EvolutionReport({ mode = 'STUDENT' }: EvolutionReportPro
             <Skeleton variant="rounded" height={430} />
             <Skeleton variant="rounded" height={180} />
           </Stack>
-        ) : personal && !studentId ? (
-          <Paper sx={{ p: { xs: 3, sm: 5 }, border: `1px solid ${tokens.color.line}`, textAlign: 'center' }}>
-            <QueryStatsOutlined color="primary" sx={{ fontSize: 48 }} />
-            <Typography variant="h4" sx={{ mt: 1 }}>Escolha um aluno para começar</Typography>
-            <Typography color="text.secondary" sx={{ mt: 1 }}>O relatório reunirá apenas exercícios que ele já concluiu.</Typography>
-          </Paper>
         ) : report && report.exercises.length === 0 ? (
           <Paper sx={{ p: { xs: 3, sm: 5 }, border: `1px solid ${tokens.color.line}` }}>
             <Typography variant="h4">Ainda não há evolução para mostrar</Typography>
             <Typography color="text.secondary" sx={{ mt: 1, maxWidth: '60ch' }}>
-              Quando {personal ? report.student.name : 'você'} concluir séries com carga registrada, os primeiros pontos aparecerão aqui.
+              Quando {report.subject.type === 'PERSONAL' || !personal ? 'você' : report.subject.name} concluir séries com carga registrada, os primeiros pontos aparecerão aqui.
             </Typography>
           </Paper>
         ) : report && exercise ? (

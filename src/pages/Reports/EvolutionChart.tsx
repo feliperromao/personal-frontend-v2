@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Box } from '@mui/material';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { EvolutionPoint } from '../../domain/types';
 import { tokens } from '../../theme';
 
@@ -13,9 +13,11 @@ const loadNumber = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 });
 
 export default function EvolutionChart({ points, exerciseName }: EvolutionChartProps) {
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const theme = useTheme();
+  const compact = useMediaQuery(theme.breakpoints.down('sm'));
   const width = Math.max(560, points.length * 92);
-  const height = 300;
-  const padding = { top: 54, right: 24, bottom: 50, left: 52 };
+  const height = compact ? 220 : 300;
+  const padding = { top: compact ? 44 : 54, right: 24, bottom: compact ? 42 : 50, left: 52 };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
   const loads = points.map((point) => point.max_load);

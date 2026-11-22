@@ -64,7 +64,7 @@ test('relatório de evolução não tem violações axe sérias ou críticas', a
     status: 200,
     contentType: 'application/json',
     body: JSON.stringify({
-      student: { id: 'student-1', name: 'Ana Aluna' },
+      subject: { id: 'student-1', name: 'Ana Aluna', type: 'STUDENT' },
       exercises: [{ id: 'exercise-1', name: 'Supino inclinado', executions: 2, personal_best: 25 }],
       selected_exercise_id: 'exercise-1',
       summary: { initial_load: 20, current_load: 25, absolute_change: 5, percentage_change: 25, personal_best: 25, total_executions: 2, total_series: 6 },

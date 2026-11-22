@@ -9,7 +9,7 @@ vi.mock('../../components/Template', () => ({ default: ({ children }: { children
 vi.mock('../@shared/api', () => ({ default: { get: vi.fn() } }));
 
 const report = {
-  student: { id: 'student-1', name: 'Ana' },
+  subject: { id: 'student-1', name: 'Ana', type: 'STUDENT' },
   exercises: [{ id: 'exercise-1', name: 'Supino inclinado', executions: 2, personal_best: 25 }],
   selected_exercise_id: 'exercise-1',
   summary: { initial_load: 20, current_load: 25, absolute_change: 5, percentage_change: 25, personal_best: 25, total_executions: 2, total_series: 5 },
@@ -18,6 +18,12 @@ const report = {
     { progress_id: 'p2', training_id: 't1', training_name: 'Treino A', executed_at: '2026-10-08T10:00:00Z', max_load: 25, average_load: 24.2, completed_series: 3, planned_series: 3, loads: [22.5, 25, 25] },
   ],
 };
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((complete) => { resolve = complete; });
+  return { promise, resolve };
+}
 
 describe('relatório de evolução', () => {
   beforeEach(() => {
@@ -29,14 +35,14 @@ describe('relatório de evolução', () => {
     render(<MemoryRouter><EvolutionReport mode="STUDENT" /></MemoryRouter>);
 
     expect(await screen.findByRole('heading', { name: 'Minha evolução' })).toBeInTheDocument();
-    await waitFor(() => expect(api.get).toHaveBeenCalledWith('/reports/evolution', { params: {} }));
+    await waitFor(() => expect(api.get).toHaveBeenCalledWith('/reports/evolution', expect.objectContaining({ params: {} })));
     expect(screen.getByRole('img', { name: /Evolução de carga em Supino inclinado/ })).toBeInTheDocument();
     expect(screen.getByText('+5 kg desde o início')).toBeInTheDocument();
     expect(screen.getAllByText('25 kg').length).toBeGreaterThan(0);
     expect(screen.getByText(/cargas: 22,5 · 25 · 25 kg/)).toBeInTheDocument();
   });
 
-  it('permite que o personal selecione um aluno antes de consultar a evolução', async () => {
+  it('abre a evolução do próprio personal e permite alternar para um aluno', async () => {
     vi.mocked(api.get).mockImplementation((url) => Promise.resolve({
       data: url === '/students/list-all'
         ? [{ id: 'student-1', name: 'Ana', email: 'ana@example.com' }]
@@ -46,10 +52,41 @@ describe('relatório de evolução', () => {
 
     render(<MemoryRouter><EvolutionReport mode="PERSONAL" /></MemoryRouter>);
 
-    expect(await screen.findByRole('heading', { name: 'Evolução dos alunos' })).toBeInTheDocument();
-    await user.selectOptions(await screen.findByRole('combobox', { name: 'Aluno' }), 'student-1');
-
-    await waitFor(() => expect(api.get).toHaveBeenCalledWith('/reports/evolution', { params: { student_id: 'student-1' } }));
+    expect(await screen.findByRole('heading', { name: 'Evolução' })).toBeInTheDocument();
+    const subjectSelect = await screen.findByRole('combobox', { name: 'Visualizar evolução de' });
+    expect(subjectSelect).toHaveValue('self');
+    await waitFor(() => expect(api.get).toHaveBeenCalledWith('/reports/evolution', expect.objectContaining({ params: {} })));
     expect(await screen.findByRole('img', { name: /Evolução de carga em Supino inclinado/ })).toBeInTheDocument();
+
+    await user.selectOptions(subjectSelect, 'student-1');
+
+    await waitFor(() => expect(api.get).toHaveBeenCalledWith('/reports/evolution', expect.objectContaining({ params: { student_id: 'student-1' } })));
+  });
+
+  it('descarta a resposta anterior quando o personal troca rapidamente de pessoa', async () => {
+    const ownRequest = deferred<{ data: typeof report }>();
+    const studentReport = {
+      ...report,
+      subject: { id: 'student-1', name: 'Ana', type: 'STUDENT' },
+      exercises: [{ id: 'exercise-2', name: 'Remada baixa', executions: 1, personal_best: 35 }],
+      selected_exercise_id: 'exercise-2',
+      points: report.points.map((point) => ({ ...point, max_load: 35 })),
+    };
+    vi.mocked(api.get).mockImplementation((url, config) => {
+      if (url === '/students/list-all') return Promise.resolve({ data: [{ id: 'student-1', name: 'Ana' }] }) as never;
+      if ((config?.params as { student_id?: string } | undefined)?.student_id === 'student-1') return Promise.resolve({ data: studentReport }) as never;
+      return ownRequest.promise as never;
+    });
+    const user = userEvent.setup();
+
+    render(<MemoryRouter><EvolutionReport mode="PERSONAL" /></MemoryRouter>);
+    const subjectSelect = await screen.findByRole('combobox', { name: 'Visualizar evolução de' });
+    await user.selectOptions(subjectSelect, 'student-1');
+
+    expect(await screen.findByRole('heading', { name: 'Remada baixa' })).toBeInTheDocument();
+    ownRequest.resolve({ data: report });
+    await Promise.resolve();
+    expect(screen.getByRole('heading', { name: 'Remada baixa' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Supino inclinado' })).not.toBeInTheDocument();
   });
 });

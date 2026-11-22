@@ -21,7 +21,7 @@ const points = [
 }));
 
 const report = {
-  student: { id: 'student-1', name: 'Ana Martins' },
+  subject: { id: 'student-1', name: 'Ana Martins', type: 'STUDENT' },
   exercises: [
     { id: 'exercise-1', name: 'Supino inclinado', executions: 7, personal_best: 30 },
     { id: 'exercise-2', name: 'Crucifixo com halteres', executions: 5, personal_best: 16 },
@@ -48,9 +48,12 @@ async function preparePage(viewport, type) {
     localStorage.setItem('auth-token', 'visual-review-token');
     localStorage.setItem('user', JSON.stringify({ name: type === 'STUDENT' ? 'Ana Martins' : 'Marina Personal', email: 'review@example.com', type }));
   }, { type });
+  const responseReport = type === 'PERSONAL'
+    ? { ...report, subject: { id: 'personal-1', name: 'Marina Personal', type: 'PERSONAL' } }
+    : report;
   await page.route('**/reports/evolution**', (route) => {
     if (route.request().resourceType() === 'document') return route.continue();
-    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(report) });
+    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(responseReport) });
   });
   await page.route('**/students/list-all', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([{ id: 'student-1', name: 'Ana Martins', email: 'ana@example.com' }]) }));
   return { context, page };
@@ -70,8 +73,8 @@ async function captureStudent(viewport, output) {
 async function capturePersonal() {
   const { context, page } = await preparePage({ width: 1440, height: 900 }, 'PERSONAL');
   await page.goto('http://127.0.0.1:4173/reports/evolution');
-  await page.getByRole('heading', { name: 'Evolução dos alunos' }).waitFor();
-  await page.getByRole('combobox', { name: 'Aluno' }).selectOption('student-1');
+  await page.getByRole('heading', { name: 'Evolução', exact: true }).waitFor();
+  await page.getByRole('combobox', { name: 'Visualizar evolução de' }).waitFor();
   await page.getByRole('img', { name: /Evolução de carga em Supino inclinado/ }).waitFor();
   await page.screenshot({ path: '.impeccable/review/personal.png', fullPage: true });
   await context.close();
