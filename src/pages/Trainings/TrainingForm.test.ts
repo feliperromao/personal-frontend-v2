@@ -22,6 +22,7 @@ describe('payload do formulário de treino', () => {
       show_to_student: true,
       student_id: 'student-1',
       exercises: [exercise],
+      exercise_groups: [],
     };
 
     const payload = toTrainingInput(training);
@@ -32,10 +33,29 @@ describe('payload do formulário de treino', () => {
       show_to_student: true,
       student_id: 'student-1',
       exercises: [exercise],
+      exercise_groups: [],
     });
     expect(payload).not.toHaveProperty('id');
     expect(payload).not.toHaveProperty('personal_id');
     expect(payload.exercises[0]).toHaveProperty('id', 'exercise-1');
+  });
+
+  it('preserva a configuração de uma série combinada', () => {
+    const exercises = [
+      { id: 'e1', name: 'Rosca direta', type: 'BICEPS', rest: 45, series: 3 },
+      { id: 'e2', name: 'Rosca martelo', type: 'BICEPS', rest: 45, series: 3 },
+    ] as Exercise[];
+
+    const payload = toTrainingInput({
+      name: 'Braços',
+      show_to_student: false,
+      exercises,
+      exercise_groups: [{ id: 'g1', exercise_ids: ['e1', 'e2'], series: 3, rest: 60 }],
+    });
+
+    expect(payload.exercise_groups).toEqual([
+      { id: 'g1', exercise_ids: ['e1', 'e2'], series: 3, rest: 60 },
+    ]);
   });
 
   it('permite um treino sem aluno e impede publicação inconsistente', () => {

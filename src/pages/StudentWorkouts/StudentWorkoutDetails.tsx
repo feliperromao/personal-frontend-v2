@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowBack, ArrowForward, Close, PlayArrow, Replay } from '@mui/icons-material';
+import { ArrowBack, ArrowForward, Close, LinkOutlined, PlayArrow, Replay } from '@mui/icons-material';
 import { Alert, Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Paper, Stack, Typography } from '@mui/material';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import Template from '../../components/Template';
@@ -9,6 +9,7 @@ import { tokens } from '../../theme';
 import api from '../@shared/api';
 import { findFirstPendingExercise, getExerciseProgress } from './workoutProgress';
 import { getWorkoutRoutes } from './workoutRoutes';
+import { getWorkoutBlocks } from '../../domain/workoutBlocks';
 
 interface StudentWorkoutDetailsProps {
   mode?: UserRole;
@@ -46,7 +47,8 @@ export default function StudentWorkoutDetails({ mode = 'STUDENT' }: StudentWorko
 
   const firstExercisePath = (data: TrainingProgress | Training, activeProgress: TrainingProgress | null = null) => {
     const exercises = data.exercises || [];
-    const exercise = activeProgress ? findFirstPendingExercise(exercises, activeProgress) || exercises[0] : exercises[0];
+    const groups = data.exercise_groups || [];
+    const exercise = activeProgress ? findFirstPendingExercise(exercises, activeProgress, groups) || exercises[0] : exercises[0];
     return exercise ? routes.exercise(exercise.id) : routes.detail;
   };
 
@@ -116,22 +118,26 @@ export default function StudentWorkoutDetails({ mode = 'STUDENT' }: StudentWorko
             <Paper sx={{ border: `1px solid ${tokens.color.line}`, overflow: 'hidden' }}>
               <Box sx={{ p: 2.5 }}>
                 <Typography component="h3" variant="h4">Sequência</Typography>
-                <Typography color="text.secondary">{training.exercises?.length || 0} exercícios</Typography>
+                <Typography color="text.secondary">{getWorkoutBlocks(training.exercises, training.exercise_groups).length} etapas · {training.exercises?.length || 0} exercícios</Typography>
               </Box>
               <Divider />
               <Stack divider={<Divider flexItem />}>
-                {training.exercises?.map((exercise, index) => {
-                  const exerciseProgress = getExerciseProgress(exercise, progress);
+                {getWorkoutBlocks(training.exercises, training.exercise_groups).map((block, index) => {
+                  const exercise = block.exercises[0];
+                  const exerciseProgress = getExerciseProgress(exercise, progress, training.exercise_groups, training.exercises);
                   return (
-                  <Box key={exercise.id} sx={{ p: 2.5, display: 'grid', gridTemplateColumns: '44px 1fr auto', gap: 1.5, alignItems: 'center' }}>
+                  <Box key={block.id} sx={{ p: 2.5, display: 'grid', gridTemplateColumns: '44px minmax(0,1fr) auto', gap: 1.5, alignItems: 'center' }}>
                     <Chip label={exerciseProgress.complete ? '✓' : index + 1} color={exerciseProgress.complete ? 'success' : 'default'} variant={exerciseProgress.complete ? 'filled' : 'outlined'} aria-label={`Exercício ${index + 1}${exerciseProgress.complete ? ' concluído' : ''}`} />
                     <Box minWidth={0}>
-                      <Typography fontWeight={750}>{exercise.name}</Typography>
+                      <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
+                        <Typography fontWeight={750}>{block.exercises.map(item => item.name).join(' + ')}</Typography>
+                        {block.isCombination && <Chip icon={<LinkOutlined />} size="small" variant="outlined" color="primary" label="Combinados" />}
+                      </Stack>
                       <Typography variant="body2" color={exerciseProgress.complete ? 'success.main' : 'text.secondary'}>
-                        {progress ? `${exerciseProgress.completedSeries} de ${exercise.series} séries` : `${exercise.series} séries · descanso de ${exercise.rest}s`}
+                        {progress ? `${exerciseProgress.completedSeries} de ${block.series} séries` : `${block.series} séries · descanso de ${block.rest}s${block.isCombination ? ' após o bloco' : ''}`}
                       </Typography>
                     </Box>
-                    {progress && <Button component={Link} to={`/my-workouts/${trainingId}/exercises/${exercise.id}`} aria-label={`Abrir ${exercise.name}`}><ArrowForward /></Button>}
+                    {progress && <Button component={Link} to={routes.exercise(exercise.id)} aria-label={`Abrir ${block.exercises.map(item => item.name).join(' + ')}`}><ArrowForward /></Button>}
                   </Box>
                   );
                 })}

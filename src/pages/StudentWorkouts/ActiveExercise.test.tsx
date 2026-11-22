@@ -83,6 +83,56 @@ describe('execução do exercício', () => {
     expect(await screen.findByText('Série 2 de 3')).toBeInTheDocument();
   });
 
+  it('registra uma série combinada somente com as cargas de todos os exercícios', async () => {
+    const groupedTraining = {
+      ...training,
+      exercises: [exercise, secondExercise],
+      exercise_groups: [{ id: 'g1', exercise_ids: ['e1', 'e2'], series: 3, rest: 75 }],
+    };
+    sessionStorage.setItem('active-training-progress', JSON.stringify({
+      id: 'p1',
+      training_id: 't1',
+      exercises: groupedTraining.exercises,
+      exercise_groups: groupedTraining.exercise_groups,
+      completed_series: [],
+    }));
+    mockTrainingRequests(groupedTraining);
+    vi.mocked(api.post).mockResolvedValue({ data: {
+      id: 'p1',
+      training_id: 't1',
+      exercises: groupedTraining.exercises,
+      exercise_groups: groupedTraining.exercise_groups,
+      completed_series: [
+        { exercise_id: 'e1', series: 1, load: 20, completed_at: '2026-11-17T19:00:00.000Z' },
+        { exercise_id: 'e2', series: 1, load: 12, completed_at: '2026-11-17T19:00:00.000Z' },
+      ],
+    } } as never);
+
+    render(
+      <MemoryRouter initialEntries={['/my-workouts/t1/exercises/e1']}>
+        <Routes>
+          <Route path="/my-workouts/:trainingId/exercises/:exerciseId" element={<ActiveExercise />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    fireEvent.change(await screen.findByRole('spinbutton', { name: 'Carga de Supino inclinado em quilogramas' }), { target: { value: '20' } });
+    fireEvent.change(screen.getByRole('spinbutton', { name: 'Carga de Crucifixo com halteres em quilogramas' }), { target: { value: '12' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Concluir série combinada' }));
+
+    await waitFor(() => expect(api.post).toHaveBeenCalledWith('/training-progress/series-group', {
+      id: 'p1',
+      group_id: 'g1',
+      series: 1,
+      exercises: [
+        { exercise_id: 'e1', load: 20 },
+        { exercise_id: 'e2', load: 12 },
+      ],
+    }));
+    expect(await screen.findByText('Série 2 de 3 · 2 exercícios seguidos')).toBeInTheDocument();
+    expect(screen.getByText('75s')).toBeInTheDocument();
+  });
+
   it('carrega a última carga de cada exercício sem reaproveitar o valor editado no anterior', async () => {
     const flexibleTraining = { ...training, exercises: [exercise, secondExercise] };
     sessionStorage.setItem('active-training-progress', JSON.stringify({
@@ -213,7 +263,7 @@ describe('execução do exercício', () => {
       </MemoryRouter>,
     );
 
-    const nextAction = await screen.findByRole('button', { name: 'Próximo exercício pendente' });
+    const nextAction = await screen.findByRole('button', { name: 'Próxima etapa pendente' });
     fireEvent.click(nextAction);
 
     expect(await screen.findByRole('heading', { name: 'Crucifixo com halteres' })).toBeInTheDocument();

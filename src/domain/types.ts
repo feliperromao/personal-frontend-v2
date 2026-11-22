@@ -65,12 +65,20 @@ export interface ExerciseInput {
   series: number;
 }
 
+export interface ExerciseGroup {
+  id: string;
+  exercise_ids: string[];
+  series: number;
+  rest: number;
+}
+
 export interface TrainingInput {
   name: string,
   description?: string,
   show_to_student: boolean,
   student_id?: string,
-  exercises: Exercise[]
+  exercises: Exercise[],
+  exercise_groups?: ExerciseGroup[]
 }
 
 export interface Training extends TrainingInput {
@@ -98,6 +106,7 @@ export interface TrainingProgress {
   executor_type?: UserRole;
   training?: Training;
   exercises?: Exercise[];
+  exercise_groups?: ExerciseGroup[];
   status?: string;
   started_at?: string;
   finished_at?: string;

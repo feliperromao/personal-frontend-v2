@@ -4,6 +4,7 @@ import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, 
 import { useNavigate, useParams } from 'react-router-dom';
 import Template from '../../components/Template';
 import { FinishStatus, Training, TrainingProgress, UserRole } from '../../domain/types';
+import { getWorkoutBlockForExercise } from '../../domain/workoutBlocks';
 import { usePwa } from '../../platform/PwaContext';
 import { tokens } from '../../theme';
 import api from '../@shared/api';
@@ -36,7 +37,7 @@ export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps
   const [progress, setProgress] = useState<TrainingProgress | null>(null);
   const [training, setTraining] = useState<Training | null>(null);
   const [completedSeries, setCompletedSeries] = useState(0);
-  const [seriesLoad, setSeriesLoad] = useState('0');
+  const [seriesLoads, setSeriesLoads] = useState<Record<string, string>>({});
   const [restSeconds, setRestSeconds] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -69,19 +70,26 @@ export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps
           const executionExercises = current.exercises?.length
             ? current.exercises
             : detail.data.exercises || [];
+          const executionGroups = current.exercise_groups?.length
+            ? current.exercise_groups
+            : detail.data.exercise_groups || [];
           setProgress(current);
-          setTraining({ ...detail.data, exercises: executionExercises });
+          setTraining({ ...detail.data, exercises: executionExercises, exercise_groups: executionGroups });
           sessionStorage.setItem('active-training-progress', JSON.stringify(current));
-          const exercise = executionExercises.find(item => item.id === exerciseId);
-          const history = (current.completed_series || [])
-            .filter(item => item.exercise_id === exerciseId)
-            .sort((a, b) => a.series - b.series);
-          const localSeries = Number(sessionStorage.getItem(`series:${current.id}:${exerciseId}`) || 0);
-          const serverSeries = history.reduce((highest, item) => Math.max(highest, item.series), 0);
+          const block = getWorkoutBlockForExercise(executionExercises, executionGroups, exerciseId);
+          const blockExercises = block?.exercises || executionExercises.filter(item => item.id === exerciseId);
+          const storageId = block?.isCombination ? block.id : exerciseId;
+          const localSeries = Number(sessionStorage.getItem(`series:${current.id}:${storageId}`) || 0);
+          const serverSeries = Array.from({ length: block?.series || blockExercises[0]?.series || 0 }, (_, index) => index + 1)
+            .filter(series => blockExercises.every(item => (current.completed_series || [])
+              .some(history => history.exercise_id === item.id && history.series === series))).length;
           setCompletedSeries(Math.max(serverSeries, localSeries));
-          const pendingLoad = sessionStorage.getItem(`load:${current.id}:${exerciseId}`);
-          setSeriesLoad(pendingLoad ?? String(history.at(-1)?.load ?? current.last_loads?.[exerciseId] ?? 0));
-          setRestSeconds(Number(sessionStorage.getItem(`rest:${current.id}:${exerciseId}`) || 0));
+          setSeriesLoads(Object.fromEntries(blockExercises.map(item => {
+            const history = (current.completed_series || []).filter(entry => entry.exercise_id === item.id).sort((a, b) => a.series - b.series);
+            const pendingLoad = sessionStorage.getItem(`load:${current.id}:${item.id}`);
+            return [item.id, pendingLoad ?? String(history.at(-1)?.load ?? current.last_loads?.[item.id] ?? 0)];
+          })));
+          setRestSeconds(Number(sessionStorage.getItem(`rest:${current.id}:${storageId}`) || 0));
         }
       } catch { if (active) setError('Não encontramos uma execução ativa deste treino. Volte e inicie ou retome o treino.'); }
       finally { if (active) setLoading(false); }
@@ -91,10 +99,15 @@ export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps
 
   const exerciseIndex = training?.exercises?.findIndex((item) => item.id === exerciseId) ?? -1;
   const exercise = exerciseIndex >= 0 ? training?.exercises?.[exerciseIndex] : undefined;
-  const allSeriesDone = Boolean(exercise && completedSeries >= exercise.series);
   const exercises = useMemo(() => training?.exercises || [], [training?.exercises]);
-  const nextPendingExercise = useMemo(() => findNextPendingExercise(exercises, progress, exerciseId), [exerciseId, exercises, progress]);
-  const workoutSummary = useMemo(() => getWorkoutProgress(exercises, progress), [exercises, progress]);
+  const groups = useMemo(() => training?.exercise_groups || [], [training?.exercise_groups]);
+  const activeBlock = useMemo(() => getWorkoutBlockForExercise(exercises, groups, exerciseId), [exerciseId, exercises, groups]);
+  const activeExercises = activeBlock?.exercises || (exercise ? [exercise] : []);
+  const totalSeries = activeBlock?.series || exercise?.series || 0;
+  const storageId = activeBlock?.isCombination ? activeBlock.id : exerciseId;
+  const allSeriesDone = Boolean(exercise && completedSeries >= totalSeries);
+  const nextPendingExercise = useMemo(() => findNextPendingExercise(exercises, progress, exerciseId, groups), [exerciseId, exercises, groups, progress]);
+  const workoutSummary = useMemo(() => getWorkoutProgress(exercises, progress, groups), [exercises, groups, progress]);
 
   useEffect(() => {
     if (restSeconds <= 0) return;
@@ -103,45 +116,53 @@ export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps
   }, [restSeconds]);
 
   useEffect(() => {
-    if (progress && exerciseId) sessionStorage.setItem(`rest:${progress.id}:${exerciseId}`, String(restSeconds));
-  }, [exerciseId, progress, restSeconds]);
+    if (progress && storageId) sessionStorage.setItem(`rest:${progress.id}:${storageId}`, String(restSeconds));
+  }, [progress, restSeconds, storageId]);
 
-  const updateSeriesLoad = (value: string) => {
-    setSeriesLoad(value);
-    if (progress && exerciseId) {
-      sessionStorage.setItem(`load:${progress.id}:${exerciseId}`, value);
+  const updateSeriesLoad = (targetExerciseId: string, value: string) => {
+    setSeriesLoads(current => ({ ...current, [targetExerciseId]: value }));
+    if (progress) {
+      sessionStorage.setItem(`load:${progress.id}:${targetExerciseId}`, value);
     }
   };
 
-  const adjustLoad = (amount: number) => {
-    const parsed = Number(seriesLoad.replace(',', '.'));
+  const adjustLoad = (targetExerciseId: string, amount: number) => {
+    const parsed = Number((seriesLoads[targetExerciseId] || '0').replace(',', '.'));
     const next = Math.max(0, (Number.isFinite(parsed) ? parsed : 0) + amount);
-    updateSeriesLoad(String(Math.round(next * 10) / 10));
+    updateSeriesLoad(targetExerciseId, String(Math.round(next * 10) / 10));
   };
 
   const completeSeries = async () => {
     if (!exercise || !progress || allSeriesDone || !online || savingSeries) return;
-    const load = Number(seriesLoad.replace(',', '.'));
-    if (!Number.isFinite(load) || load < 0) {
-      setError('Informe uma carga válida antes de concluir a série.');
+    const exerciseLoads = activeExercises.map(item => ({ exercise_id: item.id, load: Number((seriesLoads[item.id] || '0').replace(',', '.')) }));
+    if (exerciseLoads.some(item => !Number.isFinite(item.load) || item.load < 0)) {
+      setError('Informe uma carga válida para cada exercício antes de concluir a série.');
       return;
     }
-    const next = Math.min(completedSeries + 1, exercise.series);
+    const next = Math.min(completedSeries + 1, totalSeries);
     setSavingSeries(true);
     setError('');
     try {
-      const { data } = await api.post<TrainingProgress>('/training-progress/series', {
-        id: progress.id,
-        exercise_id: exercise.id,
-        series: next,
-        load,
-      });
+      const request = activeBlock?.isCombination
+        ? api.post<TrainingProgress>('/training-progress/series-group', {
+          id: progress.id,
+          group_id: activeBlock.id,
+          series: next,
+          exercises: exerciseLoads,
+        })
+        : api.post<TrainingProgress>('/training-progress/series', {
+          id: progress.id,
+          exercise_id: exercise.id,
+          series: next,
+          load: exerciseLoads[0].load,
+        });
+      const { data } = await request;
       setProgress(data);
       setCompletedSeries(next);
-      setRestSeconds(next < exercise.series ? exercise.rest : 0);
+      setRestSeconds(next < totalSeries ? (activeBlock?.rest ?? exercise.rest) : 0);
       sessionStorage.setItem('active-training-progress', JSON.stringify(data));
-      sessionStorage.setItem(`series:${progress.id}:${exercise.id}`, String(next));
-      sessionStorage.setItem(`load:${progress.id}:${exercise.id}`, String(load));
+      sessionStorage.setItem(`series:${progress.id}:${storageId}`, String(next));
+      exerciseLoads.forEach(item => sessionStorage.setItem(`load:${progress.id}:${item.exercise_id}`, String(item.load)));
     } catch {
       setError('A série não foi registrada. A carga permanece na tela; verifique a conexão e tente novamente.');
     } finally {
@@ -177,7 +198,7 @@ export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps
     finally { setFinishing(false); }
   };
 
-  const setStops = useMemo(() => Array.from({ length: exercise?.series || 0 }), [exercise?.series]);
+  const setStops = useMemo(() => Array.from({ length: totalSeries }), [totalSeries]);
 
   return (
     <Template type={mode} pageName={training?.name || 'Treino ativo'}>
@@ -197,56 +218,91 @@ export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps
                 <path d="M320 46C251 69 236 105 173 121S69 151 38 209" fill="none" stroke="currentColor" strokeWidth="1.2" />
                 <path d="M320 80C270 96 254 124 197 140S100 166 76 210" fill="none" stroke="currentColor" strokeWidth="1.2" />
               </Box>
-              <Typography component="h2" variant="h1" sx={{ maxWidth: { xs: '64%', sm: '70%' }, position: 'relative', zIndex: 1, fontSize: { xs: 'clamp(2.75rem, 11.5vw, 3.5rem)', sm: '4.75rem' }, transform: 'translateY(-8px)' }}>{exercise.name}</Typography>
-              <Typography sx={{ mt: 1, color: 'text.secondary', fontSize: '1.15rem', fontWeight: 650 }}>Série {Math.min(completedSeries + 1, exercise.series)} de {exercise.series}</Typography>
-              <Typography aria-hidden="true" sx={{ position: 'absolute', right: 0, top: -34, color: '#8989A3', fontSize: { xs: '8rem', sm: '11rem' }, lineHeight: 1, fontWeight: 850, letterSpacing: '-0.04em', fontVariantNumeric: 'tabular-nums', pointerEvents: 'none' }}>
+              <Typography component="h2" variant="h1" sx={{ maxWidth: { xs: '70%', sm: '78%' }, position: 'relative', zIndex: 1, fontSize: { xs: 'clamp(2.5rem, 10vw, 3.5rem)', sm: '4.75rem' }, transform: 'translateY(-8px)' }}>{activeBlock?.isCombination ? 'Série combinada' : exercise.name}</Typography>
+              <Typography sx={{ mt: 1, color: 'text.secondary', fontSize: '1.15rem', fontWeight: 650 }}>Série {Math.min(completedSeries + 1, totalSeries)} de {totalSeries}{activeBlock?.isCombination ? ` · ${activeExercises.length} exercícios seguidos` : ''}</Typography>
+              <Typography aria-hidden="true" sx={{ display: { xs: activeBlock?.isCombination ? 'none' : 'block', sm: 'block' }, position: 'absolute', right: 0, top: -34, color: '#8989A3', fontSize: { xs: '8rem', sm: '11rem' }, lineHeight: 1, fontWeight: 850, letterSpacing: '-0.04em', fontVariantNumeric: 'tabular-nums', pointerEvents: 'none' }}>
                 {String(exerciseIndex + 1).padStart(2, '0')}
               </Typography>
             </Box>
 
             <Box sx={{ py: 2, pl: 3, borderBlock: `1px solid ${tokens.color.line}`, position: 'relative', '&::before': { content: '""', position: 'absolute', left: 0, top: -6, width: 6, height: 36, borderRadius: 3, bgcolor: 'secondary.main' } }}>
-              <Typography sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' }, fontWeight: 700, transform: 'translateY(-30px)' }}>{exercise.instructions || 'Sem instruções adicionais para este exercício.'}</Typography>
+              <Typography sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' }, fontWeight: 700, transform: 'translateY(-30px)' }}>{activeBlock?.isCombination ? 'Faça todos na ordem abaixo, sem pausa. O descanso começa somente depois do último.' : (exercise.instructions || 'Sem instruções adicionais para este exercício.')}</Typography>
             </Box>
 
-            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0,1fr))', borderBottom: `1px solid ${tokens.color.line}` }}>
-              <Box sx={{ py: 2, pr: 2, borderRight: `1px solid ${tokens.color.line}` }}>
-                <Typography color="text.primary" fontWeight={650} sx={{ transform: 'translateY(-32px)' }}>Carga desta série</Typography>
-                <TextField
-                  value={seriesLoad}
-                  onChange={(event) => updateSeriesLoad(event.target.value)}
-                  type="number"
-                  variant="standard"
-                  disabled={savingSeries || allSeriesDone}
-                  inputProps={{ min: 0, step: 0.5, inputMode: 'decimal', 'aria-label': 'Carga da série em quilogramas' }}
-                  InputProps={{ endAdornment: <InputAdornment position="end">kg</InputAdornment> }}
-                  sx={{
-                    transform: 'translateY(-32px)',
-                    width: '100%',
-                    maxWidth: 180,
-                    borderBottom: `6px solid ${tokens.color.energy}`,
-                    '& .MuiInput-root::before, & .MuiInput-root::after': { display: 'none' },
-                    '& input': { py: 0, fontSize: { xs: '3.2rem', sm: '4rem' }, lineHeight: 1, fontWeight: 800, fontVariantNumeric: 'tabular-nums' },
-                    '& .MuiInputAdornment-root': { mt: 1.5 },
-                    '& .MuiInputAdornment-root p': { color: 'text.primary', fontSize: '1.75rem', fontWeight: 800 },
-                  }}
-                />
-                <Stack direction="row" spacing={1} sx={{ mt: -3.25 }}>
-                  <IconButton aria-label="Diminuir carga em 1 kg" onClick={() => adjustLoad(-1)} disabled={savingSeries || allSeriesDone || Number(seriesLoad) <= 0} sx={{ width: 44, height: 44, border: `1px solid ${tokens.color.line}`, borderRadius: 1.5 }}><Remove /></IconButton>
-                  <IconButton aria-label="Aumentar carga em 1 kg" onClick={() => adjustLoad(1)} disabled={savingSeries || allSeriesDone} sx={{ width: 44, height: 44, border: `1px solid ${tokens.color.line}`, borderRadius: 1.5 }}><Add /></IconButton>
-                </Stack>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.75 }}>
-                  {progress?.last_loads?.[exercise.id] !== undefined && completedSeries === 0
-                    ? 'Última carga registrada, ajuste se necessário'
-                    : 'Registrada ao concluir'}
-                </Typography>
+            {activeBlock?.isCombination ? (
+              <Stack spacing={1.5} sx={{ py: 2, borderBottom: `1px solid ${tokens.color.line}` }}>
+                {activeExercises.map((item, itemIndex) => (
+                  <Paper key={item.id} component="section" aria-labelledby={`combination-exercise-${item.id}`} sx={{ p: 2, border: `1px solid ${tokens.color.line}` }}>
+                    <Box sx={{ display: 'grid', gridTemplateColumns: '40px minmax(0,1fr)', gap: 1.5, alignItems: 'start' }}>
+                      <Box sx={{ width: 36, height: 36, borderRadius: '50%', bgcolor: 'primary.main', color: '#fff', display: 'grid', placeItems: 'center', fontWeight: 800 }}>{itemIndex + 1}</Box>
+                      <Box minWidth={0}>
+                        <Typography id={`combination-exercise-${item.id}`} variant="h4">{item.name}</Typography>
+                        <Typography color="text.secondary" sx={{ mt: 0.25 }}>{item.instructions || 'Sem instruções adicionais.'}</Typography>
+                      </Box>
+                    </Box>
+                    <Box sx={{ mt: 2, display: 'grid', gridTemplateColumns: { xs: 'minmax(0,1fr)', sm: 'minmax(0,1fr) auto' }, gap: 2, alignItems: 'end' }}>
+                      <TextField
+                        label={`Carga — ${item.name}`}
+                        value={seriesLoads[item.id] || '0'}
+                        onChange={(event) => updateSeriesLoad(item.id, event.target.value)}
+                        type="number"
+                        disabled={savingSeries || allSeriesDone}
+                        inputProps={{ min: 0, step: 0.5, inputMode: 'decimal', 'aria-label': `Carga de ${item.name} em quilogramas` }}
+                        InputProps={{ endAdornment: <InputAdornment position="end">kg</InputAdornment> }}
+                      />
+                      <Stack direction="row" spacing={1}>
+                        <IconButton aria-label={`Diminuir carga de ${item.name} em 1 kg`} onClick={() => adjustLoad(item.id, -1)} disabled={savingSeries || allSeriesDone || Number(seriesLoads[item.id]) <= 0} sx={{ width: 44, height: 44, border: `1px solid ${tokens.color.line}`, borderRadius: 1.5 }}><Remove /></IconButton>
+                        <IconButton aria-label={`Aumentar carga de ${item.name} em 1 kg`} onClick={() => adjustLoad(item.id, 1)} disabled={savingSeries || allSeriesDone} sx={{ width: 44, height: 44, border: `1px solid ${tokens.color.line}`, borderRadius: 1.5 }}><Add /></IconButton>
+                      </Stack>
+                    </Box>
+                  </Paper>
+                ))}
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 2, px: 1 }}>
+                  <Typography fontWeight={700}>Descanso após o último</Typography>
+                  <Typography variant="h3" sx={{ color: 'info.main', fontVariantNumeric: 'tabular-nums' }}>{activeBlock.rest}s</Typography>
+                </Box>
+              </Stack>
+            ) : (
+              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0,1fr))', borderBottom: `1px solid ${tokens.color.line}` }}>
+                <Box sx={{ py: 2, pr: 2, borderRight: `1px solid ${tokens.color.line}` }}>
+                  <Typography color="text.primary" fontWeight={650} sx={{ transform: 'translateY(-32px)' }}>Carga desta série</Typography>
+                  <TextField
+                    value={seriesLoads[exercise.id] || '0'}
+                    onChange={(event) => updateSeriesLoad(exercise.id, event.target.value)}
+                    type="number"
+                    variant="standard"
+                    disabled={savingSeries || allSeriesDone}
+                    inputProps={{ min: 0, step: 0.5, inputMode: 'decimal', 'aria-label': 'Carga da série em quilogramas' }}
+                    InputProps={{ endAdornment: <InputAdornment position="end">kg</InputAdornment> }}
+                    sx={{
+                      transform: 'translateY(-32px)',
+                      width: '100%',
+                      maxWidth: 180,
+                      borderBottom: `6px solid ${tokens.color.energy}`,
+                      '& .MuiInput-root::before, & .MuiInput-root::after': { display: 'none' },
+                      '& input': { py: 0, fontSize: { xs: '3.2rem', sm: '4rem' }, lineHeight: 1, fontWeight: 800, fontVariantNumeric: 'tabular-nums' },
+                      '& .MuiInputAdornment-root': { mt: 1.5 },
+                      '& .MuiInputAdornment-root p': { color: 'text.primary', fontSize: '1.75rem', fontWeight: 800 },
+                    }}
+                  />
+                  <Stack direction="row" spacing={1} sx={{ mt: -3.25 }}>
+                    <IconButton aria-label="Diminuir carga em 1 kg" onClick={() => adjustLoad(exercise.id, -1)} disabled={savingSeries || allSeriesDone || Number(seriesLoads[exercise.id]) <= 0} sx={{ width: 44, height: 44, border: `1px solid ${tokens.color.line}`, borderRadius: 1.5 }}><Remove /></IconButton>
+                    <IconButton aria-label="Aumentar carga em 1 kg" onClick={() => adjustLoad(exercise.id, 1)} disabled={savingSeries || allSeriesDone} sx={{ width: 44, height: 44, border: `1px solid ${tokens.color.line}`, borderRadius: 1.5 }}><Add /></IconButton>
+                  </Stack>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.75 }}>
+                    {progress?.last_loads?.[exercise.id] !== undefined && completedSeries === 0
+                      ? 'Última carga registrada, ajuste se necessário'
+                      : 'Registrada ao concluir'}
+                  </Typography>
+                </Box>
+                <Box sx={{ py: 2, pl: 2 }}>
+                  <Typography color="text.primary" fontWeight={650} sx={{ transform: 'translateY(-32px)' }}>{exercise.repetitions ? 'Repetições' : 'Descanso'}</Typography>
+                  <Typography variant="h2" sx={{ fontSize: '3.5rem', fontVariantNumeric: 'tabular-nums', transform: 'translateY(-32px)', width: 'fit-content', borderBottom: `6px solid ${tokens.color.info}`, pb: 0.25 }}>{exercise.repetitions || exercise.rest} {!exercise.repetitions && <Typography component="span" fontSize=".7em" fontWeight="inherit">s</Typography>}</Typography>
+                </Box>
               </Box>
-              <Box sx={{ py: 2, pl: 2 }}>
-                <Typography color="text.primary" fontWeight={650} sx={{ transform: 'translateY(-32px)' }}>{exercise.repetitions ? 'Repetições' : 'Descanso'}</Typography>
-                <Typography variant="h2" sx={{ fontSize: '3.5rem', fontVariantNumeric: 'tabular-nums', transform: 'translateY(-32px)', width: 'fit-content', borderBottom: `6px solid ${tokens.color.info}`, pb: 0.25 }}>{exercise.repetitions || exercise.rest} {!exercise.repetitions && <Typography component="span" fontSize=".7em" fontWeight="inherit">s</Typography>}</Typography>
-              </Box>
-            </Box>
+            )}
 
-            <Box aria-label={`${completedSeries} de ${exercise.series} séries concluídas`} sx={{ display: 'grid', gridTemplateColumns: `repeat(${exercise.series}, minmax(0,1fr))`, gap: 1, py: 1, mt: '-24px', borderBottom: `1px solid ${tokens.color.line}`, position: 'relative', '&::before': { content: '""', position: 'absolute', left: '9%', right: '9%', top: 27, height: 2, bgcolor: 'divider' } }}>
+            <Box aria-label={`${completedSeries} de ${totalSeries} séries concluídas`} sx={{ display: 'grid', gridTemplateColumns: `repeat(${totalSeries}, minmax(0,1fr))`, gap: 1, py: 1, mt: activeBlock?.isCombination ? 0 : '-24px', borderBottom: `1px solid ${tokens.color.line}`, position: 'relative', '&::before': { content: '""', position: 'absolute', left: '9%', right: '9%', top: 27, height: 2, bgcolor: 'divider' } }}>
               {setStops.map((_, index) => {
                 const done = index < completedSeries;
                 const active = index === completedSeries && !allSeriesDone;
@@ -308,7 +364,7 @@ export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps
               borderTop: { xs: `1px solid ${tokens.color.line}`, md: 0 },
             }}>
               <Button fullWidth variant="contained" size="large" disabled={savingSeries || (!allSeriesDone && !online)} onClick={allSeriesDone ? continueWorkout : completeSeries} sx={{ minHeight: 56, maxWidth: 900, mx: 'auto', display: 'flex', fontSize: '1.15rem' }}>
-                {savingSeries ? 'Registrando série…' : allSeriesDone ? (nextPendingExercise ? 'Próximo exercício pendente' : 'Finalizar treino') : 'Concluir série'}
+                {savingSeries ? 'Registrando série…' : allSeriesDone ? (nextPendingExercise ? 'Próxima etapa pendente' : 'Finalizar treino') : activeBlock?.isCombination ? 'Concluir série combinada' : 'Concluir série'}
               </Button>
             </Box>
             <Stack spacing={1} sx={{ mt: 1 }}>
@@ -318,9 +374,7 @@ export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps
                 </Button>
               )}
             </Stack>
-            {exercise.video && (
-              <VideoCard url={exercise.video} title={exercise.name} collapsible />
-            )}
+            {activeExercises.filter(item => item.video).map(item => <VideoCard key={item.id} url={item.video!} title={item.name} collapsible />)}
           </>
         ) : !error && <Alert severity="error">Exercício não encontrado neste treino.</Alert>}
       </Stack>
@@ -328,6 +382,7 @@ export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps
       <WorkoutExerciseNavigator
         open={exercisesOpen}
         exercises={exercises}
+        groups={groups}
         progress={progress}
         currentExerciseId={exerciseId}
         onClose={() => setExercisesOpen(false)}
