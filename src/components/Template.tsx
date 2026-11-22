@@ -33,6 +33,8 @@ import {
   LogoutOutlined,
   PeopleOutline,
   PersonOutline,
+  AdminPanelSettingsOutlined,
+  CreditCardOutlined,
   QueryStatsOutlined,
   SportsGymnasticsOutlined,
 } from '@mui/icons-material';
@@ -67,6 +69,11 @@ const studentItems = [
   { label: 'Perfil', mobileLabel: 'Perfil', path: '/profile', icon: <PersonOutline /> },
 ];
 
+const adminItems = [
+  { label: 'Personals', mobileLabel: 'Personals', path: '/admin/personals', icon: <AdminPanelSettingsOutlined /> },
+  { label: 'Planos', mobileLabel: 'Planos', path: '/admin/subscriptions', icon: <CreditCardOutlined /> },
+];
+
 function pathIsActive(current: string, target: string) {
   if (target === '/') return current === '/';
   return current === target || current.startsWith(`${target}/`);
@@ -86,7 +93,7 @@ export default function Template({ children, pageName, type, fullBleed = false }
     catch { return {}; }
   }, []);
   const role = type || user.type || 'PERSONAL';
-  const navItems = role === 'STUDENT' ? studentItems : personalItems;
+  const navItems = role === 'ADMIN' ? adminItems : role === 'STUDENT' ? studentItems : personalItems;
   const activeWorkoutHeader = isMobile && location.pathname.includes('/exercises/');
 
   useEffect(() => {
@@ -264,7 +271,7 @@ export default function Template({ children, pageName, type, fullBleed = false }
         <MenuItem component={Link} to="/profile" onClick={() => setAccountAnchor(null)}>
           <ListItemIcon><PersonOutline /></ListItemIcon>Perfil
         </MenuItem>
-        {!isStandalone && (canInstall || isIOS) && (
+        {role !== 'ADMIN' && !isStandalone && (canInstall || isIOS) && (
           <MenuItem onClick={openInstall}>
             <ListItemIcon><AddToHomeScreenOutlined /></ListItemIcon>Instalar aplicativo
           </MenuItem>

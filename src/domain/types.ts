@@ -14,7 +14,36 @@ export interface User {
   blocked: boolean;
 }
 
-export type UserRole = 'PERSONAL' | 'STUDENT';
+export type UserRole = 'ADMIN' | 'PERSONAL' | 'STUDENT';
+
+export interface PersonalAccount {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  blocked: boolean;
+  type: 'PERSONAL';
+}
+
+export interface PersonalAccountInput {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  confirm_password: string;
+  blocked: boolean;
+}
+
+export interface SubscriptionPlan {
+  id: string;
+  name: string;
+  max_students: number;
+  max_exercises: number;
+  max_training: number;
+  price_brl: number;
+}
+
+export type SubscriptionPlanInput = Omit<SubscriptionPlan, 'id'>;
 
 export interface Exercise {
   id: string;

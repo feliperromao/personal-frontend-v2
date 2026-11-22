@@ -8,6 +8,7 @@ web
 
 ## Users
 
+- Administrators manage personal-trainer accounts and subscription-plan definitions from a dedicated protected area; associating a plan with a personal is deliberately deferred.
 - Personal trainers manage students and exercises, create assigned or personal training plans, and can execute their own plans, often from a desktop but also from a phone between sessions.
 - Students consult and execute assigned workouts on a phone, frequently in a gym and without the trainer physically present.
 
@@ -30,6 +31,7 @@ The product connects the trainer's planning workflow directly to the student's g
 
 - Existing React, MUI, React Router and NestJS/MongoDB API contracts are preserved.
 - Existing `user` and `auth-token` local-storage formats remain compatible.
+- Administrators authenticate through the existing login and can create, edit, block and remove personal accounts, plus create, edit and remove subscription-plan definitions.
 - Training progress uses the existing start, current, cancel and finish endpoints.
 - A training may remain private to the personal without being associated with a student; only associated training plans can be published to students.
 - The UI remains in Brazilian Portuguese.

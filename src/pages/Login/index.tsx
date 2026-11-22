@@ -8,6 +8,8 @@ import BrandMark from '../../components/BrandMark';
 import { usePwa } from '../../platform/PwaContext';
 import { tokens } from '../../theme';
 import api from '../@shared/api';
+import { homeByRole } from '../../auth/ProtectedRoute';
+import { UserRole } from '../../domain/types';
 
 interface LoginFields { email: string; password: string }
 
@@ -44,7 +46,8 @@ export default function Login() {
       localStorage.setItem('install-prompt-pending', '1');
       const fromState = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname;
       const requested = searchParams.get('returnTo') || fromState;
-      navigate(requested || (data.user.type === 'PERSONAL' ? '/' : '/my-workouts'), { replace: true });
+      const role = data.user.type as UserRole;
+      navigate(requested || homeByRole[role] || '/login', { replace: true });
     } catch (requestError: any) {
       if (!requestError?.response) {
         setError('Não foi possível alcançar o servidor. Verifique a conexão e tente novamente.');

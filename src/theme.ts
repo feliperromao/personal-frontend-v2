@@ -1,5 +1,6 @@
 import { alpha, createTheme } from '@mui/material/styles';
 import type {} from '@mui/x-data-grid/themeAugmentation';
+import { ptBR } from '@mui/x-data-grid/locales';
 
 export const tokens = {
   color: {
@@ -84,4 +85,4 @@ export const appTheme = createTheme({
       },
     },
   },
-});
+}, ptBR);

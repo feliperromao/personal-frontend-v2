@@ -7,6 +7,12 @@ interface ProtectedRouteProps {
   allowedType: UserRole | "ALL";
 }
 
+export const homeByRole: Record<UserRole, string> = {
+  ADMIN: '/admin/personals',
+  PERSONAL: '/',
+  STUDENT: '/my-workouts',
+};
+
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, allowedType }) => {
   const location = useLocation();
   const userRaw = localStorage.getItem('user');
@@ -19,7 +25,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, allowedType })
   try {
     const user = JSON.parse(userRaw) as { type?: UserRole };
     if (allowedType === 'ALL' || user.type === allowedType) return element;
-    return <Navigate to={user.type === 'STUDENT' ? '/my-workouts' : '/'} replace />;
+    return <Navigate to={user.type && homeByRole[user.type] ? homeByRole[user.type] : '/login'} replace />;
   } catch {
     localStorage.removeItem('user');
     localStorage.removeItem('auth-token');

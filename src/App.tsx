@@ -14,6 +14,8 @@ const StudentWorkoutDetails = lazy(() => import('./pages/StudentWorkouts/Student
 const ActiveExercise = lazy(() => import('./pages/StudentWorkouts/ActiveExercise'));
 const Profile = lazy(() => import('./pages/Profile'));
 const EvolutionReport = lazy(() => import('./pages/Reports/EvolutionReport'));
+const AdminPersonals = lazy(() => import('./pages/Admin/Personals'));
+const AdminSubscriptions = lazy(() => import('./pages/Admin/Subscriptions'));
 
 function RouteLoading() {
   return (
@@ -30,6 +32,9 @@ export default function App() {
       <Suspense fallback={<RouteLoading />}>
         <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/admin" element={<Navigate to="/admin/personals" replace />} />
+        <Route path="/admin/personals" element={<ProtectedRoute allowedType="ADMIN" element={<AdminPersonals />} />} />
+        <Route path="/admin/subscriptions" element={<ProtectedRoute allowedType="ADMIN" element={<AdminSubscriptions />} />} />
         <Route path="/" element={<ProtectedRoute allowedType="PERSONAL" element={<Dashboard />} />} />
         <Route path="/students" element={<ProtectedRoute allowedType="PERSONAL" element={<Students />} />} />
         <Route path="/exercises" element={<ProtectedRoute allowedType="PERSONAL" element={<Exercises />} />} />
