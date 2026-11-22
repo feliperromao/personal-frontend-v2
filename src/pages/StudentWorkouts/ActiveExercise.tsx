@@ -299,7 +299,7 @@ export default function ActiveExercise({ mode = 'STUDENT' }: ActiveExerciseProps
               position: { xs: 'fixed', md: 'static' },
               left: { xs: 0, md: 'auto' },
               right: { xs: 0, md: 'auto' },
-              bottom: { xs: 'var(--app-bottom-nav)', md: 'auto' },
+              bottom: { xs: 'calc(var(--app-bottom-nav) + var(--app-safe-bottom))', md: 'auto' },
               zIndex: { xs: 1100, md: 'auto' },
               mt: { md: 2 },
               px: { xs: 2, md: 0 },

@@ -184,7 +184,7 @@ export default function Template({ children, pageName, type, fullBleed = false }
         </Box>
       )}
 
-      <Box sx={{ flex: 1, minWidth: 0, ml: { md: `${drawerWidth}px` }, pb: { xs: 'calc(var(--app-bottom-nav) + env(safe-area-inset-bottom))', md: 0 } }}>
+      <Box sx={{ flex: 1, minWidth: 0, ml: { md: `${drawerWidth}px` }, pb: { xs: 'calc(var(--app-bottom-nav) + var(--app-safe-bottom))', md: 0 } }}>
         <Box
           component="header"
           sx={{
@@ -237,7 +237,7 @@ export default function Template({ children, pageName, type, fullBleed = false }
           sx={{
             position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: theme.zIndex.appBar,
             bgcolor: 'background.paper', borderTop: `1px solid ${tokens.color.line}`,
-            pb: 'env(safe-area-inset-bottom)', minHeight: 'var(--app-bottom-nav)',
+            pb: 'var(--app-safe-bottom)', minHeight: 'var(--app-bottom-nav)',
             display: 'grid', gridTemplateColumns: `repeat(${navItems.length}, minmax(0, 1fr))`,
           }}
         >
