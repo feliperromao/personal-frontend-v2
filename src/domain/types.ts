@@ -23,6 +23,7 @@ export interface PersonalAccount {
   phone: string;
   blocked: boolean;
   type: 'PERSONAL';
+  subscription_id: string | null;
 }
 
 export interface PersonalAccountInput {
@@ -32,6 +33,7 @@ export interface PersonalAccountInput {
   password: string;
   confirm_password: string;
   blocked: boolean;
+  subscription_id: string;
 }
 
 export interface SubscriptionPlan {

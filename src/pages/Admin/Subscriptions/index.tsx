@@ -71,8 +71,9 @@ export default function AdminSubscriptions() {
         await api.delete(`${URL}/${deleteId}`);
         handleOpenNotification('Plano excluído com sucesso.', SNACKBAR_TYPES.success);
         await fetchPlans();
-      } catch {
-        handleOpenNotification('Não foi possível excluir o plano.', SNACKBAR_TYPES.error);
+      } catch (requestError: any) {
+        const details = get_erros_message(requestError?.response?.data?.message || 'Tente novamente.');
+        handleOpenNotification(`Não foi possível excluir o plano. ${details}`, SNACKBAR_TYPES.error);
       }
     }
     setDeleteId(null);
@@ -101,7 +102,7 @@ export default function AdminSubscriptions() {
           <Box>
             <Typography component="h2" variant="h2">Planos de assinatura</Typography>
             <Typography color="text.secondary" sx={{ mt: 1, maxWidth: '68ch' }}>
-              Defina limites e preço mensal. A associação de um plano ao personal será implementada futuramente.
+              Defina os limites e o preço mensal dos planos associados aos personals.
             </Typography>
           </Box>
           <Button variant="contained" startIcon={<Add />} onClick={openCreate}>Criar plano</Button>
@@ -134,7 +135,7 @@ export default function AdminSubscriptions() {
             {!loading && plans.length === 0 && !error && (
               <Paper sx={{ p: 3, border: `1px solid ${tokens.color.line}` }}>
                 <Typography variant="h5">Nenhum plano criado</Typography>
-                <Typography color="text.secondary" sx={{ mt: 0.5 }}>Crie o primeiro plano para preparar a futura associação aos personals.</Typography>
+                <Typography color="text.secondary" sx={{ mt: 0.5 }}>Crie o primeiro plano para começar a cadastrar personals.</Typography>
                 <Button startIcon={<Add />} onClick={openCreate} sx={{ mt: 2 }}>Criar plano</Button>
               </Paper>
             )}

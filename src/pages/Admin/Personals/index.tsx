@@ -2,11 +2,12 @@ import { useCallback, useEffect, useState } from 'react';
 import { Add, DeleteOutline, EditOutlined, Replay } from '@mui/icons-material';
 import { Alert, Box, Button, Chip, IconButton, Paper, Skeleton, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { Link } from 'react-router-dom';
 import DeleteDialog from '../../../components/DeleteDialog';
 import { handleOpenNotification, SNACKBAR_TYPES } from '../../../components/MySnackbar';
 import Template from '../../../components/Template';
 import ItemsMenu from '../../../components/table/ItemsMenu';
-import { PersonalAccount, PersonalAccountInput } from '../../../domain/types';
+import { PersonalAccount, PersonalAccountInput, SubscriptionPlan } from '../../../domain/types';
 import get_erros_message from '../../../erros/get_erros_message';
 import { tokens } from '../../../theme';
 import api from '../../@shared/api';
@@ -18,6 +19,7 @@ export default function AdminPersonals() {
   const theme = useTheme();
   const mobile = useMediaQuery(theme.breakpoints.down('md'));
   const [personals, setPersonals] = useState<PersonalAccount[]>([]);
+  const [subscriptions, setSubscriptions] = useState<SubscriptionPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [formOpen, setFormOpen] = useState(false);
@@ -28,8 +30,12 @@ export default function AdminPersonals() {
     setLoading(true);
     setError('');
     try {
-      const { data } = await api.get<PersonalAccount[]>(URL);
-      setPersonals(data);
+      const [personalsResponse, subscriptionsResponse] = await Promise.all([
+        api.get<PersonalAccount[]>(URL),
+        api.get<SubscriptionPlan[]>('/subscriptions'),
+      ]);
+      setPersonals(personalsResponse.data);
+      setSubscriptions(subscriptionsResponse.data);
     } catch {
       setError('Não foi possível carregar os personals. Verifique a conexão e tente novamente.');
     } finally {
@@ -40,9 +46,12 @@ export default function AdminPersonals() {
   useEffect(() => { fetchPersonals(); }, [fetchPersonals]);
 
   const openCreate = () => {
+    if (subscriptions.length === 0) return;
     setEditing(undefined);
     setFormOpen(true);
   };
+
+  const planName = (subscriptionId: string | null) => subscriptions.find((plan) => plan.id === subscriptionId)?.name || 'Sem plano';
 
   const openEdit = (personal: PersonalAccount) => {
     setEditing(personal);
@@ -83,6 +92,7 @@ export default function AdminPersonals() {
     { field: 'name', headerName: 'Nome', flex: 1, minWidth: 200 },
     { field: 'email', headerName: 'E-mail', flex: 1, minWidth: 220 },
     { field: 'phone', headerName: 'Celular', width: 160, valueGetter: (value) => value || '—' },
+    { field: 'subscription_id', headerName: 'Plano', width: 150, valueGetter: (value) => planName(value) },
     {
       field: 'blocked', headerName: 'Acesso', width: 120, renderCell: ({ value }) => (
         <Chip size="small" color={value ? 'default' : 'success'} label={value ? 'Bloqueado' : 'Ativo'} />
@@ -105,13 +115,18 @@ export default function AdminPersonals() {
           <Box>
             <Typography component="h2" variant="h2">Personals</Typography>
             <Typography color="text.secondary" sx={{ mt: 1, maxWidth: '68ch' }}>
-              Controle quem pode acessar a plataforma. Os planos serão associados aos personals em uma próxima etapa.
+              Associe cada personal a um plano para aplicar os limites de alunos, exercícios e treinos.
             </Typography>
           </Box>
-          <Button variant="contained" startIcon={<Add />} onClick={openCreate}>Cadastrar personal</Button>
+          <Button variant="contained" startIcon={<Add />} onClick={openCreate} disabled={!loading && subscriptions.length === 0}>Cadastrar personal</Button>
         </Stack>
 
         {error && <Alert severity="error" action={<Button color="inherit" startIcon={<Replay />} onClick={fetchPersonals}>Tentar novamente</Button>}>{error}</Alert>}
+        {!loading && !error && subscriptions.length === 0 && (
+          <Alert severity="warning" action={<Button color="inherit" component={Link} to="/admin/subscriptions">Criar plano</Button>}>
+            Crie ao menos um plano de assinatura antes de cadastrar um personal.
+          </Alert>
+        )}
 
         {mobile ? (
           <Stack spacing={1.5}>
@@ -126,6 +141,7 @@ export default function AdminPersonals() {
                   <Chip size="small" color={personal.blocked ? 'default' : 'success'} label={personal.blocked ? 'Bloqueado' : 'Ativo'} />
                 </Stack>
                 <Typography variant="body2" sx={{ mt: 1.5 }}>{personal.phone || 'Celular não informado'}</Typography>
+                <Typography variant="body2" color="text.secondary">Plano: {planName(personal.subscription_id)}</Typography>
                 <Stack direction="row" justifyContent="flex-end" spacing={0.5} sx={{ mt: 1 }}>
                   <IconButton aria-label={`Editar ${personal.name}`} onClick={() => openEdit(personal)}><EditOutlined /></IconButton>
                   <IconButton aria-label={`Excluir ${personal.name}`} color="error" onClick={() => setDeleteId(personal.id)}><DeleteOutline /></IconButton>
@@ -136,7 +152,9 @@ export default function AdminPersonals() {
               <Paper sx={{ p: 3, border: `1px solid ${tokens.color.line}` }}>
                 <Typography variant="h5">Nenhum personal cadastrado</Typography>
                 <Typography color="text.secondary" sx={{ mt: 0.5 }}>Cadastre o primeiro personal para liberar o acesso à plataforma.</Typography>
-                <Button startIcon={<Add />} onClick={openCreate} sx={{ mt: 2 }}>Cadastrar personal</Button>
+                {subscriptions.length > 0
+                  ? <Button startIcon={<Add />} onClick={openCreate} sx={{ mt: 2 }}>Cadastrar personal</Button>
+                  : <Button component={Link} to="/admin/subscriptions" sx={{ mt: 2 }}>Criar plano de assinatura</Button>}
               </Paper>
             )}
           </Stack>
@@ -147,7 +165,7 @@ export default function AdminPersonals() {
         )}
       </Stack>
 
-      <PersonalForm personal={editing} open={formOpen} onClose={() => { setFormOpen(false); setEditing(undefined); }} onSubmit={submit} />
+      <PersonalForm personal={editing} subscriptions={subscriptions} open={formOpen} onClose={() => { setFormOpen(false); setEditing(undefined); }} onSubmit={submit} />
       <DeleteDialog title="Excluir personal" isOpen={Boolean(deleteId)} handleCloseDeleteDialog={confirmDelete} />
     </Template>
   );

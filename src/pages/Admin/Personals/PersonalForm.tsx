@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Alert, FormControlLabel, Grid, Switch, TextField, Typography } from '@mui/material';
+import { Alert, Box, FormControlLabel, Grid, MenuItem, Switch, TextField, Typography } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import Modal from '../../../components/Modal';
-import { PersonalAccount, PersonalAccountInput } from '../../../domain/types';
+import { PersonalAccount, PersonalAccountInput, SubscriptionPlan } from '../../../domain/types';
 
 interface PersonalFormProps {
   personal?: PersonalAccount;
   open: boolean;
   onClose: () => void;
   onSubmit: (personal: PersonalAccountInput) => Promise<void>;
+  subscriptions: SubscriptionPlan[];
 }
 
 const emptyPersonal: PersonalAccountInput = {
@@ -20,9 +21,10 @@ const emptyPersonal: PersonalAccountInput = {
   password: '',
   confirm_password: '',
   blocked: false,
+  subscription_id: '',
 };
 
-export default function PersonalForm({ personal, open, onClose, onSubmit }: PersonalFormProps) {
+export default function PersonalForm({ personal, open, onClose, onSubmit, subscriptions }: PersonalFormProps) {
   const editing = Boolean(personal?.id);
   const [submitError, setSubmitError] = useState('');
   const schema = useMemo(() => yup.object({
@@ -38,9 +40,10 @@ export default function PersonalForm({ personal, open, onClose, onSubmit }: Pers
       .oneOf([yup.ref('password'), ''], 'As senhas não coincidem.')
       .default(''),
     blocked: yup.boolean().required(),
+    subscription_id: yup.string().required('Selecione um plano de assinatura.'),
   }), [editing]);
 
-  const { control, handleSubmit, reset, formState: { errors, isDirty, isSubmitting } } = useForm<PersonalAccountInput>({
+  const { control, handleSubmit, reset, watch, formState: { errors, isDirty, isSubmitting } } = useForm<PersonalAccountInput>({
     resolver: yupResolver(schema),
     defaultValues: emptyPersonal,
     shouldFocusError: true,
@@ -48,6 +51,9 @@ export default function PersonalForm({ personal, open, onClose, onSubmit }: Pers
 
   useEffect(() => {
     if (!open) return;
+    const selectedSubscription = personal?.subscription_id && subscriptions.some((plan) => plan.id === personal.subscription_id)
+      ? personal.subscription_id
+      : '';
     reset(personal ? {
       name: personal.name,
       email: personal.email,
@@ -55,9 +61,12 @@ export default function PersonalForm({ personal, open, onClose, onSubmit }: Pers
       password: '',
       confirm_password: '',
       blocked: personal.blocked,
+      subscription_id: selectedSubscription,
     } : emptyPersonal);
     setSubmitError('');
-  }, [open, personal, reset]);
+  }, [open, personal, reset, subscriptions]);
+
+  const selectedPlan = subscriptions.find((plan) => plan.id === watch('subscription_id'));
 
   const close = () => {
     if (isDirty && !window.confirm('Descartar as alterações deste personal?')) return;
@@ -98,6 +107,35 @@ export default function PersonalForm({ personal, open, onClose, onSubmit }: Pers
             <TextField {...field} label="Celular" type="tel" required fullWidth error={Boolean(errors.phone)} helperText={errors.phone?.message} />
           )} />
         </Grid>
+        <Grid item xs={12}>
+          <Controller name="subscription_id" control={control} render={({ field }) => (
+            <TextField
+              {...field}
+              select
+              label="Plano de assinatura"
+              required
+              fullWidth
+              disabled={subscriptions.length === 0}
+              InputLabelProps={{ shrink: true }}
+              error={Boolean(errors.subscription_id)}
+              helperText={errors.subscription_id?.message || 'Os limites do plano serão aplicados a alunos, exercícios e treinos.'}
+            >
+              {subscriptions.map((plan) => <MenuItem key={plan.id} value={plan.id}>{plan.name}</MenuItem>)}
+            </TextField>
+          )} />
+        </Grid>
+        {selectedPlan && (
+          <Grid item xs={12}>
+            <Box
+              aria-label={`Limites do plano ${selectedPlan.name}`}
+              sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 1.5, py: 1.5, borderTop: 1, borderBottom: 1, borderColor: 'divider' }}
+            >
+              <Box><Typography variant="h5" sx={{ fontVariantNumeric: 'tabular-nums' }}>{selectedPlan.max_students}</Typography><Typography variant="body2" color="text.secondary">alunos</Typography></Box>
+              <Box><Typography variant="h5" sx={{ fontVariantNumeric: 'tabular-nums' }}>{selectedPlan.max_exercises}</Typography><Typography variant="body2" color="text.secondary">exercícios</Typography></Box>
+              <Box><Typography variant="h5" sx={{ fontVariantNumeric: 'tabular-nums' }}>{selectedPlan.max_training}</Typography><Typography variant="body2" color="text.secondary">treinos</Typography></Box>
+            </Box>
+          </Grid>
+        )}
         <Grid item xs={12}>
           <Typography variant="body2" color="text.secondary">
             {editing ? 'Deixe a senha em branco para manter a atual.' : 'A senha inicial deve ter pelo menos 8 caracteres.'}
